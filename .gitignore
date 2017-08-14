@@ -1,0 +1,5 @@
+.git
+.c9
+node_modules/
+bower_components/
+.idea

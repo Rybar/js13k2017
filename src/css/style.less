@@ -1,0 +1,29 @@
+
+body { margin: 0; overflow: hidden; background: #111; color: #ccc; }
+#canvas {
+  position: fixed;
+  top:50%;
+  bottom: 0;
+  left: 50%;
+  right: 0;
+
+  width: 150vmin;
+  height: 100vmin;
+
+  transform:translate(-50%, -25%);
+
+  image-rendering: optimizeSpeed;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: -o-crisp-edges;
+  image-rendering: pixelated;
+  -ms-interpolation-mode: nearest-neighbor;
+
+  cursor: none;
+
+  margin: auto;
+
+
+}
+
+//ctx.canvas.style = 'position:fixed; top: 50%; left:50%;width:!00vmin;height:100vmin;transform:translate(-50%, -50%)';
