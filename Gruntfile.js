@@ -19,7 +19,7 @@ module.exports = function(grunt) {
 		concat : {
 			dist : {
 				src  : [
-					//'src/js/lib/stats.js',
+					'src/js/lib/stats.js',
 
 					'src/js/first.js',
 					'src/js/lib/sonantx.js',
@@ -169,5 +169,5 @@ module.exports = function(grunt) {
 	grunt.registerTask('build', ['concat:dist', 'less:development', 'htmlmin:development',] );
 	grunt.registerTask('build-compress', ['concat:dist', 'less:compressed', 'htmlmin:compressed', 'uglify:compressed', 'inline:dist', 'compress:main', 'sizecheck']);
 	//grunt.registerTask('build-compress', ['concat:dist','closure-compiler', 'less:compressed', 'htmlmin:compressed', 'inline:dist', 'compress:main', 'sizecheck']);
-	//grunt.registerTask('server', ['concat:dist','express','watch']);
+	grunt.registerTask('serve', ['concat:dist','express','watch']);
 };

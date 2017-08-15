@@ -26,20 +26,20 @@ states.menu = {
     }
 
     text([
-            'PROTOGAME',
-            256,
+            'LOSTGAME',
+            WIDTH/2,
             40 + Math.sin(t*2.5)*15,
             8 + Math.cos(t*2.9)*4,
             15 + Math.sin(t*3.5)*5,
             'center',
             'top',
-            9,
+            6,
             21,
         ]);
 
     text([
             "PRESS P TO CONTINUE",
-            256,
+            WIDTH/2,
             230,
             2,
             2,

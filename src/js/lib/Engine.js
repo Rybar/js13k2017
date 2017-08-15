@@ -3,12 +3,15 @@
 const WIDTH =     384;
 const HEIGHT =    256;
 const PAGES =     8;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
-var
-C =               document.getElementById('canvas');
-ctx =             C.getContext('2d'),
+const PAGESIZE = WIDTH*HEIGHT;
+//default palette index
+const palDefault = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
 
+var
+C =               document.getElementById('canvas'),
+ctx =             C.getContext('2d'),
 renderTarget =    0x00000,
-renderSource =    0x20000,
+renderSource =    PAGESIZE, //buffer is ahead one screen's worth of pixels
 
 //Richard Fhager's DB32 Palette http://http://pixeljoint.com/forum/forum_posts.asp?TID=16247
 //ofcourse you can change this to whatever you like, up to 256 colors.
@@ -19,9 +22,6 @@ colors =          [0xff000000, 0xff342022, 0xff3c2845, 0xff313966, 0xff3b568f, 0
                    0xff826030, 0xffe16e5b, 0xffff9b63, 0xffe4cd5f, 0xfffcdbcb, 0xffffffff, 0xffb7ad9b, 0xff877e84,
                    0xff6a6a69, 0xff525659, 0xff8a4276, 0xff3232ac, 0xff6357d9, 0xffba7bd7, 0xff4a978f, 0xff306f8a],
 
-//default palette index
-palDefault =      [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31],
-
 //active palette index. maps to indices in colors[]. can alter this whenever for palette effects.
 pal =             [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
 
@@ -30,7 +30,7 @@ ctx.mozImageSmoothingEnabled = false;
 
 C.width = WIDTH;
 C.height = HEIGHT;
-var imageData =       ctx.getImageData(0, 0, WIDTH, HEIGHT),
+var imageData =   ctx.getImageData(0, 0, WIDTH, HEIGHT),
 buf =             new ArrayBuffer(imageData.data.length),
 buf8 =            new Uint8Array(buf),
 data =            new Uint32Array(buf),
@@ -271,7 +271,6 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
 
   function spr(sx = 0, sy = 0, sw = 16, sh = 16, x=0, y=0, flipx = false, flipy = false){
 
-
     for(var i = 0; i < sh; i++){
 
       for(var j = 0; j < sw; j++){
@@ -405,7 +404,7 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
 
 function render() {
 
-  var i = 0x20000;  // display is first 0x20000 bytes of ram
+  var i = PAGESIZE;  // display is first page of ram
 
   while (i--) {
     /*

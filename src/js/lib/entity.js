@@ -1,5 +1,4 @@
-/*global
- * Const*/
+//global
 
 Entity = function(opt){
 

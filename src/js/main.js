@@ -11,14 +11,8 @@ init = () => {
   moveX = 0;
   speedFactor = .6;
   songTrigger = false;
-  state = 'menu';
-  demostate = 0;
+  state = 'game';
   audioCtx = new AudioContext;
-
-  //AC = new AudioContext();
-  //stat = document.getElementById('status');
-  //stat.innerHTML = "blargh"
-
 
   fontString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_!@.'\"?/<()";
 
@@ -31,8 +25,8 @@ init = () => {
   "1011110000101110011101000110001100010111000000000000000000000111110010000100001000000000100111111000110111101011011101010111110101011111010100000"+
   "000000000000000000100001100001000100000000000011011010011001000000000000111010001001100000000100000010001000100010001000000010001000100000100000100001000100001000010000010"
 
-  //stats = new Stats();
-  //document.body.appendChild( stats.dom );
+  stats = new Stats();
+  document.body.appendChild( stats.dom );
 
   //init vid capture
   //capturer = new CCapture( {format: 'gif', workersPath: ''});
@@ -72,7 +66,7 @@ window.addEventListener('focus', function (event) {
 }, false);
 
 loop = e => {
-    //stats.begin();
+    stats.begin();
 
     //game timer
     let now = new Date().getTime();
@@ -82,20 +76,13 @@ loop = e => {
     //draw current state to buffer
     states[state].render();
 
-
     states[state].step(dt);
-
     last = now;
 
     //draw buffer to screen
     render(e);
 
-    //render audio
-
-    //GIF capture
-    //capturer.capture(C);
-
-    //stats.end();
+    stats.end();
     requestAnimationFrame(loop);
 }
 

@@ -1,3 +1,9 @@
+// stats.js - http://github.com/mrdoob/stats.js
+var Stats=function(){function h(a){c.appendChild(a.dom);return a}function k(a){for(var d=0;d<c.children.length;d++)c.children[d].style.display=d===a?"block":"none";l=a}var l=0,c=document.createElement("div");c.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000";c.addEventListener("click",function(a){a.preventDefault();k(++l%c.children.length)},!1);var g=(performance||Date).now(),e=g,a=0,r=h(new Stats.Panel("FPS","#0ff","#002")),f=h(new Stats.Panel("MS","#0f0","#020"));
+    if(self.performance&&self.performance.memory)var t=h(new Stats.Panel("MB","#f08","#201"));k(0);return{REVISION:16,dom:c,addPanel:h,showPanel:k,begin:function(){g=(performance||Date).now()},end:function(){a++;var c=(performance||Date).now();f.update(c-g,200);if(c>e+1E3&&(r.update(1E3*a/(c-e),100),e=c,a=0,t)){var d=performance.memory;t.update(d.usedJSHeapSize/1048576,d.jsHeapSizeLimit/1048576)}return c},update:function(){g=this.end()},domElement:c,setMode:k}};
+Stats.Panel=function(h,k,l){var c=Infinity,g=0,e=Math.round,a=e(window.devicePixelRatio||1),r=80*a,f=48*a,t=3*a,u=2*a,d=3*a,m=15*a,n=74*a,p=30*a,q=document.createElement("canvas");q.width=r;q.height=f;q.style.cssText="width:80px;height:48px";var b=q.getContext("2d");b.font="bold "+9*a+"px Helvetica,Arial,sans-serif";b.textBaseline="top";b.fillStyle=l;b.fillRect(0,0,r,f);b.fillStyle=k;b.fillText(h,t,u);b.fillRect(d,m,n,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d,m,n,p);return{dom:q,update:function(f,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=k;b.fillText(e(f)+" "+h+" ("+e(c)+"-"+e(g)+")",t,u);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,e((1-f/v)*p))}}};"object"===typeof module&&(module.exports=Stats);
+
 (function(){
 
 //---------SONANT-X---------
@@ -1281,12 +1287,15 @@ var song1 = {
 const WIDTH =     384;
 const HEIGHT =    256;
 const PAGES =     8;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
-var
-C =               document.getElementById('canvas');
-ctx =             C.getContext('2d'),
+const PAGESIZE = WIDTH*HEIGHT;
+//default palette index
+const palDefault = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
 
+var
+C =               document.getElementById('canvas'),
+ctx =             C.getContext('2d'),
 renderTarget =    0x00000,
-renderSource =    0x20000,
+renderSource =    PAGESIZE, //buffer is ahead one screen's worth of pixels
 
 //Richard Fhager's DB32 Palette http://http://pixeljoint.com/forum/forum_posts.asp?TID=16247
 //ofcourse you can change this to whatever you like, up to 256 colors.
@@ -1297,9 +1306,6 @@ colors =          [0xff000000, 0xff342022, 0xff3c2845, 0xff313966, 0xff3b568f, 0
                    0xff826030, 0xffe16e5b, 0xffff9b63, 0xffe4cd5f, 0xfffcdbcb, 0xffffffff, 0xffb7ad9b, 0xff877e84,
                    0xff6a6a69, 0xff525659, 0xff8a4276, 0xff3232ac, 0xff6357d9, 0xffba7bd7, 0xff4a978f, 0xff306f8a],
 
-//default palette index
-palDefault =      [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31],
-
 //active palette index. maps to indices in colors[]. can alter this whenever for palette effects.
 pal =             [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
 
@@ -1308,7 +1314,7 @@ ctx.mozImageSmoothingEnabled = false;
 
 C.width = WIDTH;
 C.height = HEIGHT;
-var imageData =       ctx.getImageData(0, 0, WIDTH, HEIGHT),
+var imageData =   ctx.getImageData(0, 0, WIDTH, HEIGHT),
 buf =             new ArrayBuffer(imageData.data.length),
 buf8 =            new Uint8Array(buf),
 data =            new Uint32Array(buf),
@@ -1549,7 +1555,6 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
 
   function spr(sx = 0, sy = 0, sw = 16, sh = 16, x=0, y=0, flipx = false, flipy = false){
 
-
     for(var i = 0; i < sh; i++){
 
       for(var j = 0; j < sw; j++){
@@ -1683,7 +1688,7 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
 
 function render() {
 
-  var i = 0x20000;  // display is first 0x20000 bytes of ram
+  var i = PAGESIZE;  // display is first page of ram
 
   while (i--) {
     /*
@@ -1715,14 +1720,8 @@ init = () => {
   moveX = 0;
   speedFactor = .6;
   songTrigger = false;
-  state = 'menu';
-  demostate = 0;
+  state = 'game';
   audioCtx = new AudioContext;
-
-  //AC = new AudioContext();
-  //stat = document.getElementById('status');
-  //stat.innerHTML = "blargh"
-
 
   fontString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_!@.'\"?/<()";
 
@@ -1735,8 +1734,8 @@ init = () => {
   "1011110000101110011101000110001100010111000000000000000000000111110010000100001000000000100111111000110111101011011101010111110101011111010100000"+
   "000000000000000000100001100001000100000000000011011010011001000000000000111010001001100000000100000010001000100010001000000010001000100000100000100001000100001000010000010"
 
-  //stats = new Stats();
-  //document.body.appendChild( stats.dom );
+  stats = new Stats();
+  document.body.appendChild( stats.dom );
 
   //init vid capture
   //capturer = new CCapture( {format: 'gif', workersPath: ''});
@@ -1776,7 +1775,7 @@ window.addEventListener('focus', function (event) {
 }, false);
 
 loop = e => {
-    //stats.begin();
+    stats.begin();
 
     //game timer
     let now = new Date().getTime();
@@ -1786,20 +1785,13 @@ loop = e => {
     //draw current state to buffer
     states[state].render();
 
-
     states[state].step(dt);
-
     last = now;
 
     //draw buffer to screen
     render(e);
 
-    //render audio
-
-    //GIF capture
-    //capturer.capture(C);
-
-    //stats.end();
+    stats.end();
     requestAnimationFrame(loop);
 }
 
@@ -1972,20 +1964,20 @@ states.menu = {
     }
 
     text([
-            'PROTOGAME',
-            256,
+            'LOSTGAME',
+            WIDTH/2,
             40 + Math.sin(t*2.5)*15,
             8 + Math.cos(t*2.9)*4,
             15 + Math.sin(t*3.5)*5,
             'center',
             'top',
-            9,
+            6,
             21,
         ]);
 
     text([
             "PRESS P TO CONTINUE",
-            256,
+            WIDTH/2,
             230,
             2,
             2,
@@ -2023,31 +2015,6 @@ states.game = {
     }
 
     renderTarget = 0;
-
-    fillRect(0,0,16,16,17);
-    rect(400,16,16,16);
-    fillCircle(32,32,8,21);
-    circle(64,32,8,21);
-    line(128,32,192,64,21);
-    triangle(0,0,16,16,32,32);
-    fillTriangle(32,0,64,64,128,128,21);
-    spr(0,0,16,16);
-    sspr(0,0,16,16,0,0,16,16);
-    renderSource = 0x0;
-    fillRect(256,0,256,256,1);
-    //checker(256, 0, 256,256, 8,8, 2);
-    rspr(0,128,128,256, 400,128, 1.5, 45)
-    text([
-            "JS13K BOILERPLATE",
-            256,
-            20,
-            2,
-            2,
-            'center',
-            'top',
-            1,
-            21,
-        ]);
 
 
   },
@@ -2112,6 +2079,7 @@ states.game = {
 6: valign
 7: scale
 8: color
+9: per character offset
 */
 function textLine(o) {
 
@@ -2213,7 +2181,8 @@ function text(o) {
 				y,
 				o[3] || 0,
 				o[7] || 1,
-				o[8]
+				o[8],
+				o[9]
 			]);
 		}
 

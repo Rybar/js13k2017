@@ -11,6 +11,7 @@
 6: valign
 7: scale
 8: color
+9: per character offset
 */
 function textLine(o) {
 
@@ -112,7 +113,8 @@ function text(o) {
 				y,
 				o[3] || 0,
 				o[7] || 1,
-				o[8]
+				o[8],
+				o[9]
 			]);
 		}
 

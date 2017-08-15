@@ -10,9 +10,9 @@ body {
   bottom: 0;
   left: 50%;
   right: 0;
-  width: 150vmin;
-  height: 100vmin;
-  transform: translate(-50%, -25%);
+  width: 768px;
+  height: 512px;
+  transform: translate(-50%, -50%);
   image-rendering: optimizeSpeed;
   image-rendering: -moz-crisp-edges;
   image-rendering: -webkit-optimize-contrast;
