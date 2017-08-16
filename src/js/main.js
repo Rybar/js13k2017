@@ -4,6 +4,10 @@ const RIGHT = 2;
 const UP = 3;
 const DOWN = 4;
 
+const WORLDWIDTH = 2; //3 less one for 0 index;
+const WORLDHEIGHT = 2; //doesnt change due to 0 index
+
+
 states = {};
 
 init = () => {
@@ -18,7 +22,7 @@ init = () => {
   state = 'game';
   audioCtx = new AudioContext;
 
-  currentRoom = 4;
+  currentRoom = [0,0];
 
   player.init();
 

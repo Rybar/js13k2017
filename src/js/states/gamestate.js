@@ -13,7 +13,7 @@ states.game = {
 
     clear(1);
 
-    rooms[ world[currentRoom] ].draw();
+    rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].draw();  //1d array math y * width + x;
 
     player.draw(dt);
 
@@ -22,7 +22,7 @@ states.game = {
 
   },
 
-  
+
 
 };
 
