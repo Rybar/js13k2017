@@ -27,7 +27,11 @@ module.exports = function(grunt) {
 					'src/js/lib/Engine.js',
 
 					'src/js/main.js',
+					'src/js/world/world.js',
 					'src/js/lib/sound.js',
+					'src/js/player.js',
+					'src/js/particle.js',
+					'src/js/pool.js',
 					'src/js/states/gameoverstate.js',
 					'src/js/states/menustate.js',
 					'src/js/states/gamestate.js',

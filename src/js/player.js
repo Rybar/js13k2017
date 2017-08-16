@@ -56,16 +56,19 @@ player = {
     //world wrap for player
     if(player.x > WIDTH){
       player.x = 0;
+      roomSwitch(RIGHT);
     }
     if(player.x < 0){
       player.x = WIDTH;
+      roomSwitch(LEFT);
     }
     if(player.y > HEIGHT){
       player.y = 0;
+      roomSwitch(DOWN);
     }
     if(player.y < 0){
-      state = 'gameover';
       player.y = HEIGHT;
+      roomSwitch(UP);
     }
     //end world wrap for player
 
@@ -86,7 +89,7 @@ player = {
     //E.renderTarget = E.screen;
     //E.gfx.fillCircle(playerDrawPoint.x+128, playerDrawPoint.y+128, E.player.radius * playerSizeFactor, 21);
 
-    fillCircle(this.x, this.y, this.radius, 21);
+    fillCircle(this.x, this.y, this.radius, 8);
 
 
 
