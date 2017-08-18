@@ -11,10 +11,15 @@ rooms = [
       text(['0',20,20,1,1,'left','bottom',2,15,0]);
       renderSource = SPRITES;
       spr(0,0,WIDTH,HEIGHT);
-      let i = 200;
-      while(i--){
-        pset(Math.random()*384, Math.random()*256, 18);
-      }
+      let r = 40;
+        for(let x=0; x < 384; x+=r){
+          for(let y=0; y < 256; y+=r){
+            let A = x+192+Math.sin(t)*r;
+            let B = y-128+Math.cos(t)*r;
+            let s = Math.sqrt(A*A+B*B);
+            circle(x,y, s-8, 14);
+          }
+        }
     }
   },
 
@@ -25,6 +30,16 @@ rooms = [
               '1',
               20,20,1,1,'left','bottom',2,15,0
           ]);
+          
+          let r = 40;
+        for(let x=0; x < 384; x+=r){
+          for(let y=0; y < 256; y+=r){
+            let A = x-192+Math.sin(t)*r;
+            let B = y-128+Math.cos(t)*r;
+            let s = Math.sqrt(A*A+B*B);
+            circle(x,y, s-8, 14);
+          }
+        }
     }
   },
 
@@ -36,7 +51,15 @@ rooms = [
               '2',
               20,20,1,1,'left','bottom',2,15,0
           ]);
-
+          let r = 40;
+      for(let x=0; x < 384; x+=r){
+          for(let y=0; y < 256; y+=r){
+            let A = x-(192+384)+Math.sin(t)*r;
+            let B = y-128+Math.cos(t)*r;
+            let s = Math.sqrt(A*A+B*B);
+            circle(x,y, s-8, 14);
+          }
+        }
 
     }
   },

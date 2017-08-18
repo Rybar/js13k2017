@@ -1838,10 +1838,15 @@ rooms = [
       text(['0',20,20,1,1,'left','bottom',2,15,0]);
       renderSource = SPRITES;
       spr(0,0,WIDTH,HEIGHT);
-      let i = 200;
-      while(i--){
-        pset(Math.random()*384, Math.random()*256, 18);
-      }
+      let r = 40;
+        for(let x=0; x < 384; x+=r){
+          for(let y=0; y < 256; y+=r){
+            let A = x+192+Math.sin(t)*r;
+            let B = y-128+Math.cos(t)*r;
+            let s = Math.sqrt(A*A+B*B);
+            circle(x,y, s-8, 14);
+          }
+        }
     }
   },
 
@@ -1852,6 +1857,16 @@ rooms = [
               '1',
               20,20,1,1,'left','bottom',2,15,0
           ]);
+          
+          let r = 40;
+        for(let x=0; x < 384; x+=r){
+          for(let y=0; y < 256; y+=r){
+            let A = x-192+Math.sin(t)*r;
+            let B = y-128+Math.cos(t)*r;
+            let s = Math.sqrt(A*A+B*B);
+            circle(x,y, s-8, 14);
+          }
+        }
     }
   },
 
@@ -1863,7 +1878,15 @@ rooms = [
               '2',
               20,20,1,1,'left','bottom',2,15,0
           ]);
-
+          let r = 40;
+      for(let x=0; x < 384; x+=r){
+          for(let y=0; y < 256; y+=r){
+            let A = x-(192+384)+Math.sin(t)*r;
+            let B = y-128+Math.cos(t)*r;
+            let s = Math.sqrt(A*A+B*B);
+            circle(x,y, s-8, 14);
+          }
+        }
 
     }
   },
@@ -2102,7 +2125,7 @@ player = {
     this.xspeed = 200;
     this.yspeed = 200;
     this.drag = .6;
-    this.gravity = 10;
+    this.gravity = 4;
     this.maxYvel = 400;
     this.maxXvel = 400;
     this.minYvel = -400;
@@ -2112,22 +2135,15 @@ player = {
   update (dt) {
     this.bullet.x = player.x;
     this.bullet.y = player.y;
-    this.xvel *= player.drag;
-    //this.yvel *= player.drag;
-    this.yvel += player.gravity;
-    this.yvel = this.yvel.clamp(this.minYvel, this.maxYvel);
-    this.xvel = this.xvel.clamp(this.minXvel, this.maxXvel);
-
-    let xIntegrate = dt * player.xvel;
-    let yIntegrate = dt * player.yvel;
-
+    
+    
     let X = this.x|0;
-    let Y = this.y|0 + 7;
+    let Y = this.y|0 + 6;
     let collisionPixel = ram[ COLLISION + Y * WIDTH + X ];
+    
+     if(collisionPixel) {
 
-    if(collisionPixel) {
-
-      ram[DEBUG + Y * WIDTH + X] = 29; //draw a dot where we collided
+      ram[DEBUG + Y * WIDTH + X] = 29; //draw a dot where we collided  //Collide first
       console.log('hit ' + this.x + ', ' + this.y);
       this.yvel = 0;
       //this.gravity = 0;
@@ -2136,7 +2152,16 @@ player = {
       //}
       this.y--;
     }
-    else{this.gravity = 10};
+    else{this.gravity = 4};
+    
+    this.xvel *= player.drag; //move second.
+    //this.yvel *= player.drag;
+    this.yvel += player.gravity;
+    this.yvel = this.yvel.clamp(this.minYvel, this.maxYvel);
+    this.xvel = this.xvel.clamp(this.minXvel, this.maxXvel);
+
+    let xIntegrate = dt * player.xvel;
+    let yIntegrate = dt * player.yvel;
 
     player.x += xIntegrate;
     player.y += yIntegrate;
