@@ -1,3 +1,5 @@
+Greeble
+
 tiny yellow flying robot is dismantled and shoveled into a cavernous trash heap.
 
 you spend the game finding enough body parts to escape and explore a wasteland of greeble trash.
@@ -12,9 +14,13 @@ you discover that you're not alone, and find a community of other discarded robo
 MVP todo:
 player movement
 collision
-room system
+room system --drawing works.
+  -update
+    animated bits per room
+    room interactions
+
 drawing walls
-key/lock puzzles
+key/lock puzzles?
 part collection
 win state
 

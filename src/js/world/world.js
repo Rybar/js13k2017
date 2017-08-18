@@ -8,10 +8,13 @@ rooms = [
   //0
   {
     draw: function(dt){
-      text([
-              '0',
-              20,20,1,1,'left','bottom',2,15,0
-          ]);
+      text(['0',20,20,1,1,'left','bottom',2,15,0]);
+      renderSource = SPRITES;
+      spr(0,0,WIDTH,HEIGHT);
+      let i = 200;
+      while(i--){
+        pset(Math.random()*384, Math.random()*256, 18);
+      }
     }
   },
 
@@ -34,12 +37,11 @@ rooms = [
               20,20,1,1,'left','bottom',2,15,0
           ]);
 
-      fillTriangle(0,205,384,205,182,136, 25);
 
     }
   },
 
-  //1
+  //3
   {
     draw: function(dt){
       text([
@@ -48,7 +50,7 @@ rooms = [
           ]);
     }
   },
-  //1
+  //4
   {
     draw: function(dt){
       text([
@@ -57,7 +59,7 @@ rooms = [
           ]);
     }
   },
-  //1
+  //5
   {
     draw: function(dt){
       text([
@@ -66,31 +68,46 @@ rooms = [
           ]);
     }
   },
-  //1
+  //6
   {
     draw: function(dt){
       text([
               '6',
               20,20,1,1,'left','bottom',2,15,0
           ]);
+          renderTarget = COLLISION;
+          //fillRect(64,160,)
+          fillRect(0,205,384,256-205, 25);
+          renderTarget = 0x0;
     }
   },
-  //1
+  //7
   {
     draw: function(dt){
       text([
               '7',
               20,20,1,1,'left','bottom',2,15,0
+
           ]);
+          renderTarget = COLLISION;
+          fillTriangle(0,205,384,205,182,136, 25);
+          fillRect(0,205,384,256-205, 25);
+          renderTarget = 0x0;
+
+
+
     }
   },
-  //1
+  //8
   {
     draw: function(dt){
-      text([
-              '8',
-              20,20,1,1,'left','bottom',2,15,0
-          ]);
+      text(['8',20,20,1,1,'left','bottom',2,15,0 ]);
+
+      renderTarget = COLLISION;
+      fillRect(0,205,384,256, 25);
+      renderTarget = 0x0;
+
+
     }
   },
 
@@ -98,6 +115,12 @@ rooms = [
 ]
 
 function roomSwitch(direction){
+  renderTarget = COLLISION;
+  clear(0);
+  renderTarget = DEBUG;
+  clear(0);
+  renderTarget = SCREEN;
+  
 switch(direction){
 
   case LEFT:

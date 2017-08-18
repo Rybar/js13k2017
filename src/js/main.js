@@ -12,7 +12,7 @@ states = {};
 
 init = () => {
 
-
+  drawSpriteSheet();
 
   last = 0;
   dt = 0;

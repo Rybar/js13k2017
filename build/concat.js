@@ -1292,12 +1292,24 @@ fontBitmap = "111111000111111100011000111110100011111010001111101111110000100001
 "1011110000101110011101000110001100010111000000000000000000000111110010000100001000000000100111111000110111101011011101010111110101011111010100000"+
 "000000000000000000100001100001000100000000000011011010011001000000000000111010001001100000000100000010001000100010001000000010001000100000100000100001000100001000010000010"
 
+
+function drawSpriteSheet(){
+  renderTarget = SPRITES;
+
+  fillRect(0,0,10,10,8);
+}
+
 //--------------Engine.js-------------------
 
 const WIDTH =     384;
 const HEIGHT =    256;
 const PAGES =     8;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
 const PAGESIZE = WIDTH*HEIGHT;
+
+const SCREEN = 0;
+const SPRITES = PAGESIZE*7;  //sprite sheet drawn to last page of buffer
+const COLLISION = PAGESIZE*6;
+const DEBUG = PAGESIZE*5;
 //default palette index
 const palDefault = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
 
@@ -1715,6 +1727,10 @@ function render() {
 
 }
 
+Number.prototype.clamp = function(min, max) {
+  return Math.min(Math.max(this, min), max);
+};
+
 //--------END Engine.js-------------------
 
 //-----main.js---------------
@@ -1731,7 +1747,7 @@ states = {};
 
 init = () => {
 
-
+  drawSpriteSheet();
 
   last = 0;
   dt = 0;
@@ -1819,10 +1835,13 @@ rooms = [
   //0
   {
     draw: function(dt){
-      text([
-              '0',
-              20,20,1,1,'left','bottom',2,15,0
-          ]);
+      text(['0',20,20,1,1,'left','bottom',2,15,0]);
+      renderSource = SPRITES;
+      spr(0,0,WIDTH,HEIGHT);
+      let i = 200;
+      while(i--){
+        pset(Math.random()*384, Math.random()*256, 18);
+      }
     }
   },
 
@@ -1845,12 +1864,11 @@ rooms = [
               20,20,1,1,'left','bottom',2,15,0
           ]);
 
-      fillTriangle(0,205,384,205,182,136, 25);
 
     }
   },
 
-  //1
+  //3
   {
     draw: function(dt){
       text([
@@ -1859,7 +1877,7 @@ rooms = [
           ]);
     }
   },
-  //1
+  //4
   {
     draw: function(dt){
       text([
@@ -1868,7 +1886,7 @@ rooms = [
           ]);
     }
   },
-  //1
+  //5
   {
     draw: function(dt){
       text([
@@ -1877,31 +1895,46 @@ rooms = [
           ]);
     }
   },
-  //1
+  //6
   {
     draw: function(dt){
       text([
               '6',
               20,20,1,1,'left','bottom',2,15,0
           ]);
+          renderTarget = COLLISION;
+          //fillRect(64,160,)
+          fillRect(0,205,384,256-205, 25);
+          renderTarget = 0x0;
     }
   },
-  //1
+  //7
   {
     draw: function(dt){
       text([
               '7',
               20,20,1,1,'left','bottom',2,15,0
+
           ]);
+          renderTarget = COLLISION;
+          fillTriangle(0,205,384,205,182,136, 25);
+          fillRect(0,205,384,256-205, 25);
+          renderTarget = 0x0;
+
+
+
     }
   },
-  //1
+  //8
   {
     draw: function(dt){
-      text([
-              '8',
-              20,20,1,1,'left','bottom',2,15,0
-          ]);
+      text(['8',20,20,1,1,'left','bottom',2,15,0 ]);
+
+      renderTarget = COLLISION;
+      fillRect(0,205,384,256, 25);
+      renderTarget = 0x0;
+
+
     }
   },
 
@@ -1909,6 +1942,12 @@ rooms = [
 ]
 
 function roomSwitch(direction){
+  renderTarget = COLLISION;
+  clear(0);
+  renderTarget = DEBUG;
+  clear(0);
+  renderTarget = SCREEN;
+  
 switch(direction){
 
   case LEFT:
@@ -2060,18 +2099,44 @@ player = {
     this.radius = 12;
     this.xvel = 0;
     this.yvel = 0;
-    this.xspeed = 400;
-    this.yspeed = 400;
+    this.xspeed = 200;
+    this.yspeed = 200;
     this.drag = .6;
+    this.gravity = 10;
+    this.maxYvel = 400;
+    this.maxXvel = 400;
+    this.minYvel = -400;
+    this.minXvel = -400;
   },
 
   update (dt) {
     this.bullet.x = player.x;
     this.bullet.y = player.y;
     this.xvel *= player.drag;
-    this.yvel *= player.drag;
+    //this.yvel *= player.drag;
+    this.yvel += player.gravity;
+    this.yvel = this.yvel.clamp(this.minYvel, this.maxYvel);
+    this.xvel = this.xvel.clamp(this.minXvel, this.maxXvel);
+
     let xIntegrate = dt * player.xvel;
     let yIntegrate = dt * player.yvel;
+
+    let X = this.x|0;
+    let Y = this.y|0 + 7;
+    let collisionPixel = ram[ COLLISION + Y * WIDTH + X ];
+
+    if(collisionPixel) {
+
+      ram[DEBUG + Y * WIDTH + X] = 29; //draw a dot where we collided
+      console.log('hit ' + this.x + ', ' + this.y);
+      this.yvel = 0;
+      //this.gravity = 0;
+      //while(ram[COLLISION + Y * WIDTH + X]){
+        //this.y--;
+      //}
+      this.y--;
+    }
+    else{this.gravity = 10};
 
     player.x += xIntegrate;
     player.y += yIntegrate;
@@ -2113,24 +2178,10 @@ player = {
       player.y = HEIGHT;
       roomSwitch(UP);
     }
-    //end world wrap for player
-
 
   },
 
   draw (dt) {
-
-    // let degrees = (360/256) * E.player.x * 0.0174533;
-    // let radius = (E.player.y / 2);
-
-    // let playerDrawPoint = E.util.toPolarScreen({x:E.player.x, y:E.player.y});
-    //
-    // let distFromCenter = E.util.dist(playerDrawPoint.x+128, playerDrawPoint.y+128, 128,128);
-    //
-    // let playerSizeFactor = E.util.norm(distFromCenter, 0, 128);
-
-    //E.renderTarget = E.screen;
-    //E.gfx.fillCircle(playerDrawPoint.x+128, playerDrawPoint.y+128, E.player.radius * playerSizeFactor, 21);
 
     fillCircle(this.x, this.y, this.radius, 8);
 
@@ -2308,18 +2359,23 @@ states.menu = {
 
 states.game = {
 
-
   step(dt) {
+    //rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].update();  //1d array math y * width + x;
     player.update(dt);
   },
 
   render(dt) {
-
+    renderTarget = 0x0;
+    clear(1);
+    renderTarget = COLLISION;
+    clear(0);
     renderTarget = 0x0;
 
-    clear(1);
-
-    rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].draw();  //1d array math y * width + x;
+    rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].draw();
+    renderSource = COLLISION; //temporary until decoration functions
+    spr(0,0,WIDTH,HEIGHT);
+    renderSource = DEBUG;
+    spr(0,0,WIDTH,HEIGHT);
 
     player.draw(dt);
 
