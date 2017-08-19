@@ -6,6 +6,55 @@ Stats.Panel=function(h,k,l){var c=Infinity,g=0,e=Math.round,a=e(window.devicePix
 
 (function(){
 
+var lcg = {
+  seed: Date.now(),
+  a: 1664525,
+  c: 1013904223,
+  m: Math.pow(2, 32),
+
+  setSeed: function(seed) {
+    this.seed = seed;
+  },
+
+  nextInt: function() {
+    // range [0, 2^32)
+    this.seed = (this.seed * this.a + this.c) % this.m;
+    return this.seed;
+  },
+
+  nextFloat: function() {
+    // range [0, 1)
+    return this.nextInt() / this.m;
+  },
+
+  nextBool: function(percent) {
+    // percent is chance of getting true
+    if(percent == null) {
+      percent = 0.5;
+    }
+    return this.nextFloat() < percent;
+  },
+
+  nextFloatRange: function(min, max) {
+    // range [min, max)
+    return min + this.nextFloat() * (max - min);
+  },
+
+  nextIntRange: function(min, max) {
+    // range [min, max)
+    return Math.floor(this.nextFloatRange(min, max));
+  },
+
+  nextColor: function() {
+    // range [#000000, #ffffff]
+    var c = this.nextIntRange(0, Math.pow(2, 24)).toString(16).toUpperCase();
+    while(c.length < 6) {
+      c = "0" + c;
+    }
+    return "#" + c;
+  }
+};
+
 //---------SONANT-X---------
 /*
 // Sonant-X
@@ -1296,20 +1345,24 @@ fontBitmap = "111111000111111100011000111110100011111010001111101111110000100001
 function drawSpriteSheet(){
   renderTarget = SPRITES;
 
-  fillRect(0,0,10,10,8);
+  //fillRect(0,0,384,256,5);
+  fillRect(1,1,17,17,27);
+  fillRect(2,2,15,15,21);
+
+  console.log(ram[SPRITES+WIDTH+5]);
 }
 
 //--------------Engine.js-------------------
 
-const WIDTH =     384;
-const HEIGHT =    256;
-const PAGES =     8;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
-const PAGESIZE = WIDTH*HEIGHT;
+const WIDTH =     384|0;
+const HEIGHT =    256|0;
+const PAGES =     10|0;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
+const PAGESIZE = WIDTH*HEIGHT|0;
 
 const SCREEN = 0;
-const SPRITES = PAGESIZE*7;  //sprite sheet drawn to last page of buffer
-const COLLISION = PAGESIZE*6;
-const DEBUG = PAGESIZE*5;
+const SPRITES = (PAGESIZE*4)|0;
+const COLLISION = PAGESIZE*6|0;
+const DEBUG = PAGESIZE*5|0;
 //default palette index
 const palDefault = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
 
@@ -1826,8 +1879,8 @@ loop = e => {
 //----- END main.js---------------
 
 world = [
-  0,1,2,
-  3,4,5,
+  7,0,0,
+  0,0,0,
   6,7,8
 ];
 
@@ -1835,18 +1888,16 @@ rooms = [
   //0
   {
     draw: function(dt){
-      text(['0',20,20,1,1,'left','bottom',2,15,0]);
       renderSource = SPRITES;
+      renderTarget = 0;
       spr(0,0,WIDTH,HEIGHT);
-      let r = 40;
-        for(let x=0; x < 384; x+=r){
-          for(let y=0; y < 256; y+=r){
-            let A = x+192+Math.sin(t)*r;
-            let B = y-128+Math.cos(t)*r;
-            let s = Math.sqrt(A*A+B*B);
-            circle(x,y, s-8, 14);
-          }
-        }
+      text(['0',20,20,1,1,'left','bottom',2,15,0]);
+      lcg.setSeed(1019);
+      for(let i = 0; i < 200; i++){
+        pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 16);
+      }
+
+
     }
   },
 
@@ -1857,7 +1908,7 @@ rooms = [
               '1',
               20,20,1,1,'left','bottom',2,15,0
           ]);
-          
+
           let r = 40;
         for(let x=0; x < 384; x+=r){
           for(let y=0; y < 256; y+=r){
@@ -1873,6 +1924,10 @@ rooms = [
   //2
   {
     draw: function(dt){
+
+      renderSource = SPRITES;
+      renderTarget = 0;
+      spr(0,0,WIDTH,HEIGHT);
 
       text([
               '2',
@@ -1894,19 +1949,29 @@ rooms = [
   //3
   {
     draw: function(dt){
+      renderTarget = COLLISION;
+      fillRect(0,0,127,256,27);
+      fillRect(250,0,127,256,27);
+      renderTarget = 0x0;
       text([
               '3',
               20,20,1,1,'left','bottom',2,15,0
           ]);
+
     }
   },
   //4
   {
     draw: function(dt){
+      renderTarget = COLLISION;
+      fillRect(0,0,127,256,27);
+      fillRect(250,0,127,256,27);
+      renderTarget = 0x0;
       text([
               '4',
               20,20,1,1,'left','bottom',2,15,0
           ]);
+
     }
   },
   //5
@@ -1927,7 +1992,7 @@ rooms = [
           ]);
           renderTarget = COLLISION;
           //fillRect(64,160,)
-          fillRect(0,205,384,256-205, 25);
+          fillRect(0,205,384,10, 25);
           renderTarget = 0x0;
     }
   },
@@ -1940,8 +2005,10 @@ rooms = [
 
           ]);
           renderTarget = COLLISION;
-          fillTriangle(0,205,384,205,182,136, 25);
-          fillRect(0,205,384,256-205, 25);
+          fillTriangle(0,256,384,256,182,205, 25);
+          //fillRect(0,205,384,256-205, 25);
+          fillRect(100,100,10,80, 24);
+          fillRect(100,170,100,10, 23);
           renderTarget = 0x0;
 
 
@@ -1954,7 +2021,7 @@ rooms = [
       text(['8',20,20,1,1,'left','bottom',2,15,0 ]);
 
       renderTarget = COLLISION;
-      fillRect(0,205,384,256, 25);
+      fillRect(0,205,384,10, 25);
       renderTarget = 0x0;
 
 
@@ -1969,8 +2036,8 @@ function roomSwitch(direction){
   clear(0);
   renderTarget = DEBUG;
   clear(0);
-  renderTarget = SCREEN;
-  
+  renderTarget = 0;
+
 switch(direction){
 
   case LEFT:
@@ -2118,44 +2185,37 @@ player = {
 
   init (){
     this.x = 64;
-    this.y =  230;
-    this.radius = 12;
+    this.y =  64;
+    this.radius = 9;
     this.xvel = 0;
     this.yvel = 0;
-    this.xspeed = 200;
-    this.yspeed = 200;
-    this.drag = .6;
-    this.gravity = 4;
+    this.xspeed = 300;
+    this.yspeed = 300;
+    this.drag = .8;
+    this.gravity = 7;
     this.maxYvel = 400;
     this.maxXvel = 400;
     this.minYvel = -400;
     this.minXvel = -400;
+
+    this.b = {
+      left: (this.x-this.radius)|0,
+      right: (this.x+this.radius)|0,
+      top: (this.y-this.radius)|0,
+      bottom: (this.y+this.radius)|0,
+      width: this.radius * 2,
+      height: this.radius * 2
+    }
+
   },
 
   update (dt) {
     this.bullet.x = player.x;
     this.bullet.y = player.y;
-    
-    
-    let X = this.x|0;
-    let Y = this.y|0 + 6;
-    let collisionPixel = ram[ COLLISION + Y * WIDTH + X ];
-    
-     if(collisionPixel) {
 
-      ram[DEBUG + Y * WIDTH + X] = 29; //draw a dot where we collided  //Collide first
-      console.log('hit ' + this.x + ', ' + this.y);
-      this.yvel = 0;
-      //this.gravity = 0;
-      //while(ram[COLLISION + Y * WIDTH + X]){
-        //this.y--;
-      //}
-      this.y--;
-    }
-    else{this.gravity = 4};
-    
-    this.xvel *= player.drag; //move second.
+    this.xvel *= player.drag;
     //this.yvel *= player.drag;
+
     this.yvel += player.gravity;
     this.yvel = this.yvel.clamp(this.minYvel, this.maxYvel);
     this.xvel = this.xvel.clamp(this.minXvel, this.maxXvel);
@@ -2165,6 +2225,17 @@ player = {
 
     player.x += xIntegrate;
     player.y += yIntegrate;
+
+    this.b = {
+      left: (this.x-this.radius)|0,
+      right: (this.x+this.radius)|0,
+      top: (this.y-this.radius)|0,
+      bottom: (this.y+this.radius)|0,
+      width: this.radius * 2,
+      height: this.radius * 2
+    }
+
+    this.collideResolution(dt);
 
     //player movement
     if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
@@ -2180,11 +2251,11 @@ player = {
       player.yvel = player.yspeed;
     }
 
-    if(Key.isDown(Key.SPACE || Key.isDown(Key.z))){
-      //player.bullet.xvel = E.player.xvel;
-      player.bullet.yvel = -350;
-      bulletPool.get(player.bullet);
-    }
+    // if(Key.isDown(Key.SPACE || Key.isDown(Key.z))){
+    //   //player.bullet.xvel = E.player.xvel;
+    //   player.bullet.yvel = -350;
+    //   bulletPool.get(player.bullet);
+    // }
 
     //world wrap for player
     if(player.x > WIDTH){
@@ -2208,11 +2279,51 @@ player = {
 
   draw (dt) {
 
-    fillCircle(this.x, this.y, this.radius, 8);
+    //fillRect(this.x-this.radius, this.y-this.radius, this.radius, this.radius, 8);
+    renderSource = SPRITES;
+    renderTarget = 0;
+    spr(1,1,18,18,(this.x-this.radius)|0,(this.y-this.radius)|0 );
+    rect(this.x-this.radius,this.y-this.radius, this.radius*2, this.radius*2);
 
 
 
   },
+
+  collides(x,y){
+    return ram[COLLISION + x + y * WIDTH];
+  },
+
+  collideResolution (dt) {
+
+    let offsetX = 0;
+    let offsetY = 0;
+    let b = this.b;
+
+    //check bottom:
+    for(let i = b.left; i <= b.right; i++){ //from left to right, across bottom edge
+      if(ram[COLLISION+i+WIDTH*b.bottom]){
+        for(let j = b.bottom; j >= b.top; j--) {  //starting from point we found solid, scan upward for empty pixel
+          if(ram[COLLISION+i+WIDTH*j]){
+            offsetY = j - b.bottom;  //
+          }
+        } //end interior check
+      }
+    } // end bottom edge checker
+
+    //check top:
+    for(let i = b.left; i <= b.right; i++){ //from left to right, across top edge
+      if(ram[COLLISION+i+WIDTH*b.top]){
+        for(let j = b.top; j <= b.bottom; j++) {  //starting from point we found solid, scan upward for empty pixel
+          if(ram[COLLISION+i+WIDTH*j]){
+            offsetY = b.top - j;  //
+          }
+        } //end interior check
+      }
+    } // end top edge checker
+
+    this.y += offsetY;
+
+  } //end collideResolution
 
 }
 

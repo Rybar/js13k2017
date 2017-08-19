@@ -1,6 +1,6 @@
 world = [
-  0,1,2,
-  3,4,5,
+  7,0,0,
+  0,0,0,
   6,7,8
 ];
 
@@ -8,18 +8,16 @@ rooms = [
   //0
   {
     draw: function(dt){
-      text(['0',20,20,1,1,'left','bottom',2,15,0]);
       renderSource = SPRITES;
+      renderTarget = 0;
       spr(0,0,WIDTH,HEIGHT);
-      let r = 40;
-        for(let x=0; x < 384; x+=r){
-          for(let y=0; y < 256; y+=r){
-            let A = x+192+Math.sin(t)*r;
-            let B = y-128+Math.cos(t)*r;
-            let s = Math.sqrt(A*A+B*B);
-            circle(x,y, s-8, 14);
-          }
-        }
+      text(['0',20,20,1,1,'left','bottom',2,15,0]);
+      lcg.setSeed(1019);
+      for(let i = 0; i < 200; i++){
+        pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 16);
+      }
+
+
     }
   },
 
@@ -30,7 +28,7 @@ rooms = [
               '1',
               20,20,1,1,'left','bottom',2,15,0
           ]);
-          
+
           let r = 40;
         for(let x=0; x < 384; x+=r){
           for(let y=0; y < 256; y+=r){
@@ -46,6 +44,10 @@ rooms = [
   //2
   {
     draw: function(dt){
+
+      renderSource = SPRITES;
+      renderTarget = 0;
+      spr(0,0,WIDTH,HEIGHT);
 
       text([
               '2',
@@ -67,19 +69,29 @@ rooms = [
   //3
   {
     draw: function(dt){
+      renderTarget = COLLISION;
+      fillRect(0,0,127,256,27);
+      fillRect(250,0,127,256,27);
+      renderTarget = 0x0;
       text([
               '3',
               20,20,1,1,'left','bottom',2,15,0
           ]);
+
     }
   },
   //4
   {
     draw: function(dt){
+      renderTarget = COLLISION;
+      fillRect(0,0,127,256,27);
+      fillRect(250,0,127,256,27);
+      renderTarget = 0x0;
       text([
               '4',
               20,20,1,1,'left','bottom',2,15,0
           ]);
+
     }
   },
   //5
@@ -100,7 +112,7 @@ rooms = [
           ]);
           renderTarget = COLLISION;
           //fillRect(64,160,)
-          fillRect(0,205,384,256-205, 25);
+          fillRect(0,205,384,10, 25);
           renderTarget = 0x0;
     }
   },
@@ -113,8 +125,10 @@ rooms = [
 
           ]);
           renderTarget = COLLISION;
-          fillTriangle(0,205,384,205,182,136, 25);
-          fillRect(0,205,384,256-205, 25);
+          fillTriangle(0,256,384,256,182,205, 25);
+          //fillRect(0,205,384,256-205, 25);
+          fillRect(100,100,10,80, 24);
+          fillRect(100,170,100,10, 23);
           renderTarget = 0x0;
 
 
@@ -127,7 +141,7 @@ rooms = [
       text(['8',20,20,1,1,'left','bottom',2,15,0 ]);
 
       renderTarget = COLLISION;
-      fillRect(0,205,384,256, 25);
+      fillRect(0,205,384,10, 25);
       renderTarget = 0x0;
 
 
@@ -142,8 +156,8 @@ function roomSwitch(direction){
   clear(0);
   renderTarget = DEBUG;
   clear(0);
-  renderTarget = SCREEN;
-  
+  renderTarget = 0;
+
 switch(direction){
 
   case LEFT:

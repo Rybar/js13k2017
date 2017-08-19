@@ -898,5 +898,9 @@ fontBitmap = "111111000111111100011000111110100011111010001111101111110000100001
 function drawSpriteSheet(){
   renderTarget = SPRITES;
 
-  fillRect(0,0,10,10,8);
+  //fillRect(0,0,384,256,5);
+  fillRect(1,1,17,17,27);
+  fillRect(2,2,15,15,21);
+
+  console.log(ram[SPRITES+WIDTH+5]);
 }

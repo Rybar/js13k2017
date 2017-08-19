@@ -22,6 +22,7 @@ module.exports = function(grunt) {
 					'src/js/lib/stats.js',
 
 					'src/js/first.js',
+					'src/js/lib/lcg.js',
 					'src/js/lib/sonantx.js',
 					'src/js/assets.js',
 					'src/js/lib/Engine.js',

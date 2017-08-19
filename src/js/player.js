@@ -13,44 +13,37 @@ player = {
 
   init (){
     this.x = 64;
-    this.y =  230;
-    this.radius = 12;
+    this.y =  64;
+    this.radius = 9;
     this.xvel = 0;
     this.yvel = 0;
-    this.xspeed = 200;
-    this.yspeed = 200;
-    this.drag = .6;
-    this.gravity = 4;
+    this.xspeed = 300;
+    this.yspeed = 300;
+    this.drag = .8;
+    this.gravity = 7;
     this.maxYvel = 400;
     this.maxXvel = 400;
     this.minYvel = -400;
     this.minXvel = -400;
+
+    this.b = {
+      left: (this.x-this.radius)|0,
+      right: (this.x+this.radius)|0,
+      top: (this.y-this.radius)|0,
+      bottom: (this.y+this.radius)|0,
+      width: this.radius * 2,
+      height: this.radius * 2
+    }
+
   },
 
   update (dt) {
     this.bullet.x = player.x;
     this.bullet.y = player.y;
-    
-    
-    let X = this.x|0;
-    let Y = this.y|0 + 6;
-    let collisionPixel = ram[ COLLISION + Y * WIDTH + X ];
-    
-     if(collisionPixel) {
 
-      ram[DEBUG + Y * WIDTH + X] = 29; //draw a dot where we collided  //Collide first
-      console.log('hit ' + this.x + ', ' + this.y);
-      this.yvel = 0;
-      //this.gravity = 0;
-      //while(ram[COLLISION + Y * WIDTH + X]){
-        //this.y--;
-      //}
-      this.y--;
-    }
-    else{this.gravity = 4};
-    
-    this.xvel *= player.drag; //move second.
+    this.xvel *= player.drag;
     //this.yvel *= player.drag;
+
     this.yvel += player.gravity;
     this.yvel = this.yvel.clamp(this.minYvel, this.maxYvel);
     this.xvel = this.xvel.clamp(this.minXvel, this.maxXvel);
@@ -60,6 +53,17 @@ player = {
 
     player.x += xIntegrate;
     player.y += yIntegrate;
+
+    this.b = {
+      left: (this.x-this.radius)|0,
+      right: (this.x+this.radius)|0,
+      top: (this.y-this.radius)|0,
+      bottom: (this.y+this.radius)|0,
+      width: this.radius * 2,
+      height: this.radius * 2
+    }
+
+    this.collideResolution(dt);
 
     //player movement
     if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
@@ -75,11 +79,11 @@ player = {
       player.yvel = player.yspeed;
     }
 
-    if(Key.isDown(Key.SPACE || Key.isDown(Key.z))){
-      //player.bullet.xvel = E.player.xvel;
-      player.bullet.yvel = -350;
-      bulletPool.get(player.bullet);
-    }
+    // if(Key.isDown(Key.SPACE || Key.isDown(Key.z))){
+    //   //player.bullet.xvel = E.player.xvel;
+    //   player.bullet.yvel = -350;
+    //   bulletPool.get(player.bullet);
+    // }
 
     //world wrap for player
     if(player.x > WIDTH){
@@ -103,10 +107,50 @@ player = {
 
   draw (dt) {
 
-    fillCircle(this.x, this.y, this.radius, 8);
+    //fillRect(this.x-this.radius, this.y-this.radius, this.radius, this.radius, 8);
+    renderSource = SPRITES;
+    renderTarget = 0;
+    spr(1,1,18,18,(this.x-this.radius)|0,(this.y-this.radius)|0 );
+    rect(this.x-this.radius,this.y-this.radius, this.radius*2, this.radius*2);
 
 
 
   },
+
+  collides(x,y){
+    return ram[COLLISION + x + y * WIDTH];
+  },
+
+  collideResolution (dt) {
+
+    let offsetX = 0;
+    let offsetY = 0;
+    let b = this.b;
+
+    //check bottom:
+    for(let i = b.left; i <= b.right; i++){ //from left to right, across bottom edge
+      if(ram[COLLISION+i+WIDTH*b.bottom]){
+        for(let j = b.bottom; j >= b.top; j--) {  //starting from point we found solid, scan upward for empty pixel
+          if(ram[COLLISION+i+WIDTH*j]){
+            offsetY = j - b.bottom;  //
+          }
+        } //end interior check
+      }
+    } // end bottom edge checker
+
+    //check top:
+    for(let i = b.left; i <= b.right; i++){ //from left to right, across top edge
+      if(ram[COLLISION+i+WIDTH*b.top]){
+        for(let j = b.top; j <= b.bottom; j++) {  //starting from point we found solid, scan upward for empty pixel
+          if(ram[COLLISION+i+WIDTH*j]){
+            offsetY = b.top - j;  //
+          }
+        } //end interior check
+      }
+    } // end top edge checker
+
+    this.y += offsetY;
+
+  } //end collideResolution
 
 }
