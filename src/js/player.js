@@ -17,8 +17,8 @@ player = {
     this.radius = 9;
     this.xvel = 0;
     this.yvel = 0;
-    this.xspeed = 300;
-    this.yspeed = 300;
+    this.xspeed = 100;
+    this.yspeed = 100;
     this.drag = .8;
     this.gravity = 7;
     this.maxYvel = 400;
@@ -143,13 +143,16 @@ player = {
       if(ram[COLLISION+i+WIDTH*b.top]){
         for(let j = b.top; j <= b.bottom; j++) {  //starting from point we found solid, scan upward for empty pixel
           if(ram[COLLISION+i+WIDTH*j]){
-            offsetY = b.top - j;  //
+            offsetY = j-b.top;  //
           }
         } //end interior check
       }
     } // end top edge checker
 
     this.y += offsetY;
+    this.x += offsetX;
+
+
 
   } //end collideResolution
 

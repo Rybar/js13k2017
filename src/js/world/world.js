@@ -129,6 +129,7 @@ rooms = [
           //fillRect(0,205,384,256-205, 25);
           fillRect(100,100,10,80, 24);
           fillRect(100,170,100,10, 23);
+          fillRect(210,100,100,100, 22);
           renderTarget = 0x0;
 
 
