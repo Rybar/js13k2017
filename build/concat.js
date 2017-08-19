@@ -2173,17 +2173,6 @@ var songGen = new sonantx.MusicGenerator(song1);
 // }
 
 player = {
-  // x: 0,
-  // y: 0,
-  // radius: 12,
-  // xvel: 0,
-  // yvel: 0,
-  // speed: 6,
-  // drag: .97,
-
-  bullet: {
-    x: 0, y:0, xvel: 0, yvel: 0
-  },
 
   init (){
     this.x = 64;
@@ -2200,14 +2189,11 @@ player = {
     this.minYvel = -400;
     this.minXvel = -400;
 
-
-
   },
 
   update (dt) {
 
-    this.bullet.x = player.x;
-    this.bullet.y = player.y;
+    console.info(player.x, player.y);
 
     this.xvel *= player.drag;
     //this.yvel *= player.drag;
@@ -2222,11 +2208,14 @@ player = {
     player.x += xIntegrate;
     player.y += yIntegrate;
 
+    player.x = Math.round(player.x);
+    player.y = Math.round(player.y);
+
     this.b = {
-      left: (this.x-this.radius)|0,
-      right: (this.x+this.radius)|0,
-      top: (this.y-this.radius)|0,
-      bottom: (this.y+this.radius)|0,
+      left: this.x-this.radius,
+      right: this.x+this.radius,
+      top: this.y-this.radius,
+      bottom: this.y+this.radius,
       width: this.radius * 2,
       height: this.radius * 2
     }
