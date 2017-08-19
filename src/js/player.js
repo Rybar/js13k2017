@@ -17,8 +17,8 @@ player = {
     this.radius = 9;
     this.xvel = 0;
     this.yvel = 0;
-    this.xspeed = 100;
-    this.yspeed = 100;
+    this.xspeed = 200;
+    this.yspeed = 200;
     this.drag = .8;
     this.gravity = 7;
     this.maxYvel = 400;
@@ -26,18 +26,12 @@ player = {
     this.minYvel = -400;
     this.minXvel = -400;
 
-    this.b = {
-      left: (this.x-this.radius)|0,
-      right: (this.x+this.radius)|0,
-      top: (this.y-this.radius)|0,
-      bottom: (this.y+this.radius)|0,
-      width: this.radius * 2,
-      height: this.radius * 2
-    }
+
 
   },
 
   update (dt) {
+
     this.bullet.x = player.x;
     this.bullet.y = player.y;
 
@@ -63,7 +57,7 @@ player = {
       height: this.radius * 2
     }
 
-    this.collideResolution(dt);
+
 
     //player movement
     if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
@@ -78,6 +72,26 @@ player = {
     if(Key.isDown(Key.s) || Key.isDown(Key.DOWN)) {
       player.yvel = player.yspeed;
     }
+
+    offsetX = this.collideResolutionX(dt);
+    offsetY = this.collideResolutionY(dt);
+
+
+    //this.x += Math.abs(offsetX) < Math.abs(offsetY) ? offsetX : 0;
+    //this.y += Math.abs(offsetY) < Math.abs(offsetX) ? offsetY : 0;
+
+    if( Math.abs(offsetX) < Math.abs(offsetY) ){ //x overlap is smaller
+      if( ! this.collides( this.x+offsetX, this.y) ){ //does resolving remove collision?
+        this.x += offsetX;
+      }
+    }
+    if( Math.abs(offsetY) < Math.abs(offsetX) ){ //y overlap is smaller
+      if( ! this.collides( this.x, this.y+offsetY) ){ //does resolving remove collision?
+        this.y += offsetY;
+      }
+    }
+
+
 
     // if(Key.isDown(Key.SPACE || Key.isDown(Key.z))){
     //   //player.bullet.xvel = E.player.xvel;
@@ -121,10 +135,10 @@ player = {
     return ram[COLLISION + x + y * WIDTH];
   },
 
-  collideResolution (dt) {
+  collideResolutionY (dt) {
 
-    let offsetX = 0;
     let offsetY = 0;
+    let error = 4; // avoid corners?
     let b = this.b;
 
     //check bottom:
@@ -148,12 +162,41 @@ player = {
         } //end interior check
       }
     } // end top edge checker
+    return offsetY
 
-    this.y += offsetY;
-    this.x += offsetX;
+  }, //end collideResolutionY
+
+  collideResolutionX (dt) {
+
+    let offsetX = 0;
+    let b = this.b;
+    let error = 4;
+
+    //check left:
+    for(let i = b.top+error; i <= b.bottom-error; i++){ //from top to bottom across left edge;
+      if(ram[COLLISION+b.left+WIDTH*i]){
+        for(let j = b.left; j <= b.right; j++) {  //starting from point we found solid, scan upward for empty pixel
+          if(ram[COLLISION+j+WIDTH*i]){
+            offsetX = j-b.left;  //
+          }
+        } //end interior check
+      }
+    } // end left edge checker
+
+    //check left:
+    for(let i = b.top+error; i <= b.bottom-error; i++){ //from top to bottom across left edge;
+      if(ram[COLLISION+b.right+WIDTH*i]){
+        for(let j = b.right; j >= b.left; j--) {  //starting from point we found solid, scan upward for empty pixel
+          if(ram[COLLISION+j+WIDTH*i]){
+            offsetX = j-b.right;  //
+          }
+        } //end interior check
+      }
+    } // end left edge checker
 
 
+    return offsetX;
 
-  } //end collideResolution
+  }
 
 }

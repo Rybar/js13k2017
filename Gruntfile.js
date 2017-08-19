@@ -78,7 +78,7 @@ module.exports = function(grunt) {
 					 mangle: {
 					 		properties: {
 									builtins: false,
-									regex: /MusicGenerator|getAudioGenerator|osc1_oct|oscSawtooth|osc1_det|osc1_detune/
+									regex: /MusicGenerator|getAudioGenerator|osc1_oct|oscSawtooth|osc1_det|osc1_detune|fillRect|left|right|top|bottom/
 									//domprops: false,
 
 							}
