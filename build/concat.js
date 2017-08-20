@@ -2183,7 +2183,7 @@ player = {
     this.xspeed = 200;
     this.yspeed = 200;
     this.drag = .8;
-    this.gravity = 7;
+    this.gravity = 8;
     this.maxYvel = 400;
     this.maxXvel = 400;
     this.minYvel = -400;
@@ -2193,7 +2193,7 @@ player = {
 
   update (dt) {
 
-    console.info(player.x, player.y);
+
 
     this.xvel *= player.drag;
     //this.yvel *= player.drag;
@@ -2212,9 +2212,9 @@ player = {
     //player.y;
 
     this.b = {
-      left: this.x-this.radius|0,
+      left: this.x-this.radius|0+1,
       right: this.x+this.radius|0,
-      top: this.y-this.radius|0,
+      top: this.y-this.radius|0+1,
       bottom: this.y+this.radius|0,
       width: this.radius * 2,
       height: this.radius * 2
@@ -2235,32 +2235,33 @@ player = {
     if(Key.isDown(Key.s) || Key.isDown(Key.DOWN)) {
       player.yvel = player.yspeed;
     }
+    if(this.collides(this.x, this.b.bottom))player.yvel = 0;
+    if(this.collides(this.x, this.b.top))player.yvel = 0;
+    if(this.collides(this.b.left, this.y))player.xvel = 0;
+    if(this.collides(this.b.right, this.y))player.xvel = 0;
 
     offsetX = this.collideResolutionX(dt);
     offsetY = this.collideResolutionY(dt);
 
+    //if(offsetY != 0)player.yvel = 0;
+    //if(offsetX != 0)player.xvel = 0;
 
-    this.x += Math.abs(offsetX) < Math.abs(offsetY) ? offsetX : 0;
-    this.y += Math.abs(offsetY) < Math.abs(offsetX) ? offsetY : 0;
-
-    // if( Math.abs(offsetX) < Math.abs(offsetY) ){ //x overlap is smaller
-    //   if( ! this.collides( this.x+offsetX, this.y) ){ //does resolving remove collision?
-    //     this.x += offsetX;
-    //   }
-    // }
-    // if( Math.abs(offsetY) < Math.abs(offsetX) ){ //y overlap is smaller
-    //   if( ! this.collides( this.x, this.y+offsetY) ){ //does resolving remove collision?
-    //     this.y += offsetY;
-    //   }
-    // }
+    console.info(offsetX,offsetY);
 
 
+      // if( Math.abs(offsetX) < Math.abs(offsetY) ){ //x overlap is smaller
+      //   if( this.collides( this.x+offsetX, this.y) == 0 ){ //does resolving remove collision?
+      //     this.x += offsetX;
+      //   }
+      // }
+      // if( Math.abs(offsetY) < Math.abs(offsetX) ){ //y overlap is smaller
+      //   if( this.collides( this.x, this.y+offsetY) == 0 ){ //does resolving remove collision?
+      //     this.y += offsetY;
+      //   }
+      // }
 
-    // if(Key.isDown(Key.SPACE || Key.isDown(Key.z))){
-    //   //player.bullet.xvel = E.player.xvel;
-    //   player.bullet.yvel = -350;
-    //   bulletPool.get(player.bullet);
-    // }
+      this.x += Math.abs(offsetX) < Math.abs(offsetY) ? offsetX : 0;
+      this.y += Math.abs(offsetY) < Math.abs(offsetX) ? offsetY : 0;
 
     //world wrap for player
     if(player.x > WIDTH){
@@ -2283,15 +2284,11 @@ player = {
   },
 
   draw (dt) {
-
     //fillRect(this.x-this.radius, this.y-this.radius, this.radius, this.radius, 8);
     renderSource = SPRITES;
     renderTarget = 0;
     spr(1,1,18,18,(this.x-this.radius)|0,(this.y-this.radius)|0 );
     rect(this.x-this.radius,this.y-this.radius, this.radius*2, this.radius*2);
-
-
-
   },
 
   collides(x,y){
@@ -2305,7 +2302,7 @@ player = {
     let b = this.b;
 
     //check bottom:
-    for(let i = b.left; i <= b.right; i++){ //from left to right, across bottom edge
+    for(let i = b.left+1; i <= b.right-1; i++){ //from left to right, across bottom edge
       if(ram[COLLISION+i+WIDTH*b.bottom]){
         for(let j = b.bottom; j >= b.top; j--) {  //starting from point we found solid, scan upward for empty pixel
           if(ram[COLLISION+i+WIDTH*j]){
@@ -2316,9 +2313,9 @@ player = {
     } // end bottom edge checker
 
     //check top:
-    for(let i = b.left; i <= b.right; i++){ //from left to right, across top edge
+    for(let i = b.left+1; i <= b.right-1; i++){ //from left to right, across top edge
       if(ram[COLLISION+i+WIDTH*b.top]){
-        for(let j = b.top; j <= b.bottom; j++) {  //starting from point we found solid, scan upward for empty pixel
+        for(let j = b.top; j <= b.bottom; j++) {  //starting from point we found solid, scan downward for empty pixel
           if(ram[COLLISION+i+WIDTH*j]){
             offsetY = j-b.top + 1;  //
           }
@@ -2336,9 +2333,9 @@ player = {
     let error = 4;
 
     //check left:
-    for(let i = b.top; i <= b.bottom; i++){ //from top to bottom across left edge;
+    for(let i = b.top-1; i <= b.bottom+1; i++){ //from top to bottom across left edge;
       if(ram[COLLISION+b.left+WIDTH*i]){
-        for(let j = b.left; j <= b.right; j++) {  //starting from point we found solid, scan upward for empty pixel
+        for(let j = b.left; j < b.right; j++) {  //starting from point we found solid, scan upward for empty pixel
           if(ram[COLLISION+j+WIDTH*i]){
             offsetX = j-b.left;  //
           }
@@ -2347,9 +2344,9 @@ player = {
     } // end left edge checker
 
     //check right:
-    for(let i = b.top; i <= b.bottom; i++){ //from top to bottom across left edge;
+    for(let i = b.top-1; i <= b.bottom+1; i++){ //from top to bottom across left edge;
       if(ram[COLLISION+b.right+WIDTH*i]){
-        for(let j = b.right; j >= b.left; j--) {  //starting from point we found solid, scan upward for empty pixel
+        for(let j = b.right; j > b.left; j--) {  //starting from point we found solid, scan upward for empty pixel
           if(ram[COLLISION+j+WIDTH*i]){
             offsetX = j-b.right;  //
           }
