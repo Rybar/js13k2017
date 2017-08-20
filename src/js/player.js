@@ -61,10 +61,10 @@ player = {
     if(Key.isDown(Key.s) || Key.isDown(Key.DOWN)) {
       player.yvel = player.yspeed;
     }
-    if(this.collides(this.x, this.b.bottom))player.yvel = 0;
-    if(this.collides(this.x, this.b.top))player.yvel = 0;
-    if(this.collides(this.b.left, this.y))player.xvel = 0;
-    if(this.collides(this.b.right, this.y))player.xvel = 0;
+    //if(this.collides(this.x, this.b.bottom))player.yvel = 0;
+    //if(this.collides(this.x, this.b.top))player.yvel = 0;
+    //if(this.collides(this.b.left, this.y))player.xvel = 0;
+    //if(this.collides(this.b.right, this.y))player.xvel = 0;
 
     offsetX = this.collideResolutionX(dt);
     offsetY = this.collideResolutionY(dt);
@@ -128,7 +128,7 @@ player = {
     let b = this.b;
 
     //check bottom:
-    for(let i = b.left+1; i <= b.right-1; i++){ //from left to right, across bottom edge
+    for(let i = b.left; i <= b.right; i++){ //from left to right, across bottom edge
       if(ram[COLLISION+i+WIDTH*b.bottom]){
         for(let j = b.bottom; j >= b.top; j--) {  //starting from point we found solid, scan upward for empty pixel
           if(ram[COLLISION+i+WIDTH*j]){
@@ -139,7 +139,7 @@ player = {
     } // end bottom edge checker
 
     //check top:
-    for(let i = b.left+1; i <= b.right-1; i++){ //from left to right, across top edge
+    for(let i = b.left; i <= b.right; i++){ //from left to right, across top edge
       if(ram[COLLISION+i+WIDTH*b.top]){
         for(let j = b.top; j <= b.bottom; j++) {  //starting from point we found solid, scan downward for empty pixel
           if(ram[COLLISION+i+WIDTH*j]){
@@ -159,9 +159,9 @@ player = {
     let error = 4;
 
     //check left:
-    for(let i = b.top-1; i <= b.bottom+1; i++){ //from top to bottom across left edge;
+    for(let i = b.top; i <= b.bottom; i++){ //from top to bottom across left edge;
       if(ram[COLLISION+b.left+WIDTH*i]){
-        for(let j = b.left; j < b.right; j++) {  //starting from point we found solid, scan upward for empty pixel
+        for(let j = b.left; j <= b.right; j++) {  //starting from point we found solid, scan upward for empty pixel
           if(ram[COLLISION+j+WIDTH*i]){
             offsetX = j-b.left;  //
           }
@@ -170,9 +170,9 @@ player = {
     } // end left edge checker
 
     //check right:
-    for(let i = b.top-1; i <= b.bottom+1; i++){ //from top to bottom across left edge;
+    for(let i = b.top; i <= b.bottom; i++){ //from top to bottom across left edge;
       if(ram[COLLISION+b.right+WIDTH*i]){
-        for(let j = b.right; j > b.left; j--) {  //starting from point we found solid, scan upward for empty pixel
+        for(let j = b.right; j >= b.left; j--) {  //starting from point we found solid, scan upward for empty pixel
           if(ram[COLLISION+j+WIDTH*i]){
             offsetX = j-b.right;  //
           }
