@@ -28,19 +28,22 @@ player = {
     this.yvel = this.yvel.clamp(this.minYvel, this.maxYvel);
     this.xvel = this.xvel.clamp(this.minXvel, this.maxXvel);
 
-    let xIntegrate = dt * player.xvel;
-    let yIntegrate = dt * player.yvel;
+    let dx = dt * player.xvel;
+    let dy = dt * player.yvel;
 
-    player.x += xIntegrate;
-    player.y += yIntegrate;
+    dx = Math.abs(dx) > this.radius ? dx/2 : dx;
+    dy = Math.abs(dy) > this.radius ? dy/2 : dy;
+
+    player.x += dx;
+    player.y += dy;
 
     //player.x;
     //player.y;
 
     this.b = {
-      left: this.x-this.radius|0+1,
+      left: this.x-this.radius|0,
       right: this.x+this.radius|0,
-      top: this.y-this.radius|0+1,
+      top: this.y-this.radius|0,
       bottom: this.y+this.radius|0,
       width: this.radius * 2,
       height: this.radius * 2
@@ -61,33 +64,25 @@ player = {
     if(Key.isDown(Key.s) || Key.isDown(Key.DOWN)) {
       player.yvel = player.yspeed;
     }
-    //if(this.collides(this.x, this.b.bottom))player.yvel = 0;
-    //if(this.collides(this.x, this.b.top))player.yvel = 0;
-    //if(this.collides(this.b.left, this.y))player.xvel = 0;
-    //if(this.collides(this.b.right, this.y))player.xvel = 0;
+
 
     offsetX = this.collideResolutionX(dt);
     offsetY = this.collideResolutionY(dt);
 
-    //if(offsetY != 0)player.yvel = 0;
-    //if(offsetX != 0)player.xvel = 0;
+    offsetX = Math.abs(offsetX) >= this.radius ? offsetX/2 : offsetX;
+    offsetY = Math.abs(offsetY) >= this.radius ? offsetY/2 : offsetY;
+
+    //offsetX = offsetX/3;
+    //offsetY = offsetY/3;
+
 
     console.info(offsetX,offsetY);
 
+    //this.x += offsetX;
+    //this.y += offsetY;
 
-      // if( Math.abs(offsetX) < Math.abs(offsetY) ){ //x overlap is smaller
-      //   if( this.collides( this.x+offsetX, this.y) == 0 ){ //does resolving remove collision?
-      //     this.x += offsetX;
-      //   }
-      // }
-      // if( Math.abs(offsetY) < Math.abs(offsetX) ){ //y overlap is smaller
-      //   if( this.collides( this.x, this.y+offsetY) == 0 ){ //does resolving remove collision?
-      //     this.y += offsetY;
-      //   }
-      // }
-
-      this.x += Math.abs(offsetX) < Math.abs(offsetY) ? offsetX : 0;
-      this.y += Math.abs(offsetY) < Math.abs(offsetX) ? offsetY : 0;
+      this.x += Math.abs(offsetX) < Math.abs(offsetY) || Math.abs(offsetX) == Math.abs(offsetY) ? offsetX : 0;
+      this.y += Math.abs(offsetY) < Math.abs(offsetX) || Math.abs(offsetX) == Math.abs(offsetY) ? offsetY : 0;
 
     //world wrap for player
     if(player.x > WIDTH){

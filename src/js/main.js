@@ -75,11 +75,11 @@ loop = e => {
     dt = Math.min(1, (now - last) / 1000);
     t += dt;
 
-    //draw current state to buffer
-    states[state].render();
-
     states[state].step(dt);
     last = now;
+
+    //draw current state to buffer
+    states[state].render();
 
     //draw buffer to screen
     render(e);
