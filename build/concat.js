@@ -1861,6 +1861,7 @@ loop = e => {
     //game timer
     let now = new Date().getTime();
     dt = Math.min(1, (now - last) / 1000);
+    if(dt > 14/1000)dt = 16/1000; 
     t += dt;
 
     states[state].step(dt);
@@ -2205,14 +2206,8 @@ player = {
     let dx = dt * player.xvel;
     let dy = dt * player.yvel;
 
-    dx = Math.abs(dx) > this.radius ? dx/2 : dx;
-    dy = Math.abs(dy) > this.radius ? dy/2 : dy;
-
     player.x += dx;
     player.y += dy;
-
-    //player.x;
-    //player.y;
 
     this.b = {
       left: this.x-this.radius|0,
@@ -2223,7 +2218,14 @@ player = {
       height: this.radius * 2
     }
 
+    offsetX = this.collideResolutionX(dt);
 
+    offsetY = this.collideResolutionY(dt);
+
+    console.info(offsetX,dx,offsetY,dy);
+
+      this.x += Math.abs(offsetX) < Math.abs(offsetY) ? offsetX : 0;
+      this.y += Math.abs(offsetY) < Math.abs(offsetX) ? offsetY : 0;
 
     //player movement
     if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
@@ -2238,25 +2240,6 @@ player = {
     if(Key.isDown(Key.s) || Key.isDown(Key.DOWN)) {
       player.yvel = player.yspeed;
     }
-
-
-    offsetX = this.collideResolutionX(dt);
-    offsetY = this.collideResolutionY(dt);
-
-    offsetX = Math.abs(offsetX) >= this.radius ? offsetX/2 : offsetX;
-    offsetY = Math.abs(offsetY) >= this.radius ? offsetY/2 : offsetY;
-
-    //offsetX = offsetX/3;
-    //offsetY = offsetY/3;
-
-
-    console.info(offsetX,offsetY);
-
-    //this.x += offsetX;
-    //this.y += offsetY;
-
-      this.x += Math.abs(offsetX) < Math.abs(offsetY) || Math.abs(offsetX) == Math.abs(offsetY) ? offsetX : 0;
-      this.y += Math.abs(offsetY) < Math.abs(offsetX) || Math.abs(offsetX) == Math.abs(offsetY) ? offsetY : 0;
 
     //world wrap for player
     if(player.x > WIDTH){

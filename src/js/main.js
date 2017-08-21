@@ -73,6 +73,7 @@ loop = e => {
     //game timer
     let now = new Date().getTime();
     dt = Math.min(1, (now - last) / 1000);
+    if(dt > 14/1000)dt = 16/1000; 
     t += dt;
 
     states[state].step(dt);
