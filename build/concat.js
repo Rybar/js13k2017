@@ -1346,8 +1346,15 @@ function drawSpriteSheet(){
   renderTarget = SPRITES;
 
   //fillRect(0,0,384,256,5);
-  fillRect(1,1,17,17,27);
-  fillRect(2,2,15,15,21);
+  var i = 27;
+  while(i--){
+    fillCircle(
+      lcg.nextIntRange(4,17),
+      lcg.nextIntRange(4,17),
+      lcg.nextIntRange(1,4),
+      lcg.nextIntRange(8,11)
+    )
+  }
 
   console.log(ram[SPRITES+WIDTH+5]);
 }
@@ -1880,8 +1887,8 @@ loop = e => {
 //----- END main.js---------------
 
 world = [
-  7,0,0,
   0,0,0,
+  0,0,1,
   6,7,8
 ];
 
@@ -1910,6 +1917,10 @@ rooms = [
               20,20,1,1,'left','bottom',2,15,0
           ]);
 
+          for(let i = 0; i < 200; i++){
+            pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 16);
+          }
+
           let r = 40;
         for(let x=0; x < 384; x+=r){
           for(let y=0; y < 256; y+=r){
@@ -1929,6 +1940,11 @@ rooms = [
       renderSource = SPRITES;
       renderTarget = 0;
       spr(0,0,WIDTH,HEIGHT);
+
+      lcg.setSeed(42);
+      for(let i = 0; i < 200; i++){
+        pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 16);
+      }
 
       text([
               '2',
@@ -1991,6 +2007,10 @@ rooms = [
               '6',
               20,20,1,1,'left','bottom',2,15,0
           ]);
+          lcg.setSeed(42);
+          for(let i = 0; i < 200; i++){
+            pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 16);
+          }
           renderTarget = COLLISION;
           //fillRect(64,160,)
           fillRect(0,205,384,10, 25);
@@ -2008,11 +2028,17 @@ rooms = [
           renderTarget = COLLISION;
           fillTriangle(0,256,384,256,182,205, 25);
           //fillRect(0,205,384,256-205, 25);
-          fillRect(100,90,20,80, 24);
-          fillRect(100,160,100,20, 23);
-          fillRect(200,900,10,100, 23);
-          fillRect(210,90,100,100, 22);
+          fillRect(100,70,20,80, 24);
+          fillRect(100,140,100,20, 23);
+          fillRect(200,820,10,100, 23);
+          fillRect(210,70,100,100, 22);
           renderTarget = 0x0;
+          lcg.setSeed(42);
+          for(let i = 0; i < 200; i++){
+            pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 16);
+          }
+          renderSource = SPRITES;
+          spr(0,0,384,256);
 
 
 
@@ -2224,6 +2250,15 @@ player = {
       player.y = player.oldY;
       player.yvel = -player.yvel*.4;
     }
+    this.updateB();
+    if(this.collides()){
+      this.x += this.collideResolutionX();
+      this.updateB();
+      if(this.collides()){
+        this.y += this.collideResolutionY();
+        this.updateB();
+      }
+    }
 
     this.updateB();
 
@@ -2268,7 +2303,7 @@ player = {
     renderSource = SPRITES;
     renderTarget = 0;
     spr(1,1,18,18,(this.x-this.radius)|0,(this.y-this.radius)|0 );
-    rect(this.x-this.radius,this.y-this.radius, this.radius*2, this.radius*2);
+    //rect(this.x-this.radius,this.y-this.radius, this.radius*2, this.radius*2);
   },
 
   collides () {
@@ -2546,11 +2581,45 @@ states.game = {
 
     rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].draw();
     renderSource = COLLISION; //temporary until decoration functions
-    spr(0,0,WIDTH,HEIGHT);
-    renderSource = DEBUG;
-    spr(0,0,WIDTH,HEIGHT);
+    var i = 6000;
+
+    lcg.setSeed(1019);
+    while(--i){
+      let x = lcg.nextIntRange(0,WIDTH),
+          y = lcg.nextIntRange(0,HEIGHT)
+
+      if(ram[COLLISION + x + y * WIDTH]){
+        fillRect(
+          x + lcg.nextIntRange(-5,0),
+          y + lcg.nextIntRange(-10,0),
+          lcg.nextIntRange(0,15),
+          lcg.nextIntRange(0,10),
+          lcg.nextIntRange(22, 25)
+        );
+      }
+    }
 
     player.draw(dt);
+
+    var i = 1000;
+    lcg.setSeed(1019);
+    while(--i){
+      let x = lcg.nextIntRange(0,WIDTH),
+          y = lcg.nextIntRange(0,HEIGHT)
+
+      if(ram[COLLISION + x + y * WIDTH]){
+        fillRect(
+          x + lcg.nextIntRange(-5,0),
+          y + lcg.nextIntRange(-20,0),
+          lcg.nextIntRange(0,5),
+          lcg.nextIntRange(0,20),
+          lcg.nextIntRange(22, 25)
+        );
+        fillCircle(x,y-10,2, lcg.nextIntRange(22,26));
+      }
+    }
+
+
 
     renderTarget = 0;
 

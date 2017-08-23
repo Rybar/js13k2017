@@ -899,8 +899,15 @@ function drawSpriteSheet(){
   renderTarget = SPRITES;
 
   //fillRect(0,0,384,256,5);
-  fillRect(1,1,17,17,27);
-  fillRect(2,2,15,15,21);
+  var i = 27;
+  while(i--){
+    fillCircle(
+      lcg.nextIntRange(4,17),
+      lcg.nextIntRange(4,17),
+      lcg.nextIntRange(1,4),
+      lcg.nextIntRange(8,11)
+    )
+  }
 
   console.log(ram[SPRITES+WIDTH+5]);
 }

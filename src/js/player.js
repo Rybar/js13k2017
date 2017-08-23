@@ -49,6 +49,15 @@ player = {
       player.y = player.oldY;
       player.yvel = -player.yvel*.4;
     }
+    this.updateB();
+    if(this.collides()){
+      this.x += this.collideResolutionX();
+      this.updateB();
+      if(this.collides()){
+        this.y += this.collideResolutionY();
+        this.updateB();
+      }
+    }
 
     this.updateB();
 
@@ -93,7 +102,7 @@ player = {
     renderSource = SPRITES;
     renderTarget = 0;
     spr(1,1,18,18,(this.x-this.radius)|0,(this.y-this.radius)|0 );
-    rect(this.x-this.radius,this.y-this.radius, this.radius*2, this.radius*2);
+    //rect(this.x-this.radius,this.y-this.radius, this.radius*2, this.radius*2);
   },
 
   collides () {
