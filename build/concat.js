@@ -2173,6 +2173,10 @@ var songGen = new sonantx.MusicGenerator(song1);
 //     return 0.00390625 * Math.pow(1.059463094, n + 200); //200 magic number gets note 1 in audible range around middle C
 // }
 
+/*global player */
+/*global Key */
+
+
 player = {
 
   init (){
@@ -2209,23 +2213,18 @@ player = {
     player.x += dx;
     player.y += dy;
 
-    this.b = {
-      left: this.x-this.radius|0,
-      right: this.x+this.radius|0,
-      top: this.y-this.radius|0,
-      bottom: this.y+this.radius|0,
-      width: this.radius * 2,
-      height: this.radius * 2
-    }
+    this.updateB();
 
-    offsetX = this.collideResolutionX(dt);
+    let offsetX = this.collideResolutionX(dt);
+    let offsetY = this.collideResolutionY(dt);
 
-    offsetY = this.collideResolutionY(dt);
-
-    console.info(offsetX,dx,offsetY,dy);
-
-      this.x += Math.abs(offsetX) < Math.abs(offsetY) ? offsetX : 0;
+    console.info(offsetX,offsetY);
+    
+    this.x += offsetX;
+    this.y += offsetY;
+    
       this.y += Math.abs(offsetY) < Math.abs(offsetX) ? offsetY : 0;
+      this.x += Math.abs(offsetX) < Math.abs(offsetY) ? offsetX : 0;
 
     //player movement
     if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
@@ -2272,6 +2271,18 @@ player = {
   collides(x,y){
     return ram[COLLISION + x + y * WIDTH];
   },
+  
+  updateB () {
+     this.b = {
+      left: this.x-this.radius|0,
+      right: this.x+this.radius|0,
+      top: this.y-this.radius|0,
+      bottom: this.y+this.radius|0,
+      width: this.radius * 2,
+      height: this.radius * 2
+    }
+    
+  },
 
   collideResolutionY (dt) {
 
@@ -2308,10 +2319,10 @@ player = {
 
     let offsetX = 0;
     let b = this.b;
-    let error = 4;
+    let error = 2;
 
     //check left:
-    for(let i = b.top; i <= b.bottom; i++){ //from top to bottom across left edge;
+    for(let i = b.top+error; i <= b.bottom-error; i++){ //from top to bottom across left edge;
       if(ram[COLLISION+b.left+WIDTH*i]){
         for(let j = b.left; j <= b.right; j++) {  //starting from point we found solid, scan upward for empty pixel
           if(ram[COLLISION+j+WIDTH*i]){
@@ -2322,7 +2333,7 @@ player = {
     } // end left edge checker
 
     //check right:
-    for(let i = b.top; i <= b.bottom; i++){ //from top to bottom across left edge;
+    for(let i = b.top+error; i <= b.bottom-error; i++){ //from top to bottom across left edge;
       if(ram[COLLISION+b.right+WIDTH*i]){
         for(let j = b.right; j >= b.left; j--) {  //starting from point we found solid, scan upward for empty pixel
           if(ram[COLLISION+j+WIDTH*i]){
