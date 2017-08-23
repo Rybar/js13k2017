@@ -6,7 +6,8 @@ const PAGES =     10|0;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
 const PAGESIZE = WIDTH*HEIGHT|0;
 
 const SCREEN = 0;
-const SPRITES = (PAGESIZE*4)|0;
+const SCRATCH = PAGESIZE*2|0
+const SPRITES = PAGESIZE*4|0;
 const COLLISION = PAGESIZE*6|0;
 const DEBUG = PAGESIZE*5|0;
 //default palette index
@@ -173,6 +174,29 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
     }
 
     line(x1,y2, x2, y2, color);
+  }
+
+  function cRect(x,y,w,h,c,color){
+    for(let i = 0; i <= c; i++){
+      fillRect(x+i,y-i,w-i*2,h+i*2,color);
+    }
+  }
+
+  function outline(renderSource, renderTarget, color){
+
+    for(let i = 0; i <= WIDTH; i++ ){
+      for(let j = 0; j <= HEIGHT; j++){
+        let left = ram[renderSource + i-1 + j * WIDTH];
+        let right = ram[renderSource + i+1 + j * WIDTH];
+        let bottom = ram[renderSource + i + (j+1) * WIDTH];
+        let top = ram[renderSource + i + (j-1) * WIDTH];
+        let current = ram[renderSource + i + j * WIDTH];
+
+        if(current){
+          if(!left){left = color};
+        }
+      }
+    }
   }
 
   function triangle(x1, y1, x2, y2, x3, y3, color) {

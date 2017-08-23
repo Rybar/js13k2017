@@ -12,9 +12,10 @@ states.menu = {
   },
 
   render: function(dt) {
+    renderTarget=COLLISION;
+    clear(0);
 
     renderTarget = 0x0;
-
     clear(0);
 
     let s = 256;
@@ -24,18 +25,42 @@ states.menu = {
         pset(s+x+256*Math.cos( (y/128+i)*4 )+y, s+y+128*Math.sin( (x/256+i)*4 )+x, x/8%32)
       }
     }
-
+    renderTarget = COLLISION;
     text([
-            'LOSTGAME',
+            'GREEBLE',
             WIDTH/2,
-            40 + Math.sin(t*2.5)*15,
-            8 + Math.cos(t*2.9)*4,
-            15 + Math.sin(t*3.5)*5,
+            150,
+            8,
+            15,
             'center',
             'top',
             6,
-            21,
+            25,
         ]);
+
+
+
+    renderTarget = 0;
+    //cRect(100,100,200,40,10,24);
+    var j = 8000;
+    renderSource = COLLISION;
+    spr(0,0,384,256);
+
+    lcg.setSeed(1019);
+    while(--j){
+      let x = lcg.nextIntRange(0,WIDTH),
+          y = lcg.nextIntRange(0,HEIGHT)
+
+      if(ram[COLLISION + x + y * WIDTH]){
+        fillRect(
+          x + lcg.nextIntRange(-2,2),
+          y + lcg.nextIntRange(-2,2),
+          lcg.nextIntRange(0,6),
+          lcg.nextIntRange(0,5),
+          lcg.nextIntRange(22, 25)
+        );
+      }
+    }
 
     text([
             "PRESS P TO CONTINUE",

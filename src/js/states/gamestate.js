@@ -16,24 +16,31 @@ states.game = {
 
     rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].draw();
     renderSource = COLLISION; //temporary until decoration functions
-    var i = 6000;
 
+    renderTarget = SCRATCH;
+    clear(0);
+    var i = 6000;
     lcg.setSeed(1019);
     while(--i){
       let x = lcg.nextIntRange(0,WIDTH),
           y = lcg.nextIntRange(0,HEIGHT)
 
       if(ram[COLLISION + x + y * WIDTH]){
-        fillRect(
+        cRect(
           x + lcg.nextIntRange(-5,0),
           y + lcg.nextIntRange(-10,0),
           lcg.nextIntRange(0,15),
           lcg.nextIntRange(0,10),
+          1,
           lcg.nextIntRange(22, 25)
         );
       }
     }
+    outline(SCRATCH, SCRATCH, 8);
 
+    renderTarget = SCREEN;
+    renderSource = SCRATCH;
+    spr(0,0,384,256);
     player.draw(dt);
 
     var i = 1000;

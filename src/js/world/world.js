@@ -168,6 +168,7 @@ rooms = [
 
       renderTarget = COLLISION;
       fillRect(0,205,384,10, 25);
+      fillCircle(250,150,64,25);
       renderTarget = 0x0;
 
 

@@ -12,8 +12,8 @@ you discover that you're not alone, and find a community of other discarded robo
   score: parts discovered + time
 
 MVP todo:
-player movement
-collision
+player movement - in. no polish yet <<--tied to next milestone; start with tiny jump ability, parts improve mobility
+collision - works well enough.
 room system --drawing works.
   -update
     animated bits per room
@@ -21,7 +21,7 @@ room system --drawing works.
 
 drawing walls
 key/lock puzzles?
-part collection
+part collection <<---- THIS NEXT!  before diving into the pretty stuff.
 win state
 
 gameplay nice-to-haves:

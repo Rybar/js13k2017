@@ -1367,7 +1367,8 @@ const PAGES =     10|0;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
 const PAGESIZE = WIDTH*HEIGHT|0;
 
 const SCREEN = 0;
-const SPRITES = (PAGESIZE*4)|0;
+const SCRATCH = PAGESIZE*2|0
+const SPRITES = PAGESIZE*4|0;
 const COLLISION = PAGESIZE*6|0;
 const DEBUG = PAGESIZE*5|0;
 //default palette index
@@ -1534,6 +1535,29 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
     }
 
     line(x1,y2, x2, y2, color);
+  }
+
+  function cRect(x,y,w,h,c,color){
+    for(let i = 0; i <= c; i++){
+      fillRect(x+i,y-i,w-i*2,h+i*2,color);
+    }
+  }
+
+  function outline(renderSource, renderTarget, color){
+
+    for(let i = 0; i <= WIDTH; i++ ){
+      for(let j = 0; j <= HEIGHT; j++){
+        let left = ram[renderSource + i-1 + j * WIDTH];
+        let right = ram[renderSource + i+1 + j * WIDTH];
+        let bottom = ram[renderSource + i + (j+1) * WIDTH];
+        let top = ram[renderSource + i + (j-1) * WIDTH];
+        let current = ram[renderSource + i + j * WIDTH];
+
+        if(current){
+          if(!left){left = color};
+        }
+      }
+    }
   }
 
   function triangle(x1, y1, x2, y2, x3, y3, color) {
@@ -1814,7 +1838,7 @@ init = () => {
   now = 0;
   t = 0;
   songTrigger = false;
-  state = 'game';
+  state = 'menu';
   audioCtx = new AudioContext;
 
   currentRoom = [0,0];
@@ -1868,7 +1892,7 @@ loop = e => {
     //game timer
     let now = new Date().getTime();
     dt = Math.min(1, (now - last) / 1000);
-    if(dt > 14/1000)dt = 16/1000; 
+    if(dt > 14/1000)dt = 16/1000;
     t += dt;
 
     states[state].step(dt);
@@ -2056,6 +2080,7 @@ rooms = [
 
       renderTarget = COLLISION;
       fillRect(0,205,384,10, 25);
+      fillCircle(250,150,64,25);
       renderTarget = 0x0;
 
 
@@ -2526,9 +2551,10 @@ states.menu = {
   },
 
   render: function(dt) {
+    renderTarget=COLLISION;
+    clear(0);
 
     renderTarget = 0x0;
-
     clear(0);
 
     let s = 256;
@@ -2538,18 +2564,42 @@ states.menu = {
         pset(s+x+256*Math.cos( (y/128+i)*4 )+y, s+y+128*Math.sin( (x/256+i)*4 )+x, x/8%32)
       }
     }
-
+    renderTarget = COLLISION;
     text([
-            'LOSTGAME',
+            'GREEBLE',
             WIDTH/2,
-            40 + Math.sin(t*2.5)*15,
-            8 + Math.cos(t*2.9)*4,
-            15 + Math.sin(t*3.5)*5,
+            150,
+            8,
+            15,
             'center',
             'top',
             6,
-            21,
+            25,
         ]);
+
+
+
+    renderTarget = 0;
+    //cRect(100,100,200,40,10,24);
+    var j = 8000;
+    renderSource = COLLISION;
+    spr(0,0,384,256);
+
+    lcg.setSeed(1019);
+    while(--j){
+      let x = lcg.nextIntRange(0,WIDTH),
+          y = lcg.nextIntRange(0,HEIGHT)
+
+      if(ram[COLLISION + x + y * WIDTH]){
+        fillRect(
+          x + lcg.nextIntRange(-2,2),
+          y + lcg.nextIntRange(-2,2),
+          lcg.nextIntRange(0,6),
+          lcg.nextIntRange(0,5),
+          lcg.nextIntRange(22, 25)
+        );
+      }
+    }
 
     text([
             "PRESS P TO CONTINUE",
@@ -2586,24 +2636,31 @@ states.game = {
 
     rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].draw();
     renderSource = COLLISION; //temporary until decoration functions
-    var i = 6000;
 
+    renderTarget = SCRATCH;
+    clear(0);
+    var i = 6000;
     lcg.setSeed(1019);
     while(--i){
       let x = lcg.nextIntRange(0,WIDTH),
           y = lcg.nextIntRange(0,HEIGHT)
 
       if(ram[COLLISION + x + y * WIDTH]){
-        fillRect(
+        cRect(
           x + lcg.nextIntRange(-5,0),
           y + lcg.nextIntRange(-10,0),
           lcg.nextIntRange(0,15),
           lcg.nextIntRange(0,10),
+          1,
           lcg.nextIntRange(22, 25)
         );
       }
     }
+    outline(SCRATCH, SCRATCH, 8);
 
+    renderTarget = SCREEN;
+    renderSource = SCRATCH;
+    spr(0,0,384,256);
     player.draw(dt);
 
     var i = 1000;
