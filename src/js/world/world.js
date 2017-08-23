@@ -161,6 +161,11 @@ rooms = [
     draw: function(dt){
       text(['8',20,20,1,1,'left','bottom',2,15,0 ]);
 
+      lcg.setSeed(42);
+      for(let i = 0; i < 200; i++){
+        pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 16);
+      }
+
       renderTarget = COLLISION;
       fillRect(0,205,384,10, 25);
       renderTarget = 0x0;
