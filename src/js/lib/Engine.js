@@ -186,7 +186,7 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
     }
   }
 
-  function outline(renderSource, renderTarget, color){
+  function outline(renderSource, renderTarget, color, color2=color, color3=color, color4=color){
 
     for(let i = 0; i <= WIDTH; i++ ){
       for(let j = 0; j <= HEIGHT; j++){
@@ -201,13 +201,13 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
             ram[renderTarget + left] = color;
           };
           if(!ram[renderSource + right]){
-            ram[renderTarget + right] = color;
+            ram[renderTarget + right] = color3;
           };
           if(!ram[renderSource + top]){
-            ram[renderTarget + top] = color;
+            ram[renderTarget + top] = color2;
           };
           if(!ram[renderSource + bottom]){
-            ram[renderTarget + bottom] = color;
+            ram[renderTarget + bottom] = color4;
           };
         }
       }

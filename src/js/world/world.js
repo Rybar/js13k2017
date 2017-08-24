@@ -1,5 +1,5 @@
 world = [
-  0,0,0,
+  1,0,0,
   0,0,0,
   6,7,8
 ];
@@ -7,6 +7,10 @@ world = [
 rooms = [
   //0
   {
+    parts: [
+      [EYES, 200, 200]
+    ],
+
     draw: function(dt){
 
     }
@@ -122,14 +126,17 @@ decorate();
 
 function decorate() {
 
-  //---stars
+  denseGreeble();
 
+  foregroundGreeble();
 
-  //---render walls behind player
+}
+
+function denseGreeble(){
   renderSource = COLLISION;
   renderTarget = SCRATCH;
   clear(0);
-  var i = 6000;
+  var i = 3000;
   lcg.setSeed(1019);
   while(--i){
     let x = lcg.nextIntRange(0,WIDTH),
@@ -148,12 +155,42 @@ function decorate() {
   } //render greeble over walls
   renderTarget = SCRATCH2;
   clear(0);
-  outline(SCRATCH, SCRATCH2, 25);
+  outline(SCRATCH, SCRATCH2, 25, 20,26,2);
 
   renderTarget = MIDGROUND;
   renderSource = SCRATCH; spr();
   renderSource = SCRATCH2; spr();
+  //-------------------------
+  renderTarget = SCRATCH;
+  clear(0);
+  var i = 3000;
+  lcg.setSeed(1019);
+  while(--i){
+    let x = lcg.nextIntRange(0,WIDTH),
+        y = lcg.nextIntRange(0,HEIGHT)
 
+    if(ram[COLLISION + x + y * WIDTH]){
+      cRect(
+        x + lcg.nextIntRange(-5,0),
+        y + lcg.nextIntRange(-10,0),
+        lcg.nextIntRange(0,15),
+        lcg.nextIntRange(0,10),
+        1,
+        lcg.nextIntRange(22, 24)
+      );
+    }
+  }
+
+  renderTarget = SCRATCH2;
+  clear(0);
+  outline(SCRATCH, SCRATCH2, 25, 20,26,2);
+
+  renderTarget = MIDGROUND;
+  renderSource = SCRATCH; spr();
+  renderSource = SCRATCH2; spr();
+}
+
+function foregroundGreeble(){
   renderTarget = SCRATCH; clear(0);  //draw foreground elements
   var i = 1000;
   lcg.setSeed(1019);
@@ -173,12 +210,8 @@ function decorate() {
     }
   }
   renderTarget = SCRATCH2; clear(0);
-  outline(SCRATCH, SCRATCH2, 25);
+  outline(SCRATCH, SCRATCH2, 25, 20, 26, 2);
   renderTarget = FOREGROUND;
   renderSource = SCRATCH; spr();
   renderSource = SCRATCH2; spr();
-
-  //renderTarget = FOREGROUND; clear(0);
-  //outline(SCREEN, SCRATCH2, 1);
-  //renderTarget = BUFFER; spr(0);
 }

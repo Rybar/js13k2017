@@ -10,10 +10,12 @@ states.game = {
   render(dt) {
 
     renderTarget = BUFFER; clear(0);
-
     renderSource = MIDGROUND; spr();
+
     player.draw();
+
     renderSource = FOREGROUND; spr();
+
 
     renderTarget= SCREEN; clear(1);
     renderSource = BUFFER; spr();

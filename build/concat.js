@@ -1547,7 +1547,7 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
     }
   }
 
-  function outline(renderSource, renderTarget, color){
+  function outline(renderSource, renderTarget, color, color2=color, color3=color, color4=color){
 
     for(let i = 0; i <= WIDTH; i++ ){
       for(let j = 0; j <= HEIGHT; j++){
@@ -1562,13 +1562,13 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
             ram[renderTarget + left] = color;
           };
           if(!ram[renderSource + right]){
-            ram[renderTarget + right] = color;
+            ram[renderTarget + right] = color3;
           };
           if(!ram[renderSource + top]){
-            ram[renderTarget + top] = color;
+            ram[renderTarget + top] = color2;
           };
           if(!ram[renderSource + bottom]){
-            ram[renderTarget + bottom] = color;
+            ram[renderTarget + bottom] = color4;
           };
         }
       }
@@ -1841,6 +1841,9 @@ const DOWN = 4;
 const WORLDWIDTH = 2; //3 less one for 0 index;
 const WORLDHEIGHT = 2; //doesnt change due to 0 index
 
+const EYES = 20;
+const AUX_JETS = 21;
+
 
 states = {};
 
@@ -1855,6 +1858,7 @@ init = () => {
   songTrigger = false;
   state = 'menu';
   audioCtx = new AudioContext;
+
 
   currentRoom = [0,0];
 
@@ -1926,7 +1930,7 @@ loop = e => {
 //----- END main.js---------------
 
 world = [
-  0,0,0,
+  1,0,0,
   0,0,0,
   6,7,8
 ];
@@ -1934,6 +1938,10 @@ world = [
 rooms = [
   //0
   {
+    parts: [
+      [EYES, 200, 200]
+    ],
+
     draw: function(dt){
 
     }
@@ -2049,14 +2057,17 @@ decorate();
 
 function decorate() {
 
-  //---stars
+  denseGreeble();
 
+  foregroundGreeble();
 
-  //---render walls behind player
+}
+
+function denseGreeble(){
   renderSource = COLLISION;
   renderTarget = SCRATCH;
   clear(0);
-  var i = 6000;
+  var i = 3000;
   lcg.setSeed(1019);
   while(--i){
     let x = lcg.nextIntRange(0,WIDTH),
@@ -2075,12 +2086,42 @@ function decorate() {
   } //render greeble over walls
   renderTarget = SCRATCH2;
   clear(0);
-  outline(SCRATCH, SCRATCH2, 25);
+  outline(SCRATCH, SCRATCH2, 25, 20,26,2);
 
   renderTarget = MIDGROUND;
   renderSource = SCRATCH; spr();
   renderSource = SCRATCH2; spr();
+  //-------------------------
+  renderTarget = SCRATCH;
+  clear(0);
+  var i = 3000;
+  lcg.setSeed(1019);
+  while(--i){
+    let x = lcg.nextIntRange(0,WIDTH),
+        y = lcg.nextIntRange(0,HEIGHT)
 
+    if(ram[COLLISION + x + y * WIDTH]){
+      cRect(
+        x + lcg.nextIntRange(-5,0),
+        y + lcg.nextIntRange(-10,0),
+        lcg.nextIntRange(0,15),
+        lcg.nextIntRange(0,10),
+        1,
+        lcg.nextIntRange(22, 24)
+      );
+    }
+  }
+
+  renderTarget = SCRATCH2;
+  clear(0);
+  outline(SCRATCH, SCRATCH2, 25, 20,26,2);
+
+  renderTarget = MIDGROUND;
+  renderSource = SCRATCH; spr();
+  renderSource = SCRATCH2; spr();
+}
+
+function foregroundGreeble(){
   renderTarget = SCRATCH; clear(0);  //draw foreground elements
   var i = 1000;
   lcg.setSeed(1019);
@@ -2100,14 +2141,10 @@ function decorate() {
     }
   }
   renderTarget = SCRATCH2; clear(0);
-  outline(SCRATCH, SCRATCH2, 25);
+  outline(SCRATCH, SCRATCH2, 25, 20, 26, 2);
   renderTarget = FOREGROUND;
   renderSource = SCRATCH; spr();
   renderSource = SCRATCH2; spr();
-
-  //renderTarget = FOREGROUND; clear(0);
-  //outline(SCREEN, SCRATCH2, 1);
-  //renderTarget = BUFFER; spr(0);
 }
 
 var songGen = new sonantx.MusicGenerator(song1);
@@ -2609,10 +2646,12 @@ states.game = {
   render(dt) {
 
     renderTarget = BUFFER; clear(0);
-
     renderSource = MIDGROUND; spr();
+
     player.draw();
+
     renderSource = FOREGROUND; spr();
+
 
     renderTarget= SCREEN; clear(1);
     renderSource = BUFFER; spr();

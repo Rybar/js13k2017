@@ -12,17 +12,28 @@ you discover that you're not alone, and find a community of other discarded robo
   score: parts discovered + time
 
 MVP todo:
-player movement - in. no polish yet <<--tied to next milestone; start with tiny jump ability, parts improve mobility
-collision - works well enough.
-room system --drawing works.
-  -update
-    animated bits per room
-    room interactions
-
-drawing walls
-key/lock puzzles?
-part collection <<---- THIS NEXT!  before diving into the pretty stuff.
+room structure to allow for items
+item collection
+text help -bottom of screen messages, guide player, hint at story
+explore possibilty of PCG world gen; both rooms and world level
+player abilities awarded for item collection
 win state
+
+
+item collection
+  fuel for thrusters <--our 'coins'
+  body parts --power ups.
+    ideas:
+    jump boosts: jump a bit higher
+    auxillery thrusters. -game starts with limited mobility
+    eyes. -game starts with limited/monochrome visibility
+
+
+room system --drawing works.
+todo:
+  data for background generation
+  data for items in the room;
+  data for interactive items in the room;
 
 gameplay nice-to-haves:
 hazards

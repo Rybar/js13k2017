@@ -7,6 +7,9 @@ const DOWN = 4;
 const WORLDWIDTH = 2; //3 less one for 0 index;
 const WORLDHEIGHT = 2; //doesnt change due to 0 index
 
+const EYES = 20;
+const AUX_JETS = 21;
+
 
 states = {};
 
@@ -21,6 +24,7 @@ init = () => {
   songTrigger = false;
   state = 'menu';
   audioCtx = new AudioContext;
+
 
   currentRoom = [0,0];
 
