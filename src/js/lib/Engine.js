@@ -1,15 +1,19 @@
 //--------------Engine.js-------------------
 
-const WIDTH =     384|0;
-const HEIGHT =    256|0;
-const PAGES =     10|0;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
-const PAGESIZE = WIDTH*HEIGHT|0;
+const WIDTH =     384;
+const HEIGHT =    256;
+const PAGES =     10;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
+const PAGESIZE = WIDTH*HEIGHT;
 
 const SCREEN = 0;
-const SCRATCH = PAGESIZE*2|0
-const SPRITES = PAGESIZE*4|0;
-const COLLISION = PAGESIZE*6|0;
-const DEBUG = PAGESIZE*5|0;
+const BUFFER = PAGESIZE;
+const SCRATCH = PAGESIZE*3;
+const SCRATCH2 = PAGESIZE*4;
+const SPRITES = PAGESIZE*5;
+const COLLISION = PAGESIZE*6;
+const MIDGROUND = PAGESIZE*7;
+const FOREGROUND = PAGESIZE*8;
+const BACKGROUND = PAGESIZE*9;
 //default palette index
 const palDefault = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
 
@@ -45,7 +49,7 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
 //--------------graphics functions----------------
 
   function clear(color){
-    ram.fill(color, renderTarget, renderTarget + 0x20000);
+    ram.fill(color, renderTarget, renderTarget + PAGESIZE);
   }
 
   function pset(x, y, color) { //an index from colors[], 0-31
@@ -186,14 +190,25 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
 
     for(let i = 0; i <= WIDTH; i++ ){
       for(let j = 0; j <= HEIGHT; j++){
-        let left = ram[renderSource + i-1 + j * WIDTH];
-        let right = ram[renderSource + i+1 + j * WIDTH];
-        let bottom = ram[renderSource + i + (j+1) * WIDTH];
-        let top = ram[renderSource + i + (j-1) * WIDTH];
-        let current = ram[renderSource + i + j * WIDTH];
+        let left = i-1 + j * WIDTH;
+        let right = i+1 + j * WIDTH;
+        let bottom = i + (j+1) * WIDTH;
+        let top = i + (j-1) * WIDTH;
+        let current = i + j * WIDTH;
 
-        if(current){
-          if(!left){left = color};
+        if(ram[renderSource + current]){
+          if(!ram[renderSource + left]){
+            ram[renderTarget + left] = color;
+          };
+          if(!ram[renderSource + right]){
+            ram[renderTarget + right] = color;
+          };
+          if(!ram[renderSource + top]){
+            ram[renderTarget + top] = color;
+          };
+          if(!ram[renderSource + bottom]){
+            ram[renderTarget + bottom] = color;
+          };
         }
       }
     }
@@ -298,7 +313,7 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
     }
   }
 
-  function spr(sx = 0, sy = 0, sw = 16, sh = 16, x=0, y=0, flipx = false, flipy = false){
+  function spr(sx = 0, sy = 0, sw = 384, sh = 256, x=0, y=0, flipx = false, flipy = false){
 
     for(var i = 0; i < sh; i++){
 

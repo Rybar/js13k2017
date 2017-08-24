@@ -5,8 +5,8 @@
 player = {
 
   init (){
-    this.x = 64;
-    this.y =  64;
+    this.x = 384/2;
+    this.y =  30;
     this.radius = 9;
     this.xvel = 0;
     this.yvel = 0;
@@ -100,7 +100,7 @@ player = {
   draw (dt) {
     //fillRect(this.x-this.radius, this.y-this.radius, this.radius, this.radius, 8);
     renderSource = SPRITES;
-    renderTarget = 0;
+    renderTarget = BUFFER;
     spr(1,1,18,18,(this.x-this.radius)|0,(this.y-this.radius)|0 );
     //rect(this.x-this.radius,this.y-this.radius, this.radius*2, this.radius*2);
   },

@@ -1361,16 +1361,20 @@ function drawSpriteSheet(){
 
 //--------------Engine.js-------------------
 
-const WIDTH =     384|0;
-const HEIGHT =    256|0;
-const PAGES =     10|0;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
-const PAGESIZE = WIDTH*HEIGHT|0;
+const WIDTH =     384;
+const HEIGHT =    256;
+const PAGES =     10;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
+const PAGESIZE = WIDTH*HEIGHT;
 
 const SCREEN = 0;
-const SCRATCH = PAGESIZE*2|0
-const SPRITES = PAGESIZE*4|0;
-const COLLISION = PAGESIZE*6|0;
-const DEBUG = PAGESIZE*5|0;
+const BUFFER = PAGESIZE;
+const SCRATCH = PAGESIZE*3;
+const SCRATCH2 = PAGESIZE*4;
+const SPRITES = PAGESIZE*5;
+const COLLISION = PAGESIZE*6;
+const MIDGROUND = PAGESIZE*7;
+const FOREGROUND = PAGESIZE*8;
+const BACKGROUND = PAGESIZE*9;
 //default palette index
 const palDefault = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
 
@@ -1406,7 +1410,7 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
 //--------------graphics functions----------------
 
   function clear(color){
-    ram.fill(color, renderTarget, renderTarget + 0x20000);
+    ram.fill(color, renderTarget, renderTarget + PAGESIZE);
   }
 
   function pset(x, y, color) { //an index from colors[], 0-31
@@ -1547,14 +1551,25 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
 
     for(let i = 0; i <= WIDTH; i++ ){
       for(let j = 0; j <= HEIGHT; j++){
-        let left = ram[renderSource + i-1 + j * WIDTH];
-        let right = ram[renderSource + i+1 + j * WIDTH];
-        let bottom = ram[renderSource + i + (j+1) * WIDTH];
-        let top = ram[renderSource + i + (j-1) * WIDTH];
-        let current = ram[renderSource + i + j * WIDTH];
+        let left = i-1 + j * WIDTH;
+        let right = i+1 + j * WIDTH;
+        let bottom = i + (j+1) * WIDTH;
+        let top = i + (j-1) * WIDTH;
+        let current = i + j * WIDTH;
 
-        if(current){
-          if(!left){left = color};
+        if(ram[renderSource + current]){
+          if(!ram[renderSource + left]){
+            ram[renderTarget + left] = color;
+          };
+          if(!ram[renderSource + right]){
+            ram[renderTarget + right] = color;
+          };
+          if(!ram[renderSource + top]){
+            ram[renderTarget + top] = color;
+          };
+          if(!ram[renderSource + bottom]){
+            ram[renderTarget + bottom] = color;
+          };
         }
       }
     }
@@ -1659,7 +1674,7 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
     }
   }
 
-  function spr(sx = 0, sy = 0, sw = 16, sh = 16, x=0, y=0, flipx = false, flipy = false){
+  function spr(sx = 0, sy = 0, sw = 384, sh = 256, x=0, y=0, flipx = false, flipy = false){
 
     for(var i = 0; i < sh; i++){
 
@@ -1912,7 +1927,7 @@ loop = e => {
 
 world = [
   0,0,0,
-  0,0,1,
+  0,0,0,
   6,7,8
 ];
 
@@ -1920,15 +1935,6 @@ rooms = [
   //0
   {
     draw: function(dt){
-      renderSource = SPRITES;
-      renderTarget = 0;
-      spr(0,0,WIDTH,HEIGHT);
-      text(['0',20,20,1,1,'left','bottom',2,15,0]);
-      lcg.setSeed(1019);
-      for(let i = 0; i < 200; i++){
-        pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 16);
-      }
-
 
     }
   },
@@ -1936,24 +1942,7 @@ rooms = [
   //1
   {
     draw: function(dt){
-      text([
-              '1',
-              20,20,1,1,'left','bottom',2,15,0
-          ]);
 
-          for(let i = 0; i < 200; i++){
-            pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 16);
-          }
-
-          let r = 40;
-        for(let x=0; x < 384; x+=r){
-          for(let y=0; y < 256; y+=r){
-            let A = x-192+Math.sin(t)*r;
-            let B = y-128+Math.cos(t)*r;
-            let s = Math.sqrt(A*A+B*B);
-            circle(x,y, s-8, 14);
-          }
-        }
     }
   },
 
@@ -1961,108 +1950,44 @@ rooms = [
   {
     draw: function(dt){
 
-      renderSource = SPRITES;
-      renderTarget = 0;
-      spr(0,0,WIDTH,HEIGHT);
-
-      lcg.setSeed(42);
-      for(let i = 0; i < 200; i++){
-        pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 16);
-      }
-
-      text([
-              '2',
-              20,20,1,1,'left','bottom',2,15,0
-          ]);
-          let r = 40;
-      for(let x=0; x < 384; x+=r){
-          for(let y=0; y < 256; y+=r){
-            let A = x-(192+384)+Math.sin(t)*r;
-            let B = y-128+Math.cos(t)*r;
-            let s = Math.sqrt(A*A+B*B);
-            circle(x,y, s-8, 14);
-          }
-        }
-
     }
   },
 
   //3
   {
     draw: function(dt){
-      renderTarget = COLLISION;
       fillRect(0,0,127,256,27);
       fillRect(250,0,127,256,27);
-      renderTarget = 0x0;
-      text([
-              '3',
-              20,20,1,1,'left','bottom',2,15,0
-          ]);
-
     }
   },
   //4
   {
     draw: function(dt){
-      renderTarget = COLLISION;
       fillRect(0,0,127,256,27);
       fillRect(250,0,127,256,27);
-      renderTarget = 0x0;
-      text([
-              '4',
-              20,20,1,1,'left','bottom',2,15,0
-          ]);
-
     }
   },
   //5
   {
     draw: function(dt){
-      text([
-              '5',
-              20,20,1,1,'left','bottom',2,15,0
-          ]);
+
     }
   },
   //6
   {
     draw: function(dt){
-      text([
-              '6',
-              20,20,1,1,'left','bottom',2,15,0
-          ]);
-          lcg.setSeed(42);
-          for(let i = 0; i < 200; i++){
-            pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 16);
-          }
-          renderTarget = COLLISION;
-          //fillRect(64,160,)
           fillRect(0,205,384,10, 25);
-          renderTarget = 0x0;
     }
   },
   //7
   {
     draw: function(dt){
-      text([
-              '7',
-              20,20,1,1,'left','bottom',2,15,0
 
-          ]);
-          renderTarget = COLLISION;
           fillTriangle(0,256,384,256,182,205, 25);
-          //fillRect(0,205,384,256-205, 25);
           fillRect(100,70,20,80, 24);
           fillRect(100,140,100,20, 23);
           fillRect(200,820,10,100, 23);
           fillRect(210,70,100,100, 22);
-          renderTarget = 0x0;
-          lcg.setSeed(42);
-          for(let i = 0; i < 200; i++){
-            pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 16);
-          }
-          renderSource = SPRITES;
-          spr(0,0,384,256);
 
 
 
@@ -2071,19 +1996,9 @@ rooms = [
   //8
   {
     draw: function(dt){
-      text(['8',20,20,1,1,'left','bottom',2,15,0 ]);
 
-      lcg.setSeed(42);
-      for(let i = 0; i < 200; i++){
-        pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 16);
-      }
-
-      renderTarget = COLLISION;
       fillRect(0,205,384,10, 25);
       fillCircle(250,150,64,25);
-      renderTarget = 0x0;
-
-
     }
   },
 
@@ -2091,11 +2006,13 @@ rooms = [
 ]
 
 function roomSwitch(direction){
-  renderTarget = COLLISION;
-  clear(0);
-  renderTarget = DEBUG;
-  clear(0);
-  renderTarget = 0;
+  renderTarget = COLLISION; clear(0);
+  renderTarget = SCRATCH; clear(0);
+  renderTarget = SCRATCH2; clear(0);
+  renderTarget = FOREGROUND; clear(0);
+  renderTarget = MIDGROUND; clear(0);
+  renderTarget = BUFFER; clear(0);
+
 
 switch(direction){
 
@@ -2123,6 +2040,74 @@ switch(direction){
   console.log(currentRoom);
   break;
 }
+
+renderTarget = COLLISION;
+rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].draw();
+decorate();
+
+}
+
+function decorate() {
+
+  //---stars
+
+
+  //---render walls behind player
+  renderSource = COLLISION;
+  renderTarget = SCRATCH;
+  clear(0);
+  var i = 6000;
+  lcg.setSeed(1019);
+  while(--i){
+    let x = lcg.nextIntRange(0,WIDTH),
+        y = lcg.nextIntRange(0,HEIGHT)
+
+    if(ram[COLLISION + x + y * WIDTH]){
+      cRect(
+        x + lcg.nextIntRange(-5,0),
+        y + lcg.nextIntRange(-10,0),
+        lcg.nextIntRange(0,15),
+        lcg.nextIntRange(0,10),
+        1,
+        lcg.nextIntRange(22, 24)
+      );
+    }
+  } //render greeble over walls
+  renderTarget = SCRATCH2;
+  clear(0);
+  outline(SCRATCH, SCRATCH2, 25);
+
+  renderTarget = MIDGROUND;
+  renderSource = SCRATCH; spr();
+  renderSource = SCRATCH2; spr();
+
+  renderTarget = SCRATCH; clear(0);  //draw foreground elements
+  var i = 1000;
+  lcg.setSeed(1019);
+  while(--i){
+    let x = lcg.nextIntRange(0,WIDTH),
+        y = lcg.nextIntRange(0,HEIGHT)
+
+    if(ram[COLLISION + x + y * WIDTH]){
+      fillRect(
+        x + lcg.nextIntRange(-5,0),
+        y + lcg.nextIntRange(-20,0),
+        lcg.nextIntRange(0,5),
+        lcg.nextIntRange(0,20),
+        lcg.nextIntRange(22, 24)
+      );
+      fillCircle(x,y-10,2, lcg.nextIntRange(22,24));
+    }
+  }
+  renderTarget = SCRATCH2; clear(0);
+  outline(SCRATCH, SCRATCH2, 25);
+  renderTarget = FOREGROUND;
+  renderSource = SCRATCH; spr();
+  renderSource = SCRATCH2; spr();
+
+  //renderTarget = FOREGROUND; clear(0);
+  //outline(SCREEN, SCRATCH2, 1);
+  //renderTarget = BUFFER; spr(0);
 }
 
 var songGen = new sonantx.MusicGenerator(song1);
@@ -2236,8 +2221,8 @@ var songGen = new sonantx.MusicGenerator(song1);
 player = {
 
   init (){
-    this.x = 64;
-    this.y =  64;
+    this.x = 384/2;
+    this.y =  30;
     this.radius = 9;
     this.xvel = 0;
     this.yvel = 0;
@@ -2331,7 +2316,7 @@ player = {
   draw (dt) {
     //fillRect(this.x-this.radius, this.y-this.radius, this.radius, this.radius, 8);
     renderSource = SPRITES;
-    renderTarget = 0;
+    renderTarget = BUFFER;
     spr(1,1,18,18,(this.x-this.radius)|0,(this.y-this.radius)|0 );
     //rect(this.x-this.radius,this.y-this.radius, this.radius*2, this.radius*2);
   },
@@ -2545,6 +2530,7 @@ states.menu = {
 
       //game update
       if(Key.isDown(Key.p)){
+        roomSwitch(DOWN);
         state = 'game';
       }
 
@@ -2557,13 +2543,6 @@ states.menu = {
     renderTarget = 0x0;
     clear(0);
 
-    let s = 256;
-    let i = t/3;
-    for(let y = -128; y < 128; y += 1 ){
-      for(let x = -256; x < 256; x += 2 ){
-        pset(s+x+256*Math.cos( (y/128+i)*4 )+y, s+y+128*Math.sin( (x/256+i)*4 )+x, x/8%32)
-      }
-    }
     renderTarget = COLLISION;
     text([
             'GREEBLE',
@@ -2577,15 +2556,11 @@ states.menu = {
             25,
         ]);
 
-
-
-    renderTarget = 0;
-    //cRect(100,100,200,40,10,24);
-    var j = 8000;
-    renderSource = COLLISION;
-    spr(0,0,384,256);
+    renderTarget = BUFFER;
+    renderSource = COLLISION;spr();
 
     lcg.setSeed(1019);
+    var j = 8000;
     while(--j){
       let x = lcg.nextIntRange(0,WIDTH),
           y = lcg.nextIntRange(0,HEIGHT)
@@ -2600,6 +2575,7 @@ states.menu = {
         );
       }
     }
+    player.draw();
 
     text([
             "PRESS P TO CONTINUE",
@@ -2612,6 +2588,9 @@ states.menu = {
             1,
             21,
         ]);
+
+        renderTarget = SCREEN;
+        renderSource = BUFFER; spr();
   },
 
 };
@@ -2628,62 +2607,16 @@ states.game = {
   },
 
   render(dt) {
-    renderTarget = 0x0;
-    clear(1);
-    renderTarget = COLLISION;
-    clear(0);
-    renderTarget = 0x0;
 
-    rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].draw();
-    renderSource = COLLISION; //temporary until decoration functions
+    renderTarget = BUFFER; clear(0);
 
-    renderTarget = SCRATCH;
-    clear(0);
-    var i = 6000;
-    lcg.setSeed(1019);
-    while(--i){
-      let x = lcg.nextIntRange(0,WIDTH),
-          y = lcg.nextIntRange(0,HEIGHT)
+    renderSource = MIDGROUND; spr();
+    player.draw();
+    renderSource = FOREGROUND; spr();
 
-      if(ram[COLLISION + x + y * WIDTH]){
-        cRect(
-          x + lcg.nextIntRange(-5,0),
-          y + lcg.nextIntRange(-10,0),
-          lcg.nextIntRange(0,15),
-          lcg.nextIntRange(0,10),
-          1,
-          lcg.nextIntRange(22, 25)
-        );
-      }
-    }
-    outline(SCRATCH, SCRATCH, 8);
+    renderTarget= SCREEN; clear(1);
+    renderSource = BUFFER; spr();
 
-    renderTarget = SCREEN;
-    renderSource = SCRATCH;
-    spr(0,0,384,256);
-    player.draw(dt);
-
-    var i = 1000;
-    lcg.setSeed(1019);
-    while(--i){
-      let x = lcg.nextIntRange(0,WIDTH),
-          y = lcg.nextIntRange(0,HEIGHT)
-
-      if(ram[COLLISION + x + y * WIDTH]){
-        fillRect(
-          x + lcg.nextIntRange(-5,0),
-          y + lcg.nextIntRange(-20,0),
-          lcg.nextIntRange(0,5),
-          lcg.nextIntRange(0,20),
-          lcg.nextIntRange(22, 25)
-        );
-        fillCircle(x,y-10,2, lcg.nextIntRange(22,26));
-      }
-    }
-
-
-
-    renderTarget = 0;
 
 
   },

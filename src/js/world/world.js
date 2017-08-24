@@ -1,6 +1,6 @@
 world = [
   0,0,0,
-  0,0,1,
+  0,0,0,
   6,7,8
 ];
 
@@ -8,15 +8,6 @@ rooms = [
   //0
   {
     draw: function(dt){
-      renderSource = SPRITES;
-      renderTarget = 0;
-      spr(0,0,WIDTH,HEIGHT);
-      text(['0',20,20,1,1,'left','bottom',2,15,0]);
-      lcg.setSeed(1019);
-      for(let i = 0; i < 200; i++){
-        pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 16);
-      }
-
 
     }
   },
@@ -24,24 +15,7 @@ rooms = [
   //1
   {
     draw: function(dt){
-      text([
-              '1',
-              20,20,1,1,'left','bottom',2,15,0
-          ]);
 
-          for(let i = 0; i < 200; i++){
-            pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 16);
-          }
-
-          let r = 40;
-        for(let x=0; x < 384; x+=r){
-          for(let y=0; y < 256; y+=r){
-            let A = x-192+Math.sin(t)*r;
-            let B = y-128+Math.cos(t)*r;
-            let s = Math.sqrt(A*A+B*B);
-            circle(x,y, s-8, 14);
-          }
-        }
     }
   },
 
@@ -49,108 +23,44 @@ rooms = [
   {
     draw: function(dt){
 
-      renderSource = SPRITES;
-      renderTarget = 0;
-      spr(0,0,WIDTH,HEIGHT);
-
-      lcg.setSeed(42);
-      for(let i = 0; i < 200; i++){
-        pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 16);
-      }
-
-      text([
-              '2',
-              20,20,1,1,'left','bottom',2,15,0
-          ]);
-          let r = 40;
-      for(let x=0; x < 384; x+=r){
-          for(let y=0; y < 256; y+=r){
-            let A = x-(192+384)+Math.sin(t)*r;
-            let B = y-128+Math.cos(t)*r;
-            let s = Math.sqrt(A*A+B*B);
-            circle(x,y, s-8, 14);
-          }
-        }
-
     }
   },
 
   //3
   {
     draw: function(dt){
-      renderTarget = COLLISION;
       fillRect(0,0,127,256,27);
       fillRect(250,0,127,256,27);
-      renderTarget = 0x0;
-      text([
-              '3',
-              20,20,1,1,'left','bottom',2,15,0
-          ]);
-
     }
   },
   //4
   {
     draw: function(dt){
-      renderTarget = COLLISION;
       fillRect(0,0,127,256,27);
       fillRect(250,0,127,256,27);
-      renderTarget = 0x0;
-      text([
-              '4',
-              20,20,1,1,'left','bottom',2,15,0
-          ]);
-
     }
   },
   //5
   {
     draw: function(dt){
-      text([
-              '5',
-              20,20,1,1,'left','bottom',2,15,0
-          ]);
+
     }
   },
   //6
   {
     draw: function(dt){
-      text([
-              '6',
-              20,20,1,1,'left','bottom',2,15,0
-          ]);
-          lcg.setSeed(42);
-          for(let i = 0; i < 200; i++){
-            pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 16);
-          }
-          renderTarget = COLLISION;
-          //fillRect(64,160,)
           fillRect(0,205,384,10, 25);
-          renderTarget = 0x0;
     }
   },
   //7
   {
     draw: function(dt){
-      text([
-              '7',
-              20,20,1,1,'left','bottom',2,15,0
 
-          ]);
-          renderTarget = COLLISION;
           fillTriangle(0,256,384,256,182,205, 25);
-          //fillRect(0,205,384,256-205, 25);
           fillRect(100,70,20,80, 24);
           fillRect(100,140,100,20, 23);
           fillRect(200,820,10,100, 23);
           fillRect(210,70,100,100, 22);
-          renderTarget = 0x0;
-          lcg.setSeed(42);
-          for(let i = 0; i < 200; i++){
-            pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 16);
-          }
-          renderSource = SPRITES;
-          spr(0,0,384,256);
 
 
 
@@ -159,19 +69,9 @@ rooms = [
   //8
   {
     draw: function(dt){
-      text(['8',20,20,1,1,'left','bottom',2,15,0 ]);
 
-      lcg.setSeed(42);
-      for(let i = 0; i < 200; i++){
-        pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 16);
-      }
-
-      renderTarget = COLLISION;
       fillRect(0,205,384,10, 25);
       fillCircle(250,150,64,25);
-      renderTarget = 0x0;
-
-
     }
   },
 
@@ -179,11 +79,13 @@ rooms = [
 ]
 
 function roomSwitch(direction){
-  renderTarget = COLLISION;
-  clear(0);
-  renderTarget = DEBUG;
-  clear(0);
-  renderTarget = 0;
+  renderTarget = COLLISION; clear(0);
+  renderTarget = SCRATCH; clear(0);
+  renderTarget = SCRATCH2; clear(0);
+  renderTarget = FOREGROUND; clear(0);
+  renderTarget = MIDGROUND; clear(0);
+  renderTarget = BUFFER; clear(0);
+
 
 switch(direction){
 
@@ -211,4 +113,72 @@ switch(direction){
   console.log(currentRoom);
   break;
 }
+
+renderTarget = COLLISION;
+rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].draw();
+decorate();
+
+}
+
+function decorate() {
+
+  //---stars
+
+
+  //---render walls behind player
+  renderSource = COLLISION;
+  renderTarget = SCRATCH;
+  clear(0);
+  var i = 6000;
+  lcg.setSeed(1019);
+  while(--i){
+    let x = lcg.nextIntRange(0,WIDTH),
+        y = lcg.nextIntRange(0,HEIGHT)
+
+    if(ram[COLLISION + x + y * WIDTH]){
+      cRect(
+        x + lcg.nextIntRange(-5,0),
+        y + lcg.nextIntRange(-10,0),
+        lcg.nextIntRange(0,15),
+        lcg.nextIntRange(0,10),
+        1,
+        lcg.nextIntRange(22, 24)
+      );
+    }
+  } //render greeble over walls
+  renderTarget = SCRATCH2;
+  clear(0);
+  outline(SCRATCH, SCRATCH2, 25);
+
+  renderTarget = MIDGROUND;
+  renderSource = SCRATCH; spr();
+  renderSource = SCRATCH2; spr();
+
+  renderTarget = SCRATCH; clear(0);  //draw foreground elements
+  var i = 1000;
+  lcg.setSeed(1019);
+  while(--i){
+    let x = lcg.nextIntRange(0,WIDTH),
+        y = lcg.nextIntRange(0,HEIGHT)
+
+    if(ram[COLLISION + x + y * WIDTH]){
+      fillRect(
+        x + lcg.nextIntRange(-5,0),
+        y + lcg.nextIntRange(-20,0),
+        lcg.nextIntRange(0,5),
+        lcg.nextIntRange(0,20),
+        lcg.nextIntRange(22, 24)
+      );
+      fillCircle(x,y-10,2, lcg.nextIntRange(22,24));
+    }
+  }
+  renderTarget = SCRATCH2; clear(0);
+  outline(SCRATCH, SCRATCH2, 25);
+  renderTarget = FOREGROUND;
+  renderSource = SCRATCH; spr();
+  renderSource = SCRATCH2; spr();
+
+  //renderTarget = FOREGROUND; clear(0);
+  //outline(SCREEN, SCRATCH2, 1);
+  //renderTarget = BUFFER; spr(0);
 }
