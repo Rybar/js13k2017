@@ -4,9 +4,8 @@ const RIGHT = 2;
 const UP = 3;
 const DOWN = 4;
 
-const WORLDWIDTH = 2; //3 less one for 0 index;
-const WORLDHEIGHT = 2; //doesnt change due to 0 index
-
+const WORLDWIDTH = 2; 
+const WORLDHEIGHT = 2; // 0 index.
 const EYES = 20;
 const AUX_JETS = 21;
 

@@ -12,6 +12,10 @@ you discover that you're not alone, and find a community of other discarded robo
   score: parts discovered + time
 
 MVP todo:
+set up beginning! -must portray type of game and wow judges immediately.
+exploration-type games don't fare well, excitement needs to happen right when game begins.
+long fall, showing surface of planet and junk caverns, 
+
 room structure to allow for items
 item collection
 text help -bottom of screen messages, guide player, hint at story
@@ -29,11 +33,17 @@ item collection
     eyes. -game starts with limited/monochrome visibility
 
 
-room system --drawing works.
+room structure
 todo:
   data for background generation
   data for items in the room;
   data for interactive items in the room;
+
+room drawing:
+  procedural under/dark stuff, hanging cables
+  larger panel generation, better heirarchy of form, more interesting visuals
+  background generation, columns, etc
+
 
 gameplay nice-to-haves:
 hazards

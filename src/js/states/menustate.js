@@ -13,19 +13,19 @@ states.menu = {
   },
 
   render: function(dt) {
-    renderTarget=COLLISION;
-    clear(0);
-
-    renderTarget = 0x0;
-    clear(0);
+    renderTarget=COLLISION;clear(0);
+    renderTarget = 0x0; clear(0);
+    renderTarget = BUFFER; clear(0);
+    renderTarget = SCRATCH; clear(0);
+    renderTarget = SCREEN; clear(0);
 
     renderTarget = COLLISION;
     text([
             'GREEBLE',
             WIDTH/2,
             150,
-            8,
-            15,
+            20,
+            20,
             'center',
             'top',
             6,
@@ -33,10 +33,13 @@ states.menu = {
         ]);
 
     renderTarget = BUFFER;
-    renderSource = COLLISION;spr();
+    renderSource = COLLISION; spr();
+    //outline(BUFFER, SCRATCH, 2);
+
+    renderTarget = SCRATCH2;
 
     lcg.setSeed(1019);
-    var j = 8000;
+    var j = 9000;
     while(--j){
       let x = lcg.nextIntRange(0,WIDTH),
           y = lcg.nextIntRange(0,HEIGHT)
@@ -44,13 +47,17 @@ states.menu = {
       if(ram[COLLISION + x + y * WIDTH]){
         fillRect(
           x + lcg.nextIntRange(-2,2),
-          y + lcg.nextIntRange(-2,2),
-          lcg.nextIntRange(0,6),
-          lcg.nextIntRange(0,5),
-          lcg.nextIntRange(22, 25)
+          y + lcg.nextIntRange(-1,1),
+          lcg.nextIntRange(0,4),
+          lcg.nextIntRange(0,2),
+          lcg.nextIntRange(22, 24)
         );
       }
     }
+    outline(SCRATCH2, SCRATCH, 25, 20, 23, 18);
+    renderTarget = BUFFER;
+    renderSource = SCRATCH2; spr();
+    renderSource = SCRATCH; spr();
     player.draw();
 
     text([
@@ -66,7 +73,25 @@ states.menu = {
         ]);
 
         renderTarget = SCREEN;
+        var i = 8000;
+        while(--i){
+          pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 1);
+        }
+        var i = 400;
+        while(--i){
+          pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 26);
+        }
+        var i = 100;
+        while(--i){
+          pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 21);
+        }
+
+
+
+        outline(BUFFER, SCREEN, 15);
         renderSource = BUFFER; spr();
+
+        //outline(BUFFER, SCRATCH, 8);1
   },
 
 };
