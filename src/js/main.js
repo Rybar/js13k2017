@@ -4,7 +4,7 @@ const RIGHT = 2;
 const UP = 3;
 const DOWN = 4;
 
-const WORLDWIDTH = 2; 
+const WORLDWIDTH = 2;
 const WORLDHEIGHT = 2; // 0 index.
 const EYES = 20;
 const AUX_JETS = 21;
@@ -21,44 +21,25 @@ init = () => {
   now = 0;
   t = 0;
   songTrigger = false;
-  state = 'menu';
+  state = 'spritesheet';
   audioCtx = new AudioContext;
-
+  paused = false;
+  transition = false;
 
   currentRoom = [0,0];
 
   player.init();
 
-
   stats = new Stats();
   document.body.appendChild( stats.dom );
 
-  //init vid capture
-  //capturer = new CCapture( {format: 'gif', workersPath: ''});
-  //capturer.start();
-
-  //start the game loop
-  // SP = AC.createScriptProcessor(1024, 0, 1);
-  // SP.connect(AC.destination);
-  // SP.onaudioprocess = renderAudio;
-   //player = new sonantx;
    loop();
 
-}
-
-
-
-stopCapture = (e) => {
-  //capturer.stop();
-  //capturer.save();
 }
 
 //initialize  event listeners--------------------------
 window.addEventListener('keyup', function (event) {
   Key.onKeyup(event);
-}, false);
-window.addEventListener('mousedown', function (event){
-  stopCapture(event);
 }, false);
 window.addEventListener('keydown', function (event) {
   Key.onKeydown(event);
@@ -71,6 +52,9 @@ window.addEventListener('focus', function (event) {
 }, false);
 
 loop = e => {
+  if(paused){
+
+  }else{
     stats.begin();
 
     //game timer
@@ -90,6 +74,7 @@ loop = e => {
 
     stats.end();
     requestAnimationFrame(loop);
+  }
 }
 
 //----- END main.js---------------

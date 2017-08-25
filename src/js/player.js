@@ -19,6 +19,7 @@ player = {
     this.minYvel = -400;
     this.minXvel = -400;
     this.b = {};
+    this.facingLeft = false;
 
   },
 
@@ -65,9 +66,11 @@ player = {
 
     //player movement
     if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
+      player.facingLeft = false;
         player.xvel =  player.xspeed;
     }
     if (Key.isDown(Key.a) || Key.isDown(Key.LEFT)){
+        this.facingLeft = true;
         player.xvel =  - player.xspeed;
     }
     if(Key.isDown(Key.w) || Key.isDown(Key.UP)){
@@ -101,7 +104,7 @@ player = {
     //fillRect(this.x-this.radius, this.y-this.radius, this.radius, this.radius, 8);
     renderSource = SPRITES;
     renderTarget = BUFFER;
-    spr(1,1,18,18,(this.x-this.radius)|0,(this.y-this.radius)|0 );
+    spr(1,1,18,18,(this.x-this.radius)|0,(this.y-this.radius)|0, this.facingLeft );
     //rect(this.x-this.radius,this.y-this.radius, this.radius*2, this.radius*2);
   },
 

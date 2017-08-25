@@ -1347,6 +1347,7 @@ function drawSpriteSheet(){
 
   //fillRect(0,0,384,256,5);
   var i = 27;
+  lcg.setSeed(1019);
   while(i--){
     fillCircle(
       lcg.nextIntRange(4,17),
@@ -1356,7 +1357,7 @@ function drawSpriteSheet(){
     )
   }
 
-  console.log(ram[SPRITES+WIDTH+5]);
+  
 }
 
 //--------------Engine.js-------------------
@@ -1395,6 +1396,7 @@ colors =          [0xff000000, 0xff342022, 0xff3c2845, 0xff313966, 0xff3b568f, 0
 
 //active palette index. maps to indices in colors[]. can alter this whenever for palette effects.
 pal =             [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
+paldrk =          [0,0,1,2,3,4,5,6,6,10,11,12,13,14,2,2,15,16,17,18,22,20,23,24,25,26,2,2,27,28,31,13]
 
 ctx.imageSmoothingEnabled = false;
 ctx.mozImageSmoothingEnabled = false;
@@ -1419,6 +1421,10 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
     if (x > 0 && x < WIDTH && y > 0 && y < HEIGHT) {
       ram[renderTarget + (y * WIDTH + x)] = color;
     }
+  }
+
+  function pget(x, y, page=renderTarget){
+    return ram[page + x + y * WIDTH];
   }
 
   function line(x1, y1, x2, y2, color) {
@@ -1807,6 +1813,18 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
     }
   }
 
+  function transitionOut(){
+      var i = 32;
+      while(i--){
+        pal[i] = pal[ paldrk[i] ];
+      }
+      console.log(pal);
+      if(pal[31] == 0){
+        return;
+      }
+    setTimeout( transitionOut, 1000);
+  }
+
 function render() {
 
   var i = PAGESIZE;  // display is first page of ram
@@ -1838,7 +1856,7 @@ const RIGHT = 2;
 const UP = 3;
 const DOWN = 4;
 
-const WORLDWIDTH = 2; 
+const WORLDWIDTH = 2;
 const WORLDHEIGHT = 2; // 0 index.
 const EYES = 20;
 const AUX_JETS = 21;
@@ -1855,44 +1873,25 @@ init = () => {
   now = 0;
   t = 0;
   songTrigger = false;
-  state = 'menu';
+  state = 'spritesheet';
   audioCtx = new AudioContext;
-
+  paused = false;
+  transition = false;
 
   currentRoom = [0,0];
 
   player.init();
 
-
   stats = new Stats();
   document.body.appendChild( stats.dom );
 
-  //init vid capture
-  //capturer = new CCapture( {format: 'gif', workersPath: ''});
-  //capturer.start();
-
-  //start the game loop
-  // SP = AC.createScriptProcessor(1024, 0, 1);
-  // SP.connect(AC.destination);
-  // SP.onaudioprocess = renderAudio;
-   //player = new sonantx;
    loop();
 
-}
-
-
-
-stopCapture = (e) => {
-  //capturer.stop();
-  //capturer.save();
 }
 
 //initialize  event listeners--------------------------
 window.addEventListener('keyup', function (event) {
   Key.onKeyup(event);
-}, false);
-window.addEventListener('mousedown', function (event){
-  stopCapture(event);
 }, false);
 window.addEventListener('keydown', function (event) {
   Key.onKeydown(event);
@@ -1905,6 +1904,9 @@ window.addEventListener('focus', function (event) {
 }, false);
 
 loop = e => {
+  if(paused){
+
+  }else{
     stats.begin();
 
     //game timer
@@ -1924,6 +1926,7 @@ loop = e => {
 
     stats.end();
     requestAnimationFrame(loop);
+  }
 }
 
 //----- END main.js---------------
@@ -2072,7 +2075,7 @@ function denseGreeble(){
     let x = lcg.nextIntRange(0,WIDTH),
         y = lcg.nextIntRange(0,HEIGHT)
 
-    if(ram[COLLISION + x + y * WIDTH]){
+    if(pget(x,y,COLLISION)){
       cRect(
         x + lcg.nextIntRange(-5,0),
         y + lcg.nextIntRange(-10,0),
@@ -2271,6 +2274,7 @@ player = {
     this.minYvel = -400;
     this.minXvel = -400;
     this.b = {};
+    this.facingLeft = false;
 
   },
 
@@ -2317,9 +2321,11 @@ player = {
 
     //player movement
     if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
+      player.facingLeft = false;
         player.xvel =  player.xspeed;
     }
     if (Key.isDown(Key.a) || Key.isDown(Key.LEFT)){
+        this.facingLeft = true;
         player.xvel =  - player.xspeed;
     }
     if(Key.isDown(Key.w) || Key.isDown(Key.UP)){
@@ -2353,7 +2359,7 @@ player = {
     //fillRect(this.x-this.radius, this.y-this.radius, this.radius, this.radius, 8);
     renderSource = SPRITES;
     renderTarget = BUFFER;
-    spr(1,1,18,18,(this.x-this.radius)|0,(this.y-this.radius)|0 );
+    spr(1,1,18,18,(this.x-this.radius)|0,(this.y-this.radius)|0, this.facingLeft );
     //rect(this.x-this.radius,this.y-this.radius, this.radius*2, this.radius*2);
   },
 
@@ -2565,15 +2571,20 @@ states.menu = {
   step: function(dt) {
 
       //game update
-      if(Key.isDown(Key.p)){
-        roomSwitch(DOWN);
+      if(Key.justReleased(Key.p)){
+        roomSwitch();
         state = 'game';
+        //transition = true;
       }
+      // if(transition){
+      //   transitionOut();
+      //   transition = false;
+      // }
 
   },
 
   render: function(dt) {
-    renderTarget=COLLISION;clear(0);
+    renderTarget = COLLISION; clear(0);
     renderTarget = 0x0; clear(0);
     renderTarget = BUFFER; clear(0);
     renderTarget = SCRATCH; clear(0);
@@ -2594,7 +2605,6 @@ states.menu = {
 
     renderTarget = BUFFER;
     renderSource = COLLISION; spr();
-    //outline(BUFFER, SCRATCH, 2);
 
     renderTarget = SCRATCH2;
 
@@ -2646,10 +2656,14 @@ states.menu = {
           pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 21);
         }
 
-
-
         outline(BUFFER, SCREEN, 15);
         renderSource = BUFFER; spr();
+
+        //   if(pal[31] == 0){
+        //   roomSwitch();
+        //   state = 'game'
+        //   transition = false;
+        // }
 
         //outline(BUFFER, SCRATCH, 8);1
   },
@@ -2680,6 +2694,13 @@ states.game = {
     renderTarget= SCREEN; clear(1);
     renderSource = BUFFER; spr();
 
+    // if(pal[31] != 31){
+    //   let i = 32;
+    //   while(i--){
+    //     if(pal[i] != i)pal[i]++;
+    //   }
+    // }
+
 
 
   },
@@ -2689,6 +2710,25 @@ states.game = {
 };
 
 //---END gamestate.js------------------------------
+
+states.spritesheet = {
+
+    step: function(dt) {
+
+        //game update
+
+    },
+
+    render: function(dt) {
+
+        renderTarget = SCREEN;
+        renderSource = SPRITES; spr();
+
+    },
+
+
+
+};
 
     Key = {
 

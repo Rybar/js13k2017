@@ -20,6 +20,13 @@ states.game = {
     renderTarget= SCREEN; clear(1);
     renderSource = BUFFER; spr();
 
+    // if(pal[31] != 31){
+    //   let i = 32;
+    //   while(i--){
+    //     if(pal[i] != i)pal[i]++;
+    //   }
+    // }
+
 
 
   },

@@ -5,15 +5,20 @@ states.menu = {
   step: function(dt) {
 
       //game update
-      if(Key.isDown(Key.p)){
-        roomSwitch(DOWN);
+      if(Key.justReleased(Key.p)){
+        roomSwitch();
         state = 'game';
+        //transition = true;
       }
+      // if(transition){
+      //   transitionOut();
+      //   transition = false;
+      // }
 
   },
 
   render: function(dt) {
-    renderTarget=COLLISION;clear(0);
+    renderTarget = COLLISION; clear(0);
     renderTarget = 0x0; clear(0);
     renderTarget = BUFFER; clear(0);
     renderTarget = SCRATCH; clear(0);
@@ -34,7 +39,6 @@ states.menu = {
 
     renderTarget = BUFFER;
     renderSource = COLLISION; spr();
-    //outline(BUFFER, SCRATCH, 2);
 
     renderTarget = SCRATCH2;
 
@@ -86,10 +90,14 @@ states.menu = {
           pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 21);
         }
 
-
-
         outline(BUFFER, SCREEN, 15);
         renderSource = BUFFER; spr();
+
+        //   if(pal[31] == 0){
+        //   roomSwitch();
+        //   state = 'game'
+        //   transition = false;
+        // }
 
         //outline(BUFFER, SCRATCH, 8);1
   },

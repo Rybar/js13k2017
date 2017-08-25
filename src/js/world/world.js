@@ -142,7 +142,7 @@ function denseGreeble(){
     let x = lcg.nextIntRange(0,WIDTH),
         y = lcg.nextIntRange(0,HEIGHT)
 
-    if(ram[COLLISION + x + y * WIDTH]){
+    if(pget(x,y,COLLISION)){
       cRect(
         x + lcg.nextIntRange(-5,0),
         y + lcg.nextIntRange(-10,0),

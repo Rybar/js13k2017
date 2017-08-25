@@ -900,6 +900,7 @@ function drawSpriteSheet(){
 
   //fillRect(0,0,384,256,5);
   var i = 27;
+  lcg.setSeed(1019);
   while(i--){
     fillCircle(
       lcg.nextIntRange(4,17),
@@ -909,5 +910,5 @@ function drawSpriteSheet(){
     )
   }
 
-  console.log(ram[SPRITES+WIDTH+5]);
+  
 }

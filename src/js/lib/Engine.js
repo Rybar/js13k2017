@@ -34,6 +34,7 @@ colors =          [0xff000000, 0xff342022, 0xff3c2845, 0xff313966, 0xff3b568f, 0
 
 //active palette index. maps to indices in colors[]. can alter this whenever for palette effects.
 pal =             [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
+paldrk =          [0,0,1,2,3,4,5,6,6,10,11,12,13,14,2,2,15,16,17,18,22,20,23,24,25,26,2,2,27,28,31,13]
 
 ctx.imageSmoothingEnabled = false;
 ctx.mozImageSmoothingEnabled = false;
@@ -58,6 +59,10 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
     if (x > 0 && x < WIDTH && y > 0 && y < HEIGHT) {
       ram[renderTarget + (y * WIDTH + x)] = color;
     }
+  }
+
+  function pget(x, y, page=renderTarget){
+    return ram[page + x + y * WIDTH];
   }
 
   function line(x1, y1, x2, y2, color) {
@@ -444,6 +449,18 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
         fillRect(bx, by, w-1, h-1, color);
       }
     }
+  }
+
+  function transitionOut(){
+      var i = 32;
+      while(i--){
+        pal[i] = pal[ paldrk[i] ];
+      }
+      console.log(pal);
+      if(pal[31] == 0){
+        return;
+      }
+    setTimeout( transitionOut, 1000);
   }
 
 function render() {
