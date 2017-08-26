@@ -7,9 +7,6 @@ world = [
 rooms = [
   //0
   {
-    parts: [
-      [EYES, 200, 200]
-    ],
 
     draw: function(dt){
 

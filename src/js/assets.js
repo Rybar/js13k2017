@@ -897,18 +897,32 @@ fontBitmap = "111111000111111100011000111110100011111010001111101111110000100001
 
 function drawSpriteSheet(){
   renderTarget = SPRITES;
+  //head
+  fillRect(3,7,17,9,8);  //0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  fillRect(2,8,19,7,8);
+  fillRect(4,9,15,5,2);
 
-  //fillRect(0,0,384,256,5);
-  var i = 27;
-  lcg.setSeed(1019);
-  while(i--){
-    fillCircle(
-      lcg.nextIntRange(4,17),
-      lcg.nextIntRange(4,17),
-      lcg.nextIntRange(1,4),
-      lcg.nextIntRange(8,11)
-    )
-  }
+  //eyes
+  fillRect(6,11,2,1,16);
+  fillRect(16,11,2,1,16);
+  //pupils
+  line(7,12,8,12,21);
+  line(17,12,18,12,21);
+  //antenna
+  line(12,6,12,3,5);
+  pset(12,3,21);
 
-  
+  //body
+  fillRect(10,17,3,1,5);
+  fillRect(8,19,7,7,5);
+  fillRect(9,23,5,5,0);
+
+  //wheel
+  fillCircle(11,28,5,13);
+  fillRect(10,22,2,5,8);
+  fillCircle(11,28,3,8);
+  circle(11,28,1,5);
+
+  //arm
+  fillTriangle(11,19, 18,27,  21,23, 8);
 }

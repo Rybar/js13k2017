@@ -57,7 +57,7 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
     x = x|0; y = y|0; color = color|0;
 
     if (x > 0 && x < WIDTH && y > 0 && y < HEIGHT) {
-      ram[renderTarget + (y * WIDTH + x)] = color;
+      ram[renderTarget + y * WIDTH + x] = color;
     }
   }
 

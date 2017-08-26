@@ -1344,20 +1344,34 @@ fontBitmap = "111111000111111100011000111110100011111010001111101111110000100001
 
 function drawSpriteSheet(){
   renderTarget = SPRITES;
+  //head
+  fillRect(3,7,17,9,8);  //0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  fillRect(2,8,19,7,8);
+  fillRect(4,9,15,5,2);
 
-  //fillRect(0,0,384,256,5);
-  var i = 27;
-  lcg.setSeed(1019);
-  while(i--){
-    fillCircle(
-      lcg.nextIntRange(4,17),
-      lcg.nextIntRange(4,17),
-      lcg.nextIntRange(1,4),
-      lcg.nextIntRange(8,11)
-    )
-  }
+  //eyes
+  fillRect(6,11,2,1,16);
+  fillRect(16,11,2,1,16);
+  //pupils
+  line(7,12,8,12,21);
+  line(17,12,18,12,21);
+  //antenna
+  line(12,6,12,3,5);
+  pset(12,3,21);
 
-  
+  //body
+  fillRect(10,17,3,1,5);
+  fillRect(8,19,7,7,5);
+  fillRect(9,23,5,5,0);
+
+  //wheel
+  fillCircle(11,28,5,13);
+  fillRect(10,22,2,5,8);
+  fillCircle(11,28,3,8);
+  circle(11,28,1,5);
+
+  //arm
+  fillTriangle(11,19, 18,27,  21,23, 8);
 }
 
 //--------------Engine.js-------------------
@@ -1419,7 +1433,7 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
     x = x|0; y = y|0; color = color|0;
 
     if (x > 0 && x < WIDTH && y > 0 && y < HEIGHT) {
-      ram[renderTarget + (y * WIDTH + x)] = color;
+      ram[renderTarget + y * WIDTH + x] = color;
     }
   }
 
@@ -1940,9 +1954,6 @@ world = [
 rooms = [
   //0
   {
-    parts: [
-      [EYES, 200, 200]
-    ],
 
     draw: function(dt){
 
@@ -2359,7 +2370,7 @@ player = {
     //fillRect(this.x-this.radius, this.y-this.radius, this.radius, this.radius, 8);
     renderSource = SPRITES;
     renderTarget = BUFFER;
-    spr(1,1,18,18,(this.x-this.radius)|0,(this.y-this.radius)|0, this.facingLeft );
+    spr(0,0,19,34,(this.x-this.radius)|0,(this.y-this.radius-12)|0, this.facingLeft );
     //rect(this.x-this.radius,this.y-this.radius, this.radius*2, this.radius*2);
   },
 
@@ -2571,10 +2582,13 @@ states.menu = {
   step: function(dt) {
 
       //game update
-      if(Key.justReleased(Key.p)){
+      if(Key.isDown(Key.p)){
         roomSwitch();
         state = 'game';
         //transition = true;
+      }
+      if(Key.isDown(Key.z)){
+        state = 'spritesheet';
       }
       // if(transition){
       //   transitionOut();
@@ -2715,20 +2729,39 @@ states.spritesheet = {
 
     step: function(dt) {
 
-        //game update
+        if(Key.isDown(Key.x)){
+          state='menu'
+        }
 
     },
 
     render: function(dt) {
 
+
         renderTarget = SCREEN;
+        checker(0,0,384,256,256/20|0,384/20|0,1);
         renderSource = SPRITES; spr();
 
-    },
+
+        for(var i = 0; i < 32; i++){
+          text([
+            i.toString(),
+            i < 16 ? ( 3+16*i ) : ( 3 + 16* (i-16) ) ,
+            i < 16 ? 40 : 40 + 16,
+            1,
+            1,
+            1,
+            'left',
+            1,
+            i,
+            0
+          ])
+          }
 
 
 
-};
+        } //end render
+}//end state
 
     Key = {
 
