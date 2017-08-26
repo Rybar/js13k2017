@@ -2642,7 +2642,9 @@ states.menu = {
     renderTarget = BUFFER;
     renderSource = SCRATCH2; spr();
     renderSource = SCRATCH; spr();
-    player.draw();
+    //player.draw();
+    renderSource = SPRITES;
+    rspr(0,0,19,34, 384/2,60, 1, t)
 
     text([
             "PRESS P TO CONTINUE",
