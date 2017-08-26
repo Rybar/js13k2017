@@ -16,14 +16,14 @@ states.gameover = {
       clear(0);
 
       text([
-        'GAME OVER',
-        256,
+        'CRITICAL SYSTEM FAILURE',
+        384/2,
         80 + Math.sin(t*2.5)*15,
         8 + Math.cos(t*2.9)*4,
         15 + Math.sin(t*3.5)*5,
         'center',
         'top',
-        9,
+        4,
         27,
       ]);
 

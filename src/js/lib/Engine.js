@@ -7,6 +7,7 @@ const PAGESIZE = WIDTH*HEIGHT;
 
 const SCREEN = 0;
 const BUFFER = PAGESIZE;
+const DEBUG = PAGESIZE*2;
 const SCRATCH = PAGESIZE*3;
 const SCRATCH2 = PAGESIZE*4;
 const SPRITES = PAGESIZE*5;
@@ -451,16 +452,21 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
     }
   }
 
-  function transitionOut(){
-      var i = 32;
+  function transitionOut(callback){
+      //let d = delay;
+      let i = 32;
+      //this bit does one step of the transition, making all the colors one step darker
       while(i--){
         pal[i] = pal[ paldrk[i] ];
       }
+      //-------------------------------
       console.log(pal);
-      if(pal[31] == 0){
-        return;
+      //if(transition)return;
+      if(pal[21] == 0){
+        return callback();
       }
-    setTimeout( transitionOut, 1000);
+
+    setTimeout( function(){transitionOut(callback)}, 1000000);
   }
 
 function render() {

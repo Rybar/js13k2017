@@ -1383,6 +1383,7 @@ const PAGESIZE = WIDTH*HEIGHT;
 
 const SCREEN = 0;
 const BUFFER = PAGESIZE;
+const DEBUG = PAGESIZE*2;
 const SCRATCH = PAGESIZE*3;
 const SCRATCH2 = PAGESIZE*4;
 const SPRITES = PAGESIZE*5;
@@ -1827,16 +1828,21 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
     }
   }
 
-  function transitionOut(){
-      var i = 32;
+  function transitionOut(callback){
+      //let d = delay;
+      let i = 32;
+      //this bit does one step of the transition, making all the colors one step darker
       while(i--){
         pal[i] = pal[ paldrk[i] ];
       }
+      //-------------------------------
       console.log(pal);
-      if(pal[31] == 0){
-        return;
+      //if(transition)return;
+      if(pal[21] == 0){
+        return callback();
       }
-    setTimeout( transitionOut, 1000);
+
+    setTimeout( function(){transitionOut(callback)}, 1000000);
   }
 
 function render() {
@@ -1872,25 +1878,28 @@ const DOWN = 4;
 
 const WORLDWIDTH = 2;
 const WORLDHEIGHT = 2; // 0 index.
-const EYES = 20;
-const AUX_JETS = 21;
 
+const WALLS = 21;
+const FUELCELL = 8;
 
 states = {};
 
 init = () => {
 
   drawSpriteSheet();
-
+  score = 0;
+  fuelAmount = 0;
+  parts = 0;
   last = 0;
   dt = 0;
   now = 0;
   t = 0;
   songTrigger = false;
-  state = 'spritesheet';
+  state = 'game';
   audioCtx = new AudioContext;
   paused = false;
   transition = false;
+  splodes = [];
 
   currentRoom = [0,0];
 
@@ -1926,7 +1935,7 @@ loop = e => {
     //game timer
     let now = new Date().getTime();
     dt = Math.min(1, (now - last) / 1000);
-    if(dt > 14/1000)dt = 16/1000;
+    //if(dt > 14/1000)dt = 16/1000;
     t += dt;
 
     states[state].step(dt);
@@ -1977,15 +1986,15 @@ rooms = [
   //3
   {
     draw: function(dt){
-      fillRect(0,0,127,256,27);
-      fillRect(250,0,127,256,27);
+      fillRect(0,0,127,256,WALLS);
+      fillRect(250,0,127,256,WALLS);
     }
   },
   //4
   {
     draw: function(dt){
-      fillRect(0,0,127,256,27);
-      fillRect(250,0,127,256,27);
+      fillRect(0,0,127,256,WALLS);
+      fillRect(250,0,127,256,WALLS);
     }
   },
   //5
@@ -1997,18 +2006,27 @@ rooms = [
   //6
   {
     draw: function(dt){
-          fillRect(0,205,384,10, 25);
+          fillRect(0,205,384,100,WALLS);
+
+          let i = 400;
+          while(--i){
+            x = lcg.nextIntRange(0,WIDTH);
+            y = lcg.nextIntRange(0,HEIGHT);
+            pset(x,y, FUELCELL);
+          }
+
     }
   },
+
   //7
   {
     draw: function(dt){
 
-          fillTriangle(0,256,384,256,182,205, 25);
-          fillRect(100,70,20,80, 24);
-          fillRect(100,140,100,20, 23);
-          fillRect(200,820,10,100, 23);
-          fillRect(210,70,100,100, 22);
+          fillTriangle(0,256,384,256,182,205,WALLS);
+          fillRect(100,70,20,80,WALLS);
+          fillRect(100,140,100,20,WALLS);
+          fillRect(200,820,10,100, WALLS);
+          fillRect(210,70,100,100, WALLS);
 
 
 
@@ -2017,14 +2035,14 @@ rooms = [
   //8
   {
     draw: function(dt){
-
-      fillRect(0,205,384,10, 25);
-      fillCircle(250,150,64,25);
+      fillRect(0,205,384,10,WALLS);
+      fillCircle(250,150,64,WALLS);
+      pset(50, 180, FUELCELL);
     }
   },
 
 
-]
+] // end rooms;
 
 function roomSwitch(direction){
   renderTarget = COLLISION; clear(0);
@@ -2034,8 +2052,7 @@ function roomSwitch(direction){
   renderTarget = MIDGROUND; clear(0);
   renderTarget = BUFFER; clear(0);
 
-
-switch(direction){
+  switch(direction){
 
   case LEFT:
   currentRoom[0]--;
@@ -2074,6 +2091,20 @@ function decorate() {
 
   foregroundGreeble();
 
+  //drawFuel();
+
+}
+
+function drawFuel() {
+  let i = PAGESIZE;
+  while(--i){
+    if(ram[COLLISION + i] == FUELCELL){
+      let y = i / WIDTH |0;
+      let x = i % WIDTH;
+      fillCircle(x, y, 3, 9);
+      circle(x, y, 3, 11);
+    }
+  };
 }
 
 function denseGreeble(){
@@ -2086,7 +2117,7 @@ function denseGreeble(){
     let x = lcg.nextIntRange(0,WIDTH),
         y = lcg.nextIntRange(0,HEIGHT)
 
-    if(pget(x,y,COLLISION)){
+    if(pget(x,y,COLLISION) == WALLS){
       cRect(
         x + lcg.nextIntRange(-5,0),
         y + lcg.nextIntRange(-10,0),
@@ -2113,7 +2144,7 @@ function denseGreeble(){
     let x = lcg.nextIntRange(0,WIDTH),
         y = lcg.nextIntRange(0,HEIGHT)
 
-    if(ram[COLLISION + x + y * WIDTH]){
+    if(ram[COLLISION + x + y * WIDTH] == WALLS){
       cRect(
         x + lcg.nextIntRange(-5,0),
         y + lcg.nextIntRange(-10,0),
@@ -2142,7 +2173,7 @@ function foregroundGreeble(){
     let x = lcg.nextIntRange(0,WIDTH),
         y = lcg.nextIntRange(0,HEIGHT)
 
-    if(ram[COLLISION + x + y * WIDTH]){
+    if(ram[COLLISION + x + y * WIDTH] == WALLS){
       fillRect(
         x + lcg.nextIntRange(-5,0),
         y + lcg.nextIntRange(-20,0),
@@ -2273,7 +2304,7 @@ player = {
   init (){
     this.x = 384/2;
     this.y =  30;
-    this.radius = 9;
+    this.radius = 12;
     this.xvel = 0;
     this.yvel = 0;
     this.xspeed = 200;
@@ -2286,6 +2317,7 @@ player = {
     this.minXvel = -400;
     this.b = {};
     this.facingLeft = false;
+    this.jumping = false;
 
   },
 
@@ -2308,13 +2340,13 @@ player = {
     this.updateB();
     if(this.collides()){
       player.x = player.oldX;
-      player.xvel = -player.xvel*.4;
+      player.xvel = -player.xvel * .4;
     }
     player.y += dy;
     this.updateB();
     if(this.collides()){
       player.y = player.oldY;
-      player.yvel = -player.yvel*.4;
+      player.yvel = -player.yvel * .4;
     }
     this.updateB();
     if(this.collides()){
@@ -2325,10 +2357,12 @@ player = {
         this.updateB();
       }
     }
+    this.overlapResolution();
+
 
     this.updateB();
 
-    console.info(this.collides());
+    //console.info(this.collides());
 
     //player movement
     if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
@@ -2340,11 +2374,15 @@ player = {
         player.xvel =  - player.xspeed;
     }
     if(Key.isDown(Key.w) || Key.isDown(Key.UP)){
-      player.yvel = -player.yspeed;
+      if(!this.jumping && fuelAmount >0){
+        player.yvel = -player.yspeed;
+        fuelAmount--;
+      }
+
     }
-    if(Key.isDown(Key.s) || Key.isDown(Key.DOWN)) {
-      player.yvel = player.yspeed;
-    }
+    // if(Key.isDown(Key.s) || Key.isDown(Key.DOWN)) {
+    //   player.yvel = player.yspeed;
+    // }
 
     //world wrap for player
     if(player.x > WIDTH){
@@ -2377,11 +2415,28 @@ player = {
   collides () {
     for(var i = -this.radius; i < this.radius; i++){
       for(var j = -this.radius; j < this.radius; j++){
-        if(ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH]) return true;
+        if(ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH] == WALLS) return true;
       }
     }
     return false;
   },
+
+  overlaps () {
+    for(var i = -this.radius; i < this.radius; i++){
+      for(var j = -this.radius; j < this.radius; j++){
+        let overlap = ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH]
+        if(overlap){
+          return {
+            x: this.b.x + i,
+            y: this.b.y + j,
+            o: overlap
+          }
+        };
+      }
+    }
+    return false;
+},
+
   updateB () {
      this.b = {
       left: this.x-this.radius|0,
@@ -2404,9 +2459,9 @@ player = {
 
     //check bottom:
     for(let i = b.left; i <= b.right; i++){ //from left to right, across bottom edge
-      if(ram[COLLISION+i+WIDTH*b.bottom]){
+      if(ram[COLLISION+i+WIDTH*b.bottom] == WALLS){
         for(let j = b.bottom; j >= b.top; j--) {  //starting from point we found solid, scan upward for empty pixel
-          if(ram[COLLISION+i+WIDTH*j]){
+          if(ram[COLLISION+i+WIDTH*j] == WALLS){
             offsetY = j - b.bottom - 1;  //
           }
         } //end interior check
@@ -2415,9 +2470,9 @@ player = {
 
     //check top:
     for(let i = b.left; i <= b.right; i++){ //from left to right, across top edge
-      if(ram[COLLISION+i+WIDTH*b.top]){
+      if(ram[COLLISION+i+WIDTH*b.top] == WALLS){
         for(let j = b.top; j <= b.bottom; j++) {  //starting from point we found solid, scan downward for empty pixel
-          if(ram[COLLISION+i+WIDTH*j]){
+          if(ram[COLLISION+i+WIDTH*j] == WALLS){
             offsetY = j-b.top + 1;  //
           }
         } //end interior check
@@ -2435,15 +2490,15 @@ player = {
 
     //check left:
     for(let i = b.top; i <= b.bottom; i++){ //from top to bottom across left edge;
-      if(ram[COLLISION+b.left+WIDTH*i]){
+      if(ram[COLLISION+b.left+WIDTH*i] == WALLS){
         for(let j = b.x; j <= b.right; j++) {  //starting from point we found solid, scan upward for empty pixel
-          if(ram[COLLISION+j+WIDTH*i]){
+          if(ram[COLLISION+j+WIDTH*i] == WALLS){
             offsetX++;  //
           }
         } //end interior check
-      } else if(ram[COLLISION+b.right+WIDTH*i]){
+      } else if(ram[COLLISION+b.right+WIDTH*i] == WALLS){
         for(let j = b.x; j >= b.left; j--) {  //starting from point we found solid, scan upward for empty pixel
-          if(ram[COLLISION+j+WIDTH*i]){
+          if(ram[COLLISION+j+WIDTH*i] == WALLS){
             offsetX--  //
           }
         }
@@ -2464,7 +2519,29 @@ player = {
 
     return offsetX;
 
-  }
+  },
+
+  overlapResolution(dt){
+    let o = player.overlaps()
+
+    switch(o.o){
+
+      case FUELCELL:
+      ram[COLLISION + o.x + o.y * WIDTH] == 0;
+      renderTarget = COLLISION;
+      fillCircle(o.x,o.y,3,0);
+      renderTarget = BUFFER;
+
+      splodes.push( new splode(o.x, o.y) );
+
+      fuelAmount += 1;
+      console.log(fuelAmount, o.x, o.y);
+
+
+    }
+
+
+  },
 } //end player
 
 function Particle() {
@@ -2558,14 +2635,14 @@ states.gameover = {
       clear(0);
 
       text([
-        'GAME OVER',
-        256,
+        'CRITICAL SYSTEM FAILURE',
+        384/2,
         80 + Math.sin(t*2.5)*15,
         8 + Math.cos(t*2.9)*4,
         15 + Math.sin(t*3.5)*5,
         'center',
         'top',
-        9,
+        4,
         27,
       ]);
 
@@ -2622,8 +2699,8 @@ states.menu = {
 
     renderTarget = SCRATCH2;
 
-    lcg.setSeed(1019);
-    var j = 9000;
+    lcg.setSeed(21);
+    var j = 6000;
     while(--j){
       let x = lcg.nextIntRange(0,WIDTH),
           y = lcg.nextIntRange(0,HEIGHT)
@@ -2632,8 +2709,31 @@ states.menu = {
         fillRect(
           x + lcg.nextIntRange(-2,2),
           y + lcg.nextIntRange(-1,1),
-          lcg.nextIntRange(0,4),
-          lcg.nextIntRange(0,2),
+          1,
+          lcg.nextIntRange(0,3),
+          lcg.nextIntRange(24, 25)
+        );
+      }
+    }
+    outline(SCRATCH2, SCRATCH, 25, 20, 23, 18);
+    renderTarget = BUFFER;
+    renderSource = SCRATCH2; spr();
+    renderSource = SCRATCH; spr();
+
+    renderTarget = SCRATCH2;
+
+    lcg.setSeed(20);
+    var j = 6000;
+    while(--j){
+      let x = lcg.nextIntRange(0,WIDTH),
+          y = lcg.nextIntRange(0,HEIGHT)
+
+      if(ram[COLLISION + x + y * WIDTH]){
+        fillRect(
+          x + lcg.nextIntRange(-1,1),
+          y + lcg.nextIntRange(0,1),
+          lcg.nextIntRange(1,5),
+          1,
           lcg.nextIntRange(22, 24)
         );
       }
@@ -2642,9 +2742,7 @@ states.menu = {
     renderTarget = BUFFER;
     renderSource = SCRATCH2; spr();
     renderSource = SCRATCH; spr();
-    //player.draw();
-    renderSource = SPRITES;
-    rspr(0,0,19,34, 384/2,60, 1, t)
+    player.draw();
 
     text([
             "PRESS P TO CONTINUE",
@@ -2700,15 +2798,20 @@ states.game = {
   render(dt) {
 
     renderTarget = BUFFER; clear(0);
+    drawFuel();
     renderSource = MIDGROUND; spr();
-
     player.draw();
-
     renderSource = FOREGROUND; spr();
 
 
     renderTarget= SCREEN; clear(1);
+    // let i = 1000;
+    // while(i--)pset(Math.random()*WIDTH, Math.random()*HEIGHT, 2);
+    // outline(BUFFER, SCREEN, 9);
     renderSource = BUFFER; spr();
+    renderSource = DEBUG; spr();
+
+    splodes.forEach(function(s){s.draw()});
 
     // if(pal[31] != 31){
     //   let i = 32;
@@ -2716,14 +2819,31 @@ states.game = {
     //     if(pal[i] != i)pal[i]++;
     //   }
     // }
-
-
-
-  },
-
-
-
+  }
 };
+
+function splode(x = 0,y = 0,size = 10,speed = 10, color = 21){
+  this.x = x;
+  this.y = y;
+  this.maxSize = size;
+  this.speed = 10;
+  this.counter = this.speed;
+  this.color = color;
+  this.size = 1;
+
+  s = this;
+}
+
+splode.prototype.draw = function(){
+    circle(this.x,this.y,this.size, this.color);
+    this.counter--;
+    if(this.counter==0){
+      this.size++;
+      this.counter = this.speed;
+    }
+    this.size++;
+    if(this.size == this.maxSize)delete this;
+  }
 
 //---END gamestate.js------------------------------
 
@@ -2731,19 +2851,19 @@ states.spritesheet = {
 
     step: function(dt) {
 
-        if(Key.isDown(Key.x)){
-          state='menu'
+        if(Key.justReleased(Key.x)){
+          roomSwitch();
+          state = 'game'
         }
-
     },
 
     render: function(dt) {
 
-
         renderTarget = SCREEN;
         checker(0,0,384,256,256/20|0,384/20|0,1);
         renderSource = SPRITES; spr();
-
+        spr(0,0,22,34, 200,200);
+        rspr(0,0,384,256, 384/2,256/2, 1, 15);
 
         for(var i = 0; i < 32; i++){
           text([

@@ -30,15 +30,15 @@ rooms = [
   //3
   {
     draw: function(dt){
-      fillRect(0,0,127,256,27);
-      fillRect(250,0,127,256,27);
+      fillRect(0,0,127,256,WALLS);
+      fillRect(250,0,127,256,WALLS);
     }
   },
   //4
   {
     draw: function(dt){
-      fillRect(0,0,127,256,27);
-      fillRect(250,0,127,256,27);
+      fillRect(0,0,127,256,WALLS);
+      fillRect(250,0,127,256,WALLS);
     }
   },
   //5
@@ -50,18 +50,27 @@ rooms = [
   //6
   {
     draw: function(dt){
-          fillRect(0,205,384,10, 25);
+          fillRect(0,205,384,100,WALLS);
+
+          let i = 400;
+          while(--i){
+            x = lcg.nextIntRange(0,WIDTH);
+            y = lcg.nextIntRange(0,HEIGHT);
+            pset(x,y, FUELCELL);
+          }
+
     }
   },
+
   //7
   {
     draw: function(dt){
 
-          fillTriangle(0,256,384,256,182,205, 25);
-          fillRect(100,70,20,80, 24);
-          fillRect(100,140,100,20, 23);
-          fillRect(200,820,10,100, 23);
-          fillRect(210,70,100,100, 22);
+          fillTriangle(0,256,384,256,182,205,WALLS);
+          fillRect(100,70,20,80,WALLS);
+          fillRect(100,140,100,20,WALLS);
+          fillRect(200,820,10,100, WALLS);
+          fillRect(210,70,100,100, WALLS);
 
 
 
@@ -70,14 +79,14 @@ rooms = [
   //8
   {
     draw: function(dt){
-
-      fillRect(0,205,384,10, 25);
-      fillCircle(250,150,64,25);
+      fillRect(0,205,384,10,WALLS);
+      fillCircle(250,150,64,WALLS);
+      pset(50, 180, FUELCELL);
     }
   },
 
 
-]
+] // end rooms;
 
 function roomSwitch(direction){
   renderTarget = COLLISION; clear(0);
@@ -87,8 +96,7 @@ function roomSwitch(direction){
   renderTarget = MIDGROUND; clear(0);
   renderTarget = BUFFER; clear(0);
 
-
-switch(direction){
+  switch(direction){
 
   case LEFT:
   currentRoom[0]--;
@@ -127,6 +135,20 @@ function decorate() {
 
   foregroundGreeble();
 
+  //drawFuel();
+
+}
+
+function drawFuel() {
+  let i = PAGESIZE;
+  while(--i){
+    if(ram[COLLISION + i] == FUELCELL){
+      let y = i / WIDTH |0;
+      let x = i % WIDTH;
+      fillCircle(x, y, 3, 9);
+      circle(x, y, 3, 11);
+    }
+  };
 }
 
 function denseGreeble(){
@@ -139,7 +161,7 @@ function denseGreeble(){
     let x = lcg.nextIntRange(0,WIDTH),
         y = lcg.nextIntRange(0,HEIGHT)
 
-    if(pget(x,y,COLLISION)){
+    if(pget(x,y,COLLISION) == WALLS){
       cRect(
         x + lcg.nextIntRange(-5,0),
         y + lcg.nextIntRange(-10,0),
@@ -166,7 +188,7 @@ function denseGreeble(){
     let x = lcg.nextIntRange(0,WIDTH),
         y = lcg.nextIntRange(0,HEIGHT)
 
-    if(ram[COLLISION + x + y * WIDTH]){
+    if(ram[COLLISION + x + y * WIDTH] == WALLS){
       cRect(
         x + lcg.nextIntRange(-5,0),
         y + lcg.nextIntRange(-10,0),
@@ -195,7 +217,7 @@ function foregroundGreeble(){
     let x = lcg.nextIntRange(0,WIDTH),
         y = lcg.nextIntRange(0,HEIGHT)
 
-    if(ram[COLLISION + x + y * WIDTH]){
+    if(ram[COLLISION + x + y * WIDTH] == WALLS){
       fillRect(
         x + lcg.nextIntRange(-5,0),
         y + lcg.nextIntRange(-20,0),

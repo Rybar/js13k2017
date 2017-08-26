@@ -45,8 +45,8 @@ states.menu = {
 
     renderTarget = SCRATCH2;
 
-    lcg.setSeed(1019);
-    var j = 9000;
+    lcg.setSeed(21);
+    var j = 6000;
     while(--j){
       let x = lcg.nextIntRange(0,WIDTH),
           y = lcg.nextIntRange(0,HEIGHT)
@@ -55,8 +55,31 @@ states.menu = {
         fillRect(
           x + lcg.nextIntRange(-2,2),
           y + lcg.nextIntRange(-1,1),
-          lcg.nextIntRange(0,4),
-          lcg.nextIntRange(0,2),
+          1,
+          lcg.nextIntRange(0,3),
+          lcg.nextIntRange(24, 25)
+        );
+      }
+    }
+    outline(SCRATCH2, SCRATCH, 25, 20, 23, 18);
+    renderTarget = BUFFER;
+    renderSource = SCRATCH2; spr();
+    renderSource = SCRATCH; spr();
+
+    renderTarget = SCRATCH2;
+
+    lcg.setSeed(20);
+    var j = 6000;
+    while(--j){
+      let x = lcg.nextIntRange(0,WIDTH),
+          y = lcg.nextIntRange(0,HEIGHT)
+
+      if(ram[COLLISION + x + y * WIDTH]){
+        fillRect(
+          x + lcg.nextIntRange(-1,1),
+          y + lcg.nextIntRange(0,1),
+          lcg.nextIntRange(1,5),
+          1,
           lcg.nextIntRange(22, 24)
         );
       }
@@ -65,9 +88,7 @@ states.menu = {
     renderTarget = BUFFER;
     renderSource = SCRATCH2; spr();
     renderSource = SCRATCH; spr();
-    //player.draw();
-    renderSource = SPRITES;
-    rspr(0,0,19,34, 384/2,60, 1, t)
+    player.draw();
 
     text([
             "PRESS P TO CONTINUE",

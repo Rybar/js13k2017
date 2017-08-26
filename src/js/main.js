@@ -6,25 +6,28 @@ const DOWN = 4;
 
 const WORLDWIDTH = 2;
 const WORLDHEIGHT = 2; // 0 index.
-const EYES = 20;
-const AUX_JETS = 21;
 
+const WALLS = 21;
+const FUELCELL = 8;
 
 states = {};
 
 init = () => {
 
   drawSpriteSheet();
-
+  score = 0;
+  fuelAmount = 0;
+  parts = 0;
   last = 0;
   dt = 0;
   now = 0;
   t = 0;
   songTrigger = false;
-  state = 'spritesheet';
+  state = 'game';
   audioCtx = new AudioContext;
   paused = false;
   transition = false;
+  splodes = [];
 
   currentRoom = [0,0];
 
@@ -60,7 +63,7 @@ loop = e => {
     //game timer
     let now = new Date().getTime();
     dt = Math.min(1, (now - last) / 1000);
-    if(dt > 14/1000)dt = 16/1000;
+    //if(dt > 14/1000)dt = 16/1000;
     t += dt;
 
     states[state].step(dt);

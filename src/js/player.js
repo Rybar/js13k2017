@@ -7,7 +7,7 @@ player = {
   init (){
     this.x = 384/2;
     this.y =  30;
-    this.radius = 9;
+    this.radius = 12;
     this.xvel = 0;
     this.yvel = 0;
     this.xspeed = 200;
@@ -20,6 +20,7 @@ player = {
     this.minXvel = -400;
     this.b = {};
     this.facingLeft = false;
+    this.jumping = false;
 
   },
 
@@ -42,13 +43,13 @@ player = {
     this.updateB();
     if(this.collides()){
       player.x = player.oldX;
-      player.xvel = -player.xvel*.4;
+      player.xvel = -player.xvel * .4;
     }
     player.y += dy;
     this.updateB();
     if(this.collides()){
       player.y = player.oldY;
-      player.yvel = -player.yvel*.4;
+      player.yvel = -player.yvel * .4;
     }
     this.updateB();
     if(this.collides()){
@@ -59,10 +60,12 @@ player = {
         this.updateB();
       }
     }
+    this.overlapResolution();
+
 
     this.updateB();
 
-    console.info(this.collides());
+    //console.info(this.collides());
 
     //player movement
     if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
@@ -74,11 +77,15 @@ player = {
         player.xvel =  - player.xspeed;
     }
     if(Key.isDown(Key.w) || Key.isDown(Key.UP)){
-      player.yvel = -player.yspeed;
+      if(!this.jumping && fuelAmount >0){
+        player.yvel = -player.yspeed;
+        fuelAmount--;
+      }
+
     }
-    if(Key.isDown(Key.s) || Key.isDown(Key.DOWN)) {
-      player.yvel = player.yspeed;
-    }
+    // if(Key.isDown(Key.s) || Key.isDown(Key.DOWN)) {
+    //   player.yvel = player.yspeed;
+    // }
 
     //world wrap for player
     if(player.x > WIDTH){
@@ -111,11 +118,28 @@ player = {
   collides () {
     for(var i = -this.radius; i < this.radius; i++){
       for(var j = -this.radius; j < this.radius; j++){
-        if(ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH]) return true;
+        if(ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH] == WALLS) return true;
       }
     }
     return false;
   },
+
+  overlaps () {
+    for(var i = -this.radius; i < this.radius; i++){
+      for(var j = -this.radius; j < this.radius; j++){
+        let overlap = ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH]
+        if(overlap){
+          return {
+            x: this.b.x + i,
+            y: this.b.y + j,
+            o: overlap
+          }
+        };
+      }
+    }
+    return false;
+},
+
   updateB () {
      this.b = {
       left: this.x-this.radius|0,
@@ -138,9 +162,9 @@ player = {
 
     //check bottom:
     for(let i = b.left; i <= b.right; i++){ //from left to right, across bottom edge
-      if(ram[COLLISION+i+WIDTH*b.bottom]){
+      if(ram[COLLISION+i+WIDTH*b.bottom] == WALLS){
         for(let j = b.bottom; j >= b.top; j--) {  //starting from point we found solid, scan upward for empty pixel
-          if(ram[COLLISION+i+WIDTH*j]){
+          if(ram[COLLISION+i+WIDTH*j] == WALLS){
             offsetY = j - b.bottom - 1;  //
           }
         } //end interior check
@@ -149,9 +173,9 @@ player = {
 
     //check top:
     for(let i = b.left; i <= b.right; i++){ //from left to right, across top edge
-      if(ram[COLLISION+i+WIDTH*b.top]){
+      if(ram[COLLISION+i+WIDTH*b.top] == WALLS){
         for(let j = b.top; j <= b.bottom; j++) {  //starting from point we found solid, scan downward for empty pixel
-          if(ram[COLLISION+i+WIDTH*j]){
+          if(ram[COLLISION+i+WIDTH*j] == WALLS){
             offsetY = j-b.top + 1;  //
           }
         } //end interior check
@@ -169,15 +193,15 @@ player = {
 
     //check left:
     for(let i = b.top; i <= b.bottom; i++){ //from top to bottom across left edge;
-      if(ram[COLLISION+b.left+WIDTH*i]){
+      if(ram[COLLISION+b.left+WIDTH*i] == WALLS){
         for(let j = b.x; j <= b.right; j++) {  //starting from point we found solid, scan upward for empty pixel
-          if(ram[COLLISION+j+WIDTH*i]){
+          if(ram[COLLISION+j+WIDTH*i] == WALLS){
             offsetX++;  //
           }
         } //end interior check
-      } else if(ram[COLLISION+b.right+WIDTH*i]){
+      } else if(ram[COLLISION+b.right+WIDTH*i] == WALLS){
         for(let j = b.x; j >= b.left; j--) {  //starting from point we found solid, scan upward for empty pixel
-          if(ram[COLLISION+j+WIDTH*i]){
+          if(ram[COLLISION+j+WIDTH*i] == WALLS){
             offsetX--  //
           }
         }
@@ -198,5 +222,27 @@ player = {
 
     return offsetX;
 
-  }
+  },
+
+  overlapResolution(dt){
+    let o = player.overlaps()
+
+    switch(o.o){
+
+      case FUELCELL:
+      ram[COLLISION + o.x + o.y * WIDTH] == 0;
+      renderTarget = COLLISION;
+      fillCircle(o.x,o.y,3,0);
+      renderTarget = BUFFER;
+
+      splodes.push( new splode(o.x, o.y) );
+
+      fuelAmount += 1;
+      console.log(fuelAmount, o.x, o.y);
+
+
+    }
+
+
+  },
 } //end player
