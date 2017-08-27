@@ -1,4 +1,4 @@
-states.spritesheet = {
+states.emptystate = {
 
     step: function(dt) {
 

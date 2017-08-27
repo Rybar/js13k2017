@@ -10,13 +10,15 @@ states.game = {
   render(dt) {
 
     renderTarget = BUFFER; clear(0);
+    renderSource = BACKGROUND; spr();
     drawFuel();
     renderSource = MIDGROUND; spr();
     player.draw();
     renderSource = FOREGROUND; spr();
 
 
-    renderTarget= SCREEN; clear(1);
+    renderTarget= SCREEN; clear(0);
+
     // let i = 1000;
     // while(i--)pset(Math.random()*WIDTH, Math.random()*HEIGHT, 2);
     // outline(BUFFER, SCREEN, 9);
@@ -47,14 +49,17 @@ function splode(x = 0,y = 0,size = 10,speed = 10, color = 21){
 }
 
 splode.prototype.draw = function(){
-    circle(this.x,this.y,this.size, this.color);
+  this.size++;
+  if(this.size > this.maxSize)return;
+    circle(this.x,this.y, this.size, this.color);
     this.counter--;
     if(this.counter==0){
       this.size++;
       this.counter = this.speed;
     }
-    this.size++;
-    if(this.size == this.maxSize)delete this;
+
   }
+
+
 
 //---END gamestate.js------------------------------

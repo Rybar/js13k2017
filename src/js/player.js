@@ -209,15 +209,15 @@ player = {
     } // end left edge checker
 
     //check right:
-    // for(let i = b.top+error; i <= b.bottom-error; i++){ //from top to bottom across left edge;
-    //   if(ram[COLLISION+b.right+WIDTH*i]){
-    //     for(let j = b.left; j <= b.right; j++) {  //starting from point we found solid, scan upward for empty pixel
-    //       if(ram[COLLISION+j+WIDTH*i]){
-    //         offsetX = 30;  //
-    //       }
-    //     } //end interior check
-    //   }
-    // } // end left edge checker
+    for(let i = b.top+error; i <= b.bottom-error; i++){ //from top to bottom across left edge;
+      if(ram[COLLISION+b.right+WIDTH*i]){
+        for(let j = b.left; j <= b.right; j++) {  //starting from point we found solid, scan upward for empty pixel
+          if(ram[COLLISION+j+WIDTH*i]){
+            offsetX = 30;  //
+          }
+        } //end interior check
+      }
+    } // end left edge checker
 
 
     return offsetX;

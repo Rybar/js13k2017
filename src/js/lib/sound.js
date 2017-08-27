@@ -1,5 +1,5 @@
-var songGen = new sonantx.MusicGenerator(song1);
-
+// var songGen = new sonantx.MusicGenerator(song1);
+//
 // songGen.createAudioBuffer(function(buffer) {
 //     var source = audioCtx.createBufferSource();
 //     source.buffer = buffer;

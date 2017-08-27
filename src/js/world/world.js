@@ -1,8 +1,14 @@
 world = [
-  1,0,0,
+  0,0,0,
   0,0,0,
   6,7,8
 ];
+
+const WORLDWIDTH = 2;
+const WORLDHEIGHT = 2; // 0 index.
+
+currentRoom = [0,1]; //start room
+
 
 rooms = [
   //0
@@ -131,12 +137,39 @@ decorate();
 
 function decorate() {
 
+  bgstars();
+
   denseGreeble();
 
   foregroundGreeble();
 
   //drawFuel();
 
+}
+
+function bgstars(){
+  renderTarget = BACKGROUND;
+  clear(0);
+  let i = 5000;
+  while(--i){
+    pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 1);
+  }
+  i = 200;
+  while(--i){
+    pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 26);
+  }
+  i = 60;
+  while(--i){
+    pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 20);
+  }
+  i = 20;
+  while(--i){
+    pset(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), 21);
+  }
+  i = 3;
+  while(--i){
+    fillCircle(lcg.nextIntRange(0,384), lcg.nextIntRange(0,256), lcg.nextIntRange(2,5), lcg.nextIntRange(16,19) );
+  }
 }
 
 function drawFuel() {

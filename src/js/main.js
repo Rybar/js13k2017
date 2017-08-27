@@ -4,8 +4,7 @@ const RIGHT = 2;
 const UP = 3;
 const DOWN = 4;
 
-const WORLDWIDTH = 2;
-const WORLDHEIGHT = 2; // 0 index.
+
 
 const WALLS = 21;
 const FUELCELL = 8;
@@ -15,6 +14,9 @@ states = {};
 init = () => {
 
   drawSpriteSheet();
+  sounds = {};
+  soundsLoaded = 0;
+  totalSounds = 1;
   score = 0;
   fuelAmount = 0;
   parts = 0;
@@ -23,13 +25,12 @@ init = () => {
   now = 0;
   t = 0;
   songTrigger = false;
-  state = 'game';
+  state = 'menu';
   audioCtx = new AudioContext;
   paused = false;
   transition = false;
   splodes = [];
 
-  currentRoom = [0,0];
 
   player.init();
 
