@@ -18,7 +18,7 @@ init = () => {
   soundsLoaded = 0;
   totalSounds = 1;
   score = 0;
-  fuelAmount = 0;
+  fuelAmount = 12000000000;
   parts = 0;
   last = 0;
   dt = 0;
@@ -57,6 +57,19 @@ window.addEventListener('focus', function (event) {
 
 loop = e => {
   if(paused){
+
+    text([
+      'PAUSED',
+      192,
+      128,
+      1,
+      1,
+      1,
+      'center',
+      1,
+      i,
+      0
+    ])
 
   }else{
     stats.begin();

@@ -1890,7 +1890,7 @@ init = () => {
   soundsLoaded = 0;
   totalSounds = 1;
   score = 0;
-  fuelAmount = 0;
+  fuelAmount = 12000000000;
   parts = 0;
   last = 0;
   dt = 0;
@@ -1930,6 +1930,19 @@ window.addEventListener('focus', function (event) {
 loop = e => {
   if(paused){
 
+    text([
+      'PAUSED',
+      192,
+      128,
+      1,
+      1,
+      1,
+      'center',
+      1,
+      i,
+      0
+    ])
+
   }else{
     stats.begin();
 
@@ -1956,13 +1969,16 @@ loop = e => {
 //----- END main.js---------------
 
 world = [
-  0,0,0,
-  0,0,0,
-  6,7,8
+  0,0,0,0,0,0,0,0,0,0,
+  0,2,0,0,0,0,1,0,0,0,
+  0,0,0,1,0,0,0,0,2,0,
+  0,0,0,0,0,0,1,0,0,0,
+  0,0,0,0,0,0,0,0,0,0,
+  6,7,8,7,6,6,8,6,6,6
 ];
 
-const WORLDWIDTH = 2;
-const WORLDHEIGHT = 2; // 0 index.
+const WORLDWIDTH = 9;
+const WORLDHEIGHT = 5; // 0 index.
 
 currentRoom = [0,1]; //start room
 
@@ -1979,6 +1995,7 @@ rooms = [
   //1
   {
     draw: function(dt){
+      fillCircle(192,128,50,WALLS);
 
     }
   },
@@ -1986,7 +2003,7 @@ rooms = [
   //2
   {
     draw: function(dt){
-
+        circle(192,128,64,WALLS);
     }
   },
 
@@ -2901,17 +2918,18 @@ states.spritesheet = {
 
         if(Key.justReleased(Key.x)){
           roomSwitch();
-          state = 'game'
+          state = 'menu'
         }
     },
 
     render: function(dt) {
 
         renderTarget = SCREEN;
-        checker(0,0,384,256,256/20|0,384/20|0,1);
+        clear(0);
+        checker(0,0,384,256,256/32|0,384/32|0,1);
         renderSource = SPRITES; spr();
         spr(0,0,22,34, 200,200);
-        rspr(0,0,384,256, 384/2,256/2, 1, 15);
+        rspr(0,0,32,32, 192,128, 2, 15+t*90);
 
         for(var i = 0; i < 32; i++){
           text([

@@ -4,17 +4,18 @@ states.spritesheet = {
 
         if(Key.justReleased(Key.x)){
           roomSwitch();
-          state = 'game'
+          state = 'menu'
         }
     },
 
     render: function(dt) {
 
         renderTarget = SCREEN;
-        checker(0,0,384,256,256/20|0,384/20|0,1);
+        clear(0);
+        checker(0,0,384,256,256/32|0,384/32|0,1);
         renderSource = SPRITES; spr();
         spr(0,0,22,34, 200,200);
-        rspr(0,0,384,256, 384/2,256/2, 1, 15);
+        rspr(0,0,32,32, 192,128, 2, 15+t*90);
 
         for(var i = 0; i < 32; i++){
           text([

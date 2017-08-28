@@ -1,11 +1,14 @@
 world = [
-  0,0,0,
-  0,0,0,
-  6,7,8
+  0,0,0,0,0,0,0,0,0,0,
+  0,2,0,0,0,0,1,0,0,0,
+  0,0,0,1,0,0,0,0,2,0,
+  0,0,0,0,0,0,1,0,0,0,
+  0,0,0,0,0,0,0,0,0,0,
+  6,7,8,7,6,6,8,6,6,6
 ];
 
-const WORLDWIDTH = 2;
-const WORLDHEIGHT = 2; // 0 index.
+const WORLDWIDTH = 9;
+const WORLDHEIGHT = 5; // 0 index.
 
 currentRoom = [0,1]; //start room
 
@@ -22,6 +25,7 @@ rooms = [
   //1
   {
     draw: function(dt){
+      fillCircle(192,128,50,WALLS);
 
     }
   },
@@ -29,7 +33,7 @@ rooms = [
   //2
   {
     draw: function(dt){
-
+        circle(192,128,64,WALLS);
     }
   },
 

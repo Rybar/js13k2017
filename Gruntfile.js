@@ -77,12 +77,12 @@ module.exports = function(grunt) {
 					//reserveDOMCache: true,
 					 nameCache: 'grunt-uglify-cache.json',
 					 mangle: {
-					 		properties: {
-									builtins: false,
-									//regex: /fillRect|left|right|top|bottom|xspeed|yspeed|fillTriangle|player|renderTarget|renderSource|/
-									//domprops: false,
-
-							}
+							// 	properties: {
+							// 		builtins: false,
+							// 		//regex: /fillRect|left|right|top|bottom|xspeed|yspeed|fillTriangle|player|renderTarget|renderSource/
+							// 		//domprops: false,
+							//
+							// }
 					}
 					//mangle: true
 
