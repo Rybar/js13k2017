@@ -77,9 +77,9 @@ player = {
         player.xvel =  - player.xspeed;
     }
     if(Key.isDown(Key.w) || Key.isDown(Key.UP)){
-      if(!this.jumping && fuelAmount >0){
+      if(!this.jumping && fuelTimer >0){
         player.yvel = -player.yspeed;
-        fuelAmount--;
+        //fuelAmount--;
       }
 
     }
@@ -237,7 +237,7 @@ player = {
 
       splodes.push( new splode(o.x, o.y) );
 
-      fuelAmount += 1;
+      fuelTimer += 1;
       console.log(fuelAmount, o.x, o.y);
 
 

@@ -1330,7 +1330,7 @@ var song1 = {
     "rowLen": 5513,
     "endPattern": 9
 }
-fontString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_!@.'\"?/<()";
+fontString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_!@#.'\"?/<()";
 
 fontBitmap = "11111100011111110001100011111010001111101000111110111111000010000100000111111100100101000110001111101111110000111001000011111111111000"+
 "0111001000010000111111000010111100011111110001100011111110001100011111100100001000010011111111110001000010100101111010001100101110010010100011000"+
@@ -1893,6 +1893,7 @@ init = () => {
   totalSounds = 1;
   score = 0; //
   fuelAmount = 12000000000;
+  fuelTimer = 30;
   parts = 0;
   last = 0;
   dt = 0;
@@ -1903,6 +1904,7 @@ init = () => {
   audioCtx = new AudioContext;
   paused = false;
   transition = false;
+
   splodes = [];
 
 
@@ -2063,10 +2065,10 @@ rooms = [
     draw: function(dt){
           fillRect(0,205,384,100,WALLS);
 
-          let i = 400;
+          let i = 100;
           while(--i){
             x = lcg.nextIntRange(0,WIDTH);
-            y = lcg.nextIntRange(0,HEIGHT);
+            y = lcg.nextIntRange(100,200);
             pset(x,y, FUELCELL);
           }
 
@@ -2470,9 +2472,9 @@ player = {
         player.xvel =  - player.xspeed;
     }
     if(Key.isDown(Key.w) || Key.isDown(Key.UP)){
-      if(!this.jumping && fuelAmount >0){
+      if(!this.jumping && fuelTimer >0){
         player.yvel = -player.yspeed;
-        fuelAmount--;
+        //fuelAmount--;
       }
 
     }
@@ -2630,7 +2632,7 @@ player = {
 
       splodes.push( new splode(o.x, o.y) );
 
-      fuelAmount += 1;
+      fuelTimer += 1;
       console.log(fuelAmount, o.x, o.y);
 
 
@@ -2640,7 +2642,7 @@ player = {
   },
 } //end player
 
-function splode(x = 0,y = 0,size = 10,speed = 10, color = 21){
+function splode(x = 0,y = 0,size = 10,speed = 10, color = 21, filled=false){
   this.x = x;
   this.y = y;
   this.maxSize = size;
@@ -2648,6 +2650,7 @@ function splode(x = 0,y = 0,size = 10,speed = 10, color = 21){
   this.counter = this.speed;
   this.color = color;
   this.size = 1;
+  this.filled = filled;
 
   s = this;
 }
@@ -2655,7 +2658,11 @@ function splode(x = 0,y = 0,size = 10,speed = 10, color = 21){
 splode.prototype.draw = function(){
   this.size++;
   if(this.size > this.maxSize)return;
-    circle(this.x,this.y, this.size, this.color);
+    if(this.filled){
+      fillCircle(this.x,this.y, this.size, this.color);
+    }else{
+      circle(this.x,this.y, this.size, this.color);
+    }
     this.counter--;
     if(this.counter==0){
       this.size++;
@@ -2924,26 +2931,55 @@ states.game = {
     if(Key.justReleased(Key.f))state = 'gameover';
     //rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].update();  //1d array math y * width + x;
     player.update(dt);
+    fuelTimer -= dt;
+    if(fuelTimer < 0)fuelTimer = 0;
   },
 
   render(dt) {
 
-    renderTarget = BUFFER; clear(0);
+    renderTarget = SCREEN; clear(0);
     renderSource = BACKGROUND; spr();
+    renderTarget = BUFFER; clear(0);
     drawFuel();
     renderSource = MIDGROUND; spr();
     player.draw();
     renderSource = FOREGROUND; spr();
 
 
-    renderTarget= SCREEN; clear(0);
+    renderTarget= SCREEN;
 
-    // let i = 1000;
-    // while(i--)pset(Math.random()*WIDTH, Math.random()*HEIGHT, 2);
-    // outline(BUFFER, SCREEN, 9);
-    renderSource = BUFFER; spr();
-    renderSource = DEBUG; spr();
-
+    if(fuelTimer){
+      if(fuelTimer > 20){
+        renderSource = BUFFER; spr();
+        renderSource = DEBUG; spr();
+      } else{
+        renderTarget = SCREEN; clear(0);
+        let i = 1000;
+        while(i--)pset(Math.random()*WIDTH, Math.random()*HEIGHT, 2);
+        outline(BUFFER, SCREEN, 9);  //-green outline effect
+      }
+    }else {
+      renderTarget = SCREEN; clear(0);
+      let i = 2000;
+      while(i--){
+        let x = Math.random()*WIDTH|0;
+        let y = Math.random()*HEIGHT|0;
+        let color = ram[BUFFER + x + y * WIDTH] ? 27 : 0;
+        circle(x, y, 1, color);
+      }
+    }
+    text([
+      fuelTimer.toString(),
+      192,
+      10,
+      1,
+      1,
+      1,
+      'center',
+      1,
+      9,
+      0
+    ])
     splodes.forEach(function(s){s.draw()});
 
     // if(pal[31] != 31){

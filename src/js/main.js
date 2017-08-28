@@ -19,6 +19,7 @@ init = () => {
   totalSounds = 1;
   score = 0; //
   fuelAmount = 12000000000;
+  fuelTimer = 30;
   parts = 0;
   last = 0;
   dt = 0;
@@ -29,6 +30,7 @@ init = () => {
   audioCtx = new AudioContext;
   paused = false;
   transition = false;
+
   splodes = [];
 
 

@@ -88,10 +88,10 @@ rooms = [
     draw: function(dt){
           fillRect(0,205,384,100,WALLS);
 
-          let i = 400;
+          let i = 100;
           while(--i){
             x = lcg.nextIntRange(0,WIDTH);
-            y = lcg.nextIntRange(0,HEIGHT);
+            y = lcg.nextIntRange(100,200);
             pset(x,y, FUELCELL);
           }
 

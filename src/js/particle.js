@@ -1,4 +1,4 @@
-function splode(x = 0,y = 0,size = 10,speed = 10, color = 21){
+function splode(x = 0,y = 0,size = 10,speed = 10, color = 21, filled=false){
   this.x = x;
   this.y = y;
   this.maxSize = size;
@@ -6,6 +6,7 @@ function splode(x = 0,y = 0,size = 10,speed = 10, color = 21){
   this.counter = this.speed;
   this.color = color;
   this.size = 1;
+  this.filled = filled;
 
   s = this;
 }
@@ -13,7 +14,11 @@ function splode(x = 0,y = 0,size = 10,speed = 10, color = 21){
 splode.prototype.draw = function(){
   this.size++;
   if(this.size > this.maxSize)return;
-    circle(this.x,this.y, this.size, this.color);
+    if(this.filled){
+      fillCircle(this.x,this.y, this.size, this.color);
+    }else{
+      circle(this.x,this.y, this.size, this.color);
+    }
     this.counter--;
     if(this.counter==0){
       this.size++;
