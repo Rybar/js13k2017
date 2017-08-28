@@ -32,7 +32,7 @@ module.exports = function(grunt) {
 					'src/js/lib/sound.js',
 					'src/js/player.js',
 					'src/js/particle.js',
-					'src/js/pool.js',
+					//'src/js/pool.js',
 					'src/js/states/gameoverstate.js',
 					'src/js/states/menustate.js',
 					'src/js/states/gamestate.js',

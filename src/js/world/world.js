@@ -18,6 +18,11 @@ rooms = [
   {
 
     draw: function(dt){
+      bgstars();
+
+      denseGreeble();
+
+      foregroundGreeble();
 
     }
   },
@@ -26,6 +31,11 @@ rooms = [
   {
     draw: function(dt){
       fillCircle(192,128,50,WALLS);
+      bgstars();
+
+      denseGreeble();
+
+      foregroundGreeble();
 
     }
   },
@@ -34,6 +44,11 @@ rooms = [
   {
     draw: function(dt){
         circle(192,128,64,WALLS);
+        bgstars();
+
+        denseGreeble();
+
+        foregroundGreeble();
     }
   },
 
@@ -42,6 +57,11 @@ rooms = [
     draw: function(dt){
       fillRect(0,0,127,256,WALLS);
       fillRect(250,0,127,256,WALLS);
+      bgstars();
+
+      denseGreeble();
+
+      foregroundGreeble();
     }
   },
   //4
@@ -49,6 +69,12 @@ rooms = [
     draw: function(dt){
       fillRect(0,0,127,256,WALLS);
       fillRect(250,0,127,256,WALLS);
+
+      bgstars();
+
+      denseGreeble();
+
+      foregroundGreeble();
     }
   },
   //5
@@ -69,6 +95,12 @@ rooms = [
             pset(x,y, FUELCELL);
           }
 
+          bgstars();
+
+          denseGreeble();
+
+          foregroundGreeble();
+
     }
   },
 
@@ -82,6 +114,12 @@ rooms = [
           fillRect(200,820,10,100, WALLS);
           fillRect(210,70,100,100, WALLS);
 
+          bgstars();
+
+          denseGreeble();
+
+          foregroundGreeble();
+
 
 
     }
@@ -92,6 +130,12 @@ rooms = [
       fillRect(0,205,384,10,WALLS);
       fillCircle(250,150,64,WALLS);
       pset(50, 180, FUELCELL);
+
+      bgstars();
+
+      denseGreeble();
+
+      foregroundGreeble();
     }
   },
 
@@ -135,11 +179,10 @@ function roomSwitch(direction){
 
 renderTarget = COLLISION;
 rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].draw();
-decorate();
 
 }
 
-function decorate() {
+
 
   bgstars();
 
@@ -147,9 +190,6 @@ function decorate() {
 
   foregroundGreeble();
 
-  //drawFuel();
-
-}
 
 function bgstars(){
   renderTarget = BACKGROUND;

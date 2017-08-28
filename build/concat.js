@@ -1864,6 +1864,8 @@ function render() {
 
 }
 
+
+
 Number.prototype.clamp = function(min, max) {
   return Math.min(Math.max(this, min), max);
 };
@@ -1889,7 +1891,7 @@ init = () => {
   sounds = {};
   soundsLoaded = 0;
   totalSounds = 1;
-  score = 0;
+  score = 0; //
   fuelAmount = 12000000000;
   parts = 0;
   last = 0;
@@ -1928,7 +1930,10 @@ window.addEventListener('focus', function (event) {
 }, false);
 
 loop = e => {
+  stats.begin();
+
   if(paused){
+    pal = paldrk;
 
     text([
       'PAUSED',
@@ -1939,13 +1944,12 @@ loop = e => {
       1,
       'center',
       1,
-      i,
+      21,
       0
     ])
 
   }else{
-    stats.begin();
-
+    pal = palDefault;
     //game timer
     let now = new Date().getTime();
     dt = Math.min(1, (now - last) / 1000);
@@ -1959,11 +1963,12 @@ loop = e => {
     states[state].render();
 
     //draw buffer to screen
-    render(e);
 
-    stats.end();
-    requestAnimationFrame(loop);
   }
+  render(e);
+
+  stats.end();
+  requestAnimationFrame(loop);
 }
 
 //----- END main.js---------------
@@ -1988,6 +1993,11 @@ rooms = [
   {
 
     draw: function(dt){
+      bgstars();
+
+      denseGreeble();
+
+      foregroundGreeble();
 
     }
   },
@@ -1996,6 +2006,11 @@ rooms = [
   {
     draw: function(dt){
       fillCircle(192,128,50,WALLS);
+      bgstars();
+
+      denseGreeble();
+
+      foregroundGreeble();
 
     }
   },
@@ -2004,6 +2019,11 @@ rooms = [
   {
     draw: function(dt){
         circle(192,128,64,WALLS);
+        bgstars();
+
+        denseGreeble();
+
+        foregroundGreeble();
     }
   },
 
@@ -2012,6 +2032,11 @@ rooms = [
     draw: function(dt){
       fillRect(0,0,127,256,WALLS);
       fillRect(250,0,127,256,WALLS);
+      bgstars();
+
+      denseGreeble();
+
+      foregroundGreeble();
     }
   },
   //4
@@ -2019,6 +2044,12 @@ rooms = [
     draw: function(dt){
       fillRect(0,0,127,256,WALLS);
       fillRect(250,0,127,256,WALLS);
+
+      bgstars();
+
+      denseGreeble();
+
+      foregroundGreeble();
     }
   },
   //5
@@ -2039,6 +2070,12 @@ rooms = [
             pset(x,y, FUELCELL);
           }
 
+          bgstars();
+
+          denseGreeble();
+
+          foregroundGreeble();
+
     }
   },
 
@@ -2052,6 +2089,12 @@ rooms = [
           fillRect(200,820,10,100, WALLS);
           fillRect(210,70,100,100, WALLS);
 
+          bgstars();
+
+          denseGreeble();
+
+          foregroundGreeble();
+
 
 
     }
@@ -2062,6 +2105,12 @@ rooms = [
       fillRect(0,205,384,10,WALLS);
       fillCircle(250,150,64,WALLS);
       pset(50, 180, FUELCELL);
+
+      bgstars();
+
+      denseGreeble();
+
+      foregroundGreeble();
     }
   },
 
@@ -2105,11 +2154,10 @@ function roomSwitch(direction){
 
 renderTarget = COLLISION;
 rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].draw();
-decorate();
 
 }
 
-function decorate() {
+
 
   bgstars();
 
@@ -2117,9 +2165,6 @@ function decorate() {
 
   foregroundGreeble();
 
-  //drawFuel();
-
-}
 
 function bgstars(){
   renderTarget = BACKGROUND;
@@ -2595,78 +2640,102 @@ player = {
   },
 } //end player
 
-function Particle() {
+function splode(x = 0,y = 0,size = 10,speed = 10, color = 21){
+  this.x = x;
+  this.y = y;
+  this.maxSize = size;
+  this.speed = 10;
+  this.counter = this.speed;
+  this.color = color;
+  this.size = 1;
 
-  this.inUse = false;
-
-  this.init = function(){
-    this.x = -500;
-    this.y = -500;
-    this.dead = true;
-    this.xvel = 0;
-    this.yvel = 1;
-    this.life = 1;
-  }
-
-  Particle.prototype.spawn = function(opt) {
-    this.x = opt.x;
-    this.y = opt.y;
-    this.xvel = opt.xvel;
-    this.yvel = opt.yvel;
-    this.inUse = true;
-    this.life = opt.life || 1;
-    this.remaining = opt.life || 1;
-    this.radius = opt.radius || 1;
-    this.color = opt.color || 21;
-    this.dead = false;
-  }
-
-  Particle.prototype.use = function(dt){
-    if(this.dead) {
-      return true;
-    }
-    else {
-      this.remaining -= dt;
-      this.x += dt * this.xvel;
-      this.y += dt * this.yvel;
-      this.draw();
-      //console.log('bullet used/updated');
-        if(this.remaining <= 0) {
-          this.dead = true;
-          return true;
-        }
-        if(this.y < 0){
-          this.dead = true;
-        }
-        if(this.x >= 0 && this.x <= WIDTH && this.y >=0 && this.y <= 256){  //is it on screen?
-          if(ram[0x40000 + ( (this.y|0) * WIDTH + (this.x|0) )] > 0) {  //is it overlapping something drawn into the collision buffer?
-
-            this.dead = true;
-            drawExplode(this.x, this.y);
-          }
-        }
-
-    }
-    return false;
-  }
-
-
-  Particle.prototype.clear = function(){
-    this.x = -500;
-    this.y = -500;
-    this.dead = true;
-    this.xvel = 0;
-    this.yvel = 0;
-    this.life = 1;
-    this.inUse = false;
-  }
-
-  Particle.prototype.draw = function(){
-    circle(this.x, this.y, 0|Math.random()*4, 21);
-  }
-
-
+  s = this;
 }
+
+splode.prototype.draw = function(){
+  this.size++;
+  if(this.size > this.maxSize)return;
+    circle(this.x,this.y, this.size, this.color);
+    this.counter--;
+    if(this.counter==0){
+      this.size++;
+      this.counter = this.speed;
+    }
+
+  }
+
+// function Particle() {
+//
+//   this.inUse = false;
+//
+//   this.init = function(){
+//     this.x = -500;
+//     this.y = -500;
+//     this.dead = true;
+//     this.xvel = 0;
+//     this.yvel = 1;
+//     this.life = 1;
+//   }
+//
+//   Particle.prototype.spawn = function(opt) {
+//     this.x = opt.x;
+//     this.y = opt.y;
+//     this.xvel = opt.xvel;
+//     this.yvel = opt.yvel;
+//     this.inUse = true;
+//     this.life = opt.life || 1;
+//     this.remaining = opt.life || 1;
+//     this.radius = opt.radius || 1;
+//     this.color = opt.color || 21;
+//     this.dead = false;
+//   }
+//
+//   Particle.prototype.use = function(dt){
+//     if(this.dead) {
+//       return true;
+//     }
+//     else {
+//       this.remaining -= dt;
+//       this.x += dt * this.xvel;
+//       this.y += dt * this.yvel;
+//       this.draw();
+//       //console.log('bullet used/updated');
+//         if(this.remaining <= 0) {
+//           this.dead = true;
+//           return true;
+//         }
+//         if(this.y < 0){
+//           this.dead = true;
+//         }
+//         if(this.x >= 0 && this.x <= WIDTH && this.y >=0 && this.y <= 256){  //is it on screen?
+//           if(ram[0x40000 + ( (this.y|0) * WIDTH + (this.x|0) )] > 0) {  //is it overlapping something drawn into the collision buffer?
+//
+//             this.dead = true;
+//             drawExplode(this.x, this.y);
+//           }
+//         }
+//
+//     }
+//     return false;
+//   }
+//
+//
+//   Particle.prototype.clear = function(){
+//     this.x = -500;
+//     this.y = -500;
+//     this.dead = true;
+//     this.xvel = 0;
+//     this.yvel = 0;
+//     this.life = 1;
+//     this.inUse = false;
+//   }
+//
+//   Particle.prototype.draw = function(){
+//     circle(this.x, this.y, 0|Math.random()*4, 21);
+//   }
+//
+//
+// }
 
 //--------gameoverstate.js-----------
 
@@ -2686,14 +2755,14 @@ states.gameover = {
       clear(0);
 
       text([
-        'CRITICAL SYSTEM FAILURE',
+        'CRITICAL SYSTEM\nFAILURE',
         384/2,
-        80 + Math.sin(t*2.5)*15,
-        8 + Math.cos(t*2.9)*4,
-        15 + Math.sin(t*3.5)*5,
+        80,
+        8,
+        15,
         'center',
         'top',
-        4,
+        3,
         27,
       ]);
 
@@ -2710,12 +2779,12 @@ states.menu = {
   step: function(dt) {
 
       //game update
-      if(Key.isDown(Key.p)){
+      if(Key.justReleased(Key.p)){
         roomSwitch();
         state = 'game';
         //transition = true;
       }
-      if(Key.isDown(Key.z)){
+      if(Key.justReleased(Key.z)){
         state = 'spritesheet';
       }
       // if(transition){
@@ -2851,6 +2920,8 @@ states.menu = {
 states.game = {
 
   step(dt) {
+
+    if(Key.justReleased(Key.f))state = 'gameover';
     //rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].update();  //1d array math y * width + x;
     player.update(dt);
   },
@@ -2884,29 +2955,7 @@ states.game = {
   }
 };
 
-function splode(x = 0,y = 0,size = 10,speed = 10, color = 21){
-  this.x = x;
-  this.y = y;
-  this.maxSize = size;
-  this.speed = 10;
-  this.counter = this.speed;
-  this.color = color;
-  this.size = 1;
 
-  s = this;
-}
-
-splode.prototype.draw = function(){
-  this.size++;
-  if(this.size > this.maxSize)return;
-    circle(this.x,this.y, this.size, this.color);
-    this.counter--;
-    if(this.counter==0){
-      this.size++;
-      this.counter = this.speed;
-    }
-
-  }
 
 
 

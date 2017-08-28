@@ -5,12 +5,12 @@ states.menu = {
   step: function(dt) {
 
       //game update
-      if(Key.isDown(Key.p)){
+      if(Key.justReleased(Key.p)){
         roomSwitch();
         state = 'game';
         //transition = true;
       }
-      if(Key.isDown(Key.z)){
+      if(Key.justReleased(Key.z)){
         state = 'spritesheet';
       }
       // if(transition){

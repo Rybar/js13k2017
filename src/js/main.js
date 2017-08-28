@@ -56,7 +56,10 @@ window.addEventListener('focus', function (event) {
 }, false);
 
 loop = e => {
+  stats.begin();
+
   if(paused){
+    pal = paldrk;
 
     text([
       'PAUSED',
@@ -67,13 +70,12 @@ loop = e => {
       1,
       'center',
       1,
-      i,
+      21,
       0
     ])
 
   }else{
-    stats.begin();
-
+    pal = palDefault;
     //game timer
     let now = new Date().getTime();
     dt = Math.min(1, (now - last) / 1000);
@@ -87,11 +89,12 @@ loop = e => {
     states[state].render();
 
     //draw buffer to screen
-    render(e);
 
-    stats.end();
-    requestAnimationFrame(loop);
   }
+  render(e);
+
+  stats.end();
+  requestAnimationFrame(loop);
 }
 
 //----- END main.js---------------
