@@ -17,7 +17,7 @@ init = () => {
   sounds = {};
   soundsLoaded = 0;
   totalSounds = 1;
-  score = 0;
+  score = 0; //
   fuelAmount = 12000000000;
   parts = 0;
   last = 0;
