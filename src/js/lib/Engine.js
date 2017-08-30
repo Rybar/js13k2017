@@ -393,25 +393,25 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
   function rspr( sx, sy, sw, sh, destCenterX, destCenterY, scale, angle ){
 
     angle = angle * 0.0174533 //convert to radians in place
-    var sourceCenterX = sx + sw / 2;
-    var sourceCenterY = sy + sh / 2;
+    let sourceCenterX = sx + (sw / 2)|0;
+    let sourceCenterY = sy + (sh / 2)|0;
 
-   var destWidth = sw * scale;
-    var destHeight = sh * scale;
+   let destWidth = sw * scale;
+    let destHeight = sh * scale;
 
-   var halfWidth = (destWidth / 2 * 1.41421356237)|0 + 5;  //area will always be square, hypotenuse trick
-    var halfHeight = (destHeight / 2 * 1.41421356237)|0 + 5;
+   let halfWidth = (destWidth / 2 * 1.41421356237)|0 + 5;  //area will always be square, hypotenuse trick
+    let halfHeight = (destHeight / 2 * 1.41421356237)|0 + 5;
 
-   var startX = -halfWidth;
-    var endX = halfWidth;
+   let startX = -halfWidth;
+    let endX = halfWidth;
 
-   var startY = -halfHeight;
-    var endY = halfHeight;
+   let startY = -halfHeight;
+    let endY = halfHeight;
 
-   var scaleFactor = 1.0 / scale;
+   let scaleFactor = 1.0 / scale;
 
-   var cos = Math.cos(-angle) * scaleFactor;
-   var sin = Math.sin(-angle) * scaleFactor;
+   let cos = Math.cos(-angle) * scaleFactor;
+   let sin = Math.sin(-angle) * scaleFactor;
 
    for(let y = startY; y < endY; y++){
       for(let x = startX; x < endX; x++){
@@ -469,6 +469,26 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
     setTimeout( function(){transitionOut(callback)}, 1000000);
   }
 
+  function playSound(buffer, playbackRate = 1, pan = 0, loop = false) {
+
+    var source = audioCtx.createBufferSource();
+    var gainNode = audioCtx.createGain();
+    var panNode = audioCtx.createStereoPanner();
+
+    source.buffer = buffer;
+    source.connect(panNode);
+    panNode.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    //gainNode.connect(audioCtx.destination);
+    source.playbackRate.value = playbackRate;
+    source.loop = loop;
+    gainNode.gain.value = 1;
+    panNode.pan.value = pan;
+    source.start();
+    return {volume: gainNode, sound: source};
+}
+
 function render() {
 
   var i = PAGESIZE;  // display is first page of ram
@@ -493,5 +513,9 @@ function render() {
 Number.prototype.clamp = function(min, max) {
   return Math.min(Math.max(this, min), max);
 };
+
+Number.prototype.map = function(old_bottom, old_top, new_bottom, new_top) {
+  return (this - old_bottom) / (old_top - old_bottom) * (new_top - new_bottom) + new_bottom;
+}
 
 //--------END Engine.js-------------------

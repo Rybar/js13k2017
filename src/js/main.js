@@ -13,27 +13,34 @@ states = {};
 
 init = () => {
 
-  drawSpriteSheet();
+
   sounds = {};
   soundsLoaded = 0;
-  totalSounds = 1;
+  totalSounds = 3;
   score = 0; //
-  fuelAmount = 12000000000;
+  //fuelAmount = 12000000000;
   fuelTimer = 30;
   parts = 0;
   last = 0;
   dt = 0;
   now = 0;
   t = 0;
-  songTrigger = false;
-  state = 'menu';
-  audioCtx = new AudioContext;
-  paused = false;
-  transition = false;
-
+  state = 'loading';
   splodes = [];
 
 
+  //FLAGS--------------------------------------------------------------
+  paused = false;
+  transition = false;
+
+  //sound flags--------------------------------------------------------
+  s_titleSong = false;
+  s_gameSong = false;
+  s_jump = false;
+
+  audioCtx = new AudioContext;
+  drawSpriteSheet();
+  states.loading.init();
   player.init();
 
   stats = new Stats();

@@ -4,13 +4,19 @@ states.menu = {
 
   step: function(dt) {
 
+      if(!s_titleSong){
+        titleSong = playSound(sounds.titleMusic, 1, 0, true);
+        s_titleSong = true;
+      }
+
       //game update
       if(Key.justReleased(Key.p)){
         roomSwitch();
         state = 'game';
+        titleSong.sound.stop();
         //transition = true;
       }
-      if(Key.justReleased(Key.z)){
+      if(Key.justReleased(Key.x)){
         state = 'spritesheet';
       }
       // if(transition){

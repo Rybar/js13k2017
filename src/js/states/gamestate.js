@@ -3,6 +3,10 @@
 states.game = {
 
   step(dt) {
+    if(!s_gameSong){
+      s_gameSong = true;
+      playSound(sounds.gameMusic, 1, 0, true);
+    }
 
     if(Key.justReleased(Key.f))state = 'gameover';
     //rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].update();  //1d array math y * width + x;

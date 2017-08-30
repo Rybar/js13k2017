@@ -77,10 +77,14 @@ player = {
         player.xvel =  - player.xspeed;
     }
     if(Key.isDown(Key.w) || Key.isDown(Key.UP)){
-      if(!this.jumping && fuelTimer >0){
+      if(!this.jumping && fuelTimer > 0){
+        this.jumping = true;
+        s_jump = true;
         player.yvel = -player.yspeed;
+        playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
         //fuelAmount--;
       }
+
 
     }
     // if(Key.isDown(Key.s) || Key.isDown(Key.DOWN)) {
@@ -118,7 +122,10 @@ player = {
   collides () {
     for(var i = -this.radius; i < this.radius; i++){
       for(var j = -this.radius; j < this.radius; j++){
-        if(ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH] == WALLS) return true;
+        if(ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH] == WALLS){
+          player.jumping = false;
+          return true;
+        }
       }
     }
     return false;
@@ -141,6 +148,7 @@ player = {
 },
 
   updateB () {
+
      this.b = {
       left: this.x-this.radius|0,
       right: this.x+this.radius|0,
@@ -230,15 +238,15 @@ player = {
     switch(o.o){
 
       case FUELCELL:
-      ram[COLLISION + o.x + o.y * WIDTH] == 0;
-      renderTarget = COLLISION;
-      fillCircle(o.x,o.y,3,0);
-      renderTarget = BUFFER;
+        ram[COLLISION + o.x + o.y * WIDTH] == 0;
+        renderTarget = COLLISION;
+        fillCircle(o.x,o.y,3,0);
+        renderTarget = BUFFER;
 
-      splodes.push( new splode(o.x, o.y) );
+        splodes.push( new splode(o.x, o.y) );
 
-      fuelTimer += 1;
-      console.log(fuelAmount, o.x, o.y);
+        fuelTimer += 1;
+        playSound(sounds.jump, 1, player.x.map(0, WIDTH, -1, 1), false); //pan sound based on position
 
 
     }

@@ -143,53 +143,44 @@ rooms = [
 ] // end rooms;
 
 function roomSwitch(direction){
-  renderTarget = COLLISION; clear(0);
-  renderTarget = SCRATCH; clear(0);
-  renderTarget = SCRATCH2; clear(0);
-  renderTarget = FOREGROUND; clear(0);
-  renderTarget = MIDGROUND; clear(0);
-  renderTarget = BUFFER; clear(0);
+    renderTarget = COLLISION; clear(0);
+    renderTarget = SCRATCH; clear(0);
+    renderTarget = SCRATCH2; clear(0);
+    renderTarget = FOREGROUND; clear(0);
+    renderTarget = MIDGROUND; clear(0);
+    renderTarget = BUFFER; clear(0);
 
-  switch(direction){
+    switch(direction){
 
-  case LEFT:
-  currentRoom[0]--;
-  if(currentRoom[0] < 0) currentRoom[0] = WORLDWIDTH;
-  console.log(currentRoom);
-  break;
+    case LEFT:
+    currentRoom[0]--;
+    if(currentRoom[0] < 0) currentRoom[0] = WORLDWIDTH;
+    console.log(currentRoom);
+    break;
 
-  case RIGHT:
-  currentRoom[0]++;
-  if(currentRoom[0] > WORLDWIDTH) currentRoom[0] = 0;
-  console.log(currentRoom);
-  break;
+    case RIGHT:
+    currentRoom[0]++;
+    if(currentRoom[0] > WORLDWIDTH) currentRoom[0] = 0;
+    console.log(currentRoom);
+    break;
 
-  case UP:
-  currentRoom[1]--;
-  if(currentRoom[1] < 0) currentRoom[1] = WORLDHEIGHT;
-  console.log(currentRoom);
-  break;
+    case UP:
+    currentRoom[1]--;
+    if(currentRoom[1] < 0) currentRoom[1] = WORLDHEIGHT;
+    console.log(currentRoom);
+    break;
 
-  case DOWN:
-  currentRoom[1]++;
-  if(currentRoom[1] > WORLDHEIGHT) currentRoom[1] = 0;
-  console.log(currentRoom);
-  break;
+    case DOWN:
+    currentRoom[1]++;
+    if(currentRoom[1] > WORLDHEIGHT) currentRoom[1] = 0;
+    console.log(currentRoom);
+    break;
+  }
+
+  renderTarget = COLLISION;
+  rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].draw();
+
 }
-
-renderTarget = COLLISION;
-rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].draw();
-
-}
-
-
-
-  bgstars();
-
-  denseGreeble();
-
-  foregroundGreeble();
-
 
 function bgstars(){
   renderTarget = BACKGROUND;
@@ -310,4 +301,9 @@ function foregroundGreeble(){
   renderTarget = FOREGROUND;
   renderSource = SCRATCH; spr();
   renderSource = SCRATCH2; spr();
+}
+
+function drawMessage(message, color){
+  
+
 }
