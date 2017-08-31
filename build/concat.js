@@ -2011,15 +2011,7 @@ Number.prototype.map = function(old_bottom, old_top, new_bottom, new_top) {
 //--------END Engine.js-------------------
 
 //-----main.js---------------
-const LEFT = 1;
-const RIGHT = 2;
-const UP = 3;
-const DOWN = 4;
 
-
-
-const WALLS = 21;
-const FUELCELL = 8;
 
 states = {};
 
@@ -2129,11 +2121,20 @@ world = [
   6,7,8,7,6,6,8,6,6,6
 ];
 
+const LEFT = 1;
+const RIGHT = 2;
+const UP = 3;
+const DOWN = 4;
+
+const WALLS = 21;
+const FUELCELL = 8;
+const FUELCRYSTAL = 9;
+const TERRA = 4;
+
 const WORLDWIDTH = 9;
 const WORLDHEIGHT = 5; // 0 index.
 
 currentRoom = [0,1]; //start room
-
 
 rooms = [
   //0
@@ -2426,7 +2427,7 @@ function foregroundGreeble(){
 }
 
 function drawMessage(message, color){
-  
+
 
 }
 
@@ -2658,7 +2659,7 @@ player = {
   collides () {
     for(var i = -this.radius; i < this.radius; i++){
       for(var j = -this.radius; j < this.radius; j++){
-        if(ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH] == WALLS){
+        if(ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH] == WALLS || TERRA || FUELCRYSTAL){
           player.jumping = false;
           return true;
         }
@@ -2706,9 +2707,9 @@ player = {
 
     //check bottom:
     for(let i = b.left; i <= b.right; i++){ //from left to right, across bottom edge
-      if(ram[COLLISION+i+WIDTH*b.bottom] == WALLS){
+      if(ram[COLLISION+i+WIDTH*b.bottom] == WALLS || TERRA || FUELCRYSTAL){
         for(let j = b.bottom; j >= b.top; j--) {  //starting from point we found solid, scan upward for empty pixel
-          if(ram[COLLISION+i+WIDTH*j] == WALLS){
+          if(ram[COLLISION+i+WIDTH*j] == WALLS || TERRA || FUELCRYSTAL){
             offsetY = j - b.bottom - 1;  //
           }
         } //end interior check

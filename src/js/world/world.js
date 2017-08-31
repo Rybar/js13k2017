@@ -7,11 +7,20 @@ world = [
   6,7,8,7,6,6,8,6,6,6
 ];
 
+const LEFT = 1;
+const RIGHT = 2;
+const UP = 3;
+const DOWN = 4;
+
+const WALLS = 21;
+const FUELCELL = 8;
+const FUELCRYSTAL = 9;
+const TERRA = 4;
+
 const WORLDWIDTH = 9;
 const WORLDHEIGHT = 5; // 0 index.
 
 currentRoom = [0,1]; //start room
-
 
 rooms = [
   //0
@@ -304,6 +313,6 @@ function foregroundGreeble(){
 }
 
 function drawMessage(message, color){
-  
+
 
 }

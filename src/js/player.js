@@ -122,7 +122,7 @@ player = {
   collides () {
     for(var i = -this.radius; i < this.radius; i++){
       for(var j = -this.radius; j < this.radius; j++){
-        if(ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH] == WALLS){
+        if(ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH] == WALLS || TERRA || FUELCRYSTAL){
           player.jumping = false;
           return true;
         }
@@ -170,9 +170,9 @@ player = {
 
     //check bottom:
     for(let i = b.left; i <= b.right; i++){ //from left to right, across bottom edge
-      if(ram[COLLISION+i+WIDTH*b.bottom] == WALLS){
+      if(ram[COLLISION+i+WIDTH*b.bottom] == WALLS || TERRA || FUELCRYSTAL){
         for(let j = b.bottom; j >= b.top; j--) {  //starting from point we found solid, scan upward for empty pixel
-          if(ram[COLLISION+i+WIDTH*j] == WALLS){
+          if(ram[COLLISION+i+WIDTH*j] == WALLS || TERRA || FUELCRYSTAL){
             offsetY = j - b.bottom - 1;  //
           }
         } //end interior check

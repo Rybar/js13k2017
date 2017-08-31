@@ -1,13 +1,5 @@
 //-----main.js---------------
-const LEFT = 1;
-const RIGHT = 2;
-const UP = 3;
-const DOWN = 4;
 
-
-
-const WALLS = 21;
-const FUELCELL = 8;
 
 states = {};
 
