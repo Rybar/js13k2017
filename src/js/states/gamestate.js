@@ -20,7 +20,7 @@ states.game = {
 
   render(dt) {
 
-    renderTarget = SCREEN; clear(0);
+    //renderTarget = SCREEN; clear(0);
     renderSource = BACKGROUND; spr();
     renderTarget = BUFFER; clear(0);
     drawFuel();
@@ -52,10 +52,10 @@ states.game = {
       }
     }
     //-----------------------
-    let k = 16000;
+    let k = 9000;
     while(--k){
       let t = 2 * Math.PI * Math.random();
-      let u = Math.random() * 100 + Math.random() * 100;
+      let u = Math.random() * 250 + Math.random() * 250;
       let r = u > 60 ? u : 120-u;
 
 
