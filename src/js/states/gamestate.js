@@ -3,16 +3,19 @@
 states.game = {
 
   step(dt) {
-    if(!s_gameSong){
-      s_gameSong = true;
-      playSound(sounds.gameMusic, 1, 0, true);
-    }
+    // if(!s_gameSong){
+    //   s_gameSong = true;
+    //   playSound(sounds.gameMusic, 1, 0, true);
+    // }
 
     if(Key.justReleased(Key.f))state = 'gameover';
     //rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].update();  //1d array math y * width + x;
     player.update(dt);
     fuelTimer -= dt;
-    if(fuelTimer < 0)fuelTimer = 0;
+    if(fuelTimer < 0){
+      fuelTimer = 0;
+      state = 'gameover';
+    }
   },
 
   render(dt) {
@@ -48,6 +51,19 @@ states.game = {
         circle(x, y, 1, color);
       }
     }
+    //-----------------------
+    let k = 16000;
+    while(--k){
+      let t = 2 * Math.PI * Math.random();
+      let u = Math.random() * 100 + Math.random() * 100;
+      let r = u > 60 ? u : 120-u;
+
+
+      let x = r * Math.cos(t) + player.x | 0;
+      let y = r * Math.sin(t) + player.y | 0;
+      circle(x, y, 1, paldrk[ ram[SCREEN + x + (y+1) * WIDTH] ]);
+    }
+
     text([
       fuelTimer.toString(),
       192,

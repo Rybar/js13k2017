@@ -1,5 +1,5 @@
 world = [
-  0,0,0,0,0,0,0,0,0,0,
+  6,0,0,0,0,0,0,0,0,0,
   0,2,0,0,0,0,1,0,0,0,
   0,0,0,1,0,0,0,0,2,0,
   0,0,0,0,0,0,1,0,0,0,
@@ -20,7 +20,7 @@ const TERRA = 4;
 const WORLDWIDTH = 9;
 const WORLDHEIGHT = 5; // 0 index.
 
-currentRoom = [0,1]; //start room
+currentRoom = [0,0]; //start room
 
 rooms = [
   //0
@@ -96,6 +96,8 @@ rooms = [
   {
     draw: function(dt){
           fillRect(0,205,384,100,WALLS);
+          fillRect(0,150,100,100,TERRA);
+          fillRect(300,150,100,100,FUELCRYSTAL);
 
           let i = 100;
           while(--i){
@@ -105,9 +107,9 @@ rooms = [
           }
 
           bgstars();
-
+          drawTerra();
+          drawFuelCrystals();
           denseGreeble();
-
           foregroundGreeble();
 
     }
@@ -124,9 +126,7 @@ rooms = [
           fillRect(210,70,100,100, WALLS);
 
           bgstars();
-
           denseGreeble();
-
           foregroundGreeble();
 
 
@@ -310,6 +310,26 @@ function foregroundGreeble(){
   renderTarget = FOREGROUND;
   renderSource = SCRATCH; spr();
   renderSource = SCRATCH2; spr();
+}
+
+function drawTerra(){
+  let i = PAGESIZE;
+  while(--i){
+    if(ram[COLLISION + i] == TERRA){
+      ram[MIDGROUND + i] = lcg.nextIntRange(2,4);
+    }
+  }
+}
+
+function drawFuelCrystals(){
+
+  let i = PAGESIZE;
+  while(--i){
+    if(ram[COLLISION + i] == FUELCRYSTAL){
+      ram[MIDGROUND + i] = lcg.nextIntRange(9,11);
+    }
+  }
+
 }
 
 function drawMessage(message, color){

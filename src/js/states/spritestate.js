@@ -4,7 +4,7 @@ states.spritesheet = {
 
         if(Key.justReleased(Key.x)){
           roomSwitch();
-          state = 'menu'
+          state = 'menu';
         }
     },
 

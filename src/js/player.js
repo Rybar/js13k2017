@@ -81,7 +81,7 @@ player = {
         this.jumping = true;
         s_jump = true;
         player.yvel = -player.yspeed;
-        playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
+        //playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
         //fuelAmount--;
       }
 
@@ -122,7 +122,8 @@ player = {
   collides () {
     for(var i = -this.radius; i < this.radius; i++){
       for(var j = -this.radius; j < this.radius; j++){
-        if(ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH] == WALLS || TERRA || FUELCRYSTAL){
+        let check = ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH]
+        if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
           player.jumping = false;
           return true;
         }
@@ -170,9 +171,11 @@ player = {
 
     //check bottom:
     for(let i = b.left; i <= b.right; i++){ //from left to right, across bottom edge
-      if(ram[COLLISION+i+WIDTH*b.bottom] == WALLS || TERRA || FUELCRYSTAL){
+      let check = ram[COLLISION+i+WIDTH*b.bottom]
+      if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
         for(let j = b.bottom; j >= b.top; j--) {  //starting from point we found solid, scan upward for empty pixel
-          if(ram[COLLISION+i+WIDTH*j] == WALLS || TERRA || FUELCRYSTAL){
+          let check = ram[COLLISION+i+WIDTH*j]
+          if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
             offsetY = j - b.bottom - 1;  //
           }
         } //end interior check
@@ -181,9 +184,11 @@ player = {
 
     //check top:
     for(let i = b.left; i <= b.right; i++){ //from left to right, across top edge
-      if(ram[COLLISION+i+WIDTH*b.top] == WALLS){
+      let check = ram[COLLISION+i+WIDTH*b.top]
+      if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
         for(let j = b.top; j <= b.bottom; j++) {  //starting from point we found solid, scan downward for empty pixel
-          if(ram[COLLISION+i+WIDTH*j] == WALLS){
+          let check = ram[COLLISION+i+WIDTH*j]
+          if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
             offsetY = j-b.top + 1;  //
           }
         } //end interior check
@@ -201,32 +206,26 @@ player = {
 
     //check left:
     for(let i = b.top; i <= b.bottom; i++){ //from top to bottom across left edge;
-      if(ram[COLLISION+b.left+WIDTH*i] == WALLS){
+      let check = ram[COLLISION+b.left+WIDTH*i]
+      if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
         for(let j = b.x; j <= b.right; j++) {  //starting from point we found solid, scan upward for empty pixel
-          if(ram[COLLISION+j+WIDTH*i] == WALLS){
+          let check = ram[COLLISION+j+WIDTH*i]
+          if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
             offsetX++;  //
           }
         } //end interior check
-      } else if(ram[COLLISION+b.right+WIDTH*i] == WALLS){
+      } else{
+        let check = ram[COLLISION+b.right+WIDTH*i]
+       if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
         for(let j = b.x; j >= b.left; j--) {  //starting from point we found solid, scan upward for empty pixel
-          if(ram[COLLISION+j+WIDTH*i] == WALLS){
+          let check = ram[COLLISION+j+WIDTH*i]
+          if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
             offsetX--  //
           }
         }
       }
-    } // end left edge checker
-
-    //check right:
-    for(let i = b.top+error; i <= b.bottom-error; i++){ //from top to bottom across left edge;
-      if(ram[COLLISION+b.right+WIDTH*i]){
-        for(let j = b.left; j <= b.right; j++) {  //starting from point we found solid, scan upward for empty pixel
-          if(ram[COLLISION+j+WIDTH*i]){
-            offsetX = 30;  //
-          }
-        } //end interior check
-      }
-    } // end left edge checker
-
+    }
+    }
 
     return offsetX;
 
@@ -245,8 +244,8 @@ player = {
 
         splodes.push( new splode(o.x, o.y) );
 
-        fuelTimer += 1;
-        playSound(sounds.jump, 1, player.x.map(0, WIDTH, -1, 1), false); //pan sound based on position
+        fuelTimer += 0.5;
+        //playSound(sounds.jump, 1, player.x.map(0, WIDTH, -1, 1), false); //pan sound based on position
 
 
     }

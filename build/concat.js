@@ -2029,7 +2029,7 @@ init = () => {
   dt = 0;
   now = 0;
   t = 0;
-  state = 'loading';
+  state = 'menu';
   splodes = [];
 
 
@@ -2044,7 +2044,7 @@ init = () => {
 
   audioCtx = new AudioContext;
   drawSpriteSheet();
-  states.loading.init();
+  //states.loading.init();
   player.init();
 
   stats = new Stats();
@@ -2113,7 +2113,7 @@ loop = e => {
 //----- END main.js---------------
 
 world = [
-  0,0,0,0,0,0,0,0,0,0,
+  6,0,0,0,0,0,0,0,0,0,
   0,2,0,0,0,0,1,0,0,0,
   0,0,0,1,0,0,0,0,2,0,
   0,0,0,0,0,0,1,0,0,0,
@@ -2134,7 +2134,7 @@ const TERRA = 4;
 const WORLDWIDTH = 9;
 const WORLDHEIGHT = 5; // 0 index.
 
-currentRoom = [0,1]; //start room
+currentRoom = [0,0]; //start room
 
 rooms = [
   //0
@@ -2210,6 +2210,8 @@ rooms = [
   {
     draw: function(dt){
           fillRect(0,205,384,100,WALLS);
+          fillRect(0,150,100,100,TERRA);
+          fillRect(300,150,100,100,FUELCRYSTAL);
 
           let i = 100;
           while(--i){
@@ -2219,9 +2221,9 @@ rooms = [
           }
 
           bgstars();
-
+          drawTerra();
+          drawFuelCrystals();
           denseGreeble();
-
           foregroundGreeble();
 
     }
@@ -2238,9 +2240,7 @@ rooms = [
           fillRect(210,70,100,100, WALLS);
 
           bgstars();
-
           denseGreeble();
-
           foregroundGreeble();
 
 
@@ -2424,6 +2424,26 @@ function foregroundGreeble(){
   renderTarget = FOREGROUND;
   renderSource = SCRATCH; spr();
   renderSource = SCRATCH2; spr();
+}
+
+function drawTerra(){
+  let i = PAGESIZE;
+  while(--i){
+    if(ram[COLLISION + i] == TERRA){
+      ram[MIDGROUND + i] = lcg.nextIntRange(2,4);
+    }
+  }
+}
+
+function drawFuelCrystals(){
+
+  let i = PAGESIZE;
+  while(--i){
+    if(ram[COLLISION + i] == FUELCRYSTAL){
+      ram[MIDGROUND + i] = lcg.nextIntRange(9,11);
+    }
+  }
+
 }
 
 function drawMessage(message, color){
@@ -2618,7 +2638,7 @@ player = {
         this.jumping = true;
         s_jump = true;
         player.yvel = -player.yspeed;
-        playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
+        //playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
         //fuelAmount--;
       }
 
@@ -2659,7 +2679,8 @@ player = {
   collides () {
     for(var i = -this.radius; i < this.radius; i++){
       for(var j = -this.radius; j < this.radius; j++){
-        if(ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH] == WALLS || TERRA || FUELCRYSTAL){
+        let check = ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH]
+        if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
           player.jumping = false;
           return true;
         }
@@ -2707,9 +2728,11 @@ player = {
 
     //check bottom:
     for(let i = b.left; i <= b.right; i++){ //from left to right, across bottom edge
-      if(ram[COLLISION+i+WIDTH*b.bottom] == WALLS || TERRA || FUELCRYSTAL){
+      let check = ram[COLLISION+i+WIDTH*b.bottom]
+      if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
         for(let j = b.bottom; j >= b.top; j--) {  //starting from point we found solid, scan upward for empty pixel
-          if(ram[COLLISION+i+WIDTH*j] == WALLS || TERRA || FUELCRYSTAL){
+          let check = ram[COLLISION+i+WIDTH*j]
+          if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
             offsetY = j - b.bottom - 1;  //
           }
         } //end interior check
@@ -2718,9 +2741,11 @@ player = {
 
     //check top:
     for(let i = b.left; i <= b.right; i++){ //from left to right, across top edge
-      if(ram[COLLISION+i+WIDTH*b.top] == WALLS){
+      let check = ram[COLLISION+i+WIDTH*b.top]
+      if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
         for(let j = b.top; j <= b.bottom; j++) {  //starting from point we found solid, scan downward for empty pixel
-          if(ram[COLLISION+i+WIDTH*j] == WALLS){
+          let check = ram[COLLISION+i+WIDTH*j]
+          if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
             offsetY = j-b.top + 1;  //
           }
         } //end interior check
@@ -2738,32 +2763,26 @@ player = {
 
     //check left:
     for(let i = b.top; i <= b.bottom; i++){ //from top to bottom across left edge;
-      if(ram[COLLISION+b.left+WIDTH*i] == WALLS){
+      let check = ram[COLLISION+b.left+WIDTH*i]
+      if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
         for(let j = b.x; j <= b.right; j++) {  //starting from point we found solid, scan upward for empty pixel
-          if(ram[COLLISION+j+WIDTH*i] == WALLS){
+          let check = ram[COLLISION+j+WIDTH*i]
+          if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
             offsetX++;  //
           }
         } //end interior check
-      } else if(ram[COLLISION+b.right+WIDTH*i] == WALLS){
+      } else{
+        let check = ram[COLLISION+b.right+WIDTH*i]
+       if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
         for(let j = b.x; j >= b.left; j--) {  //starting from point we found solid, scan upward for empty pixel
-          if(ram[COLLISION+j+WIDTH*i] == WALLS){
+          let check = ram[COLLISION+j+WIDTH*i]
+          if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
             offsetX--  //
           }
         }
       }
-    } // end left edge checker
-
-    //check right:
-    for(let i = b.top+error; i <= b.bottom-error; i++){ //from top to bottom across left edge;
-      if(ram[COLLISION+b.right+WIDTH*i]){
-        for(let j = b.left; j <= b.right; j++) {  //starting from point we found solid, scan upward for empty pixel
-          if(ram[COLLISION+j+WIDTH*i]){
-            offsetX = 30;  //
-          }
-        } //end interior check
-      }
-    } // end left edge checker
-
+    }
+    }
 
     return offsetX;
 
@@ -2782,8 +2801,8 @@ player = {
 
         splodes.push( new splode(o.x, o.y) );
 
-        fuelTimer += 1;
-        playSound(sounds.jump, 1, player.x.map(0, WIDTH, -1, 1), false); //pan sound based on position
+        fuelTimer += 0.5;
+        //playSound(sounds.jump, 1, player.x.map(0, WIDTH, -1, 1), false); //pan sound based on position
 
 
     }
@@ -2935,16 +2954,16 @@ states.menu = {
 
   step: function(dt) {
 
-      if(!s_titleSong){
-        titleSong = playSound(sounds.titleMusic, 1, 0, true);
-        s_titleSong = true;
-      }
+      // if(!s_titleSong){
+      //   titleSong = playSound(sounds.titleMusic, 1, 0, true);
+      //   s_titleSong = true;
+      // }
 
       //game update
       if(Key.justReleased(Key.p)){
         roomSwitch();
         state = 'game';
-        titleSong.sound.stop();
+        //titleSong.sound.stop();
         //transition = true;
       }
       if(Key.justReleased(Key.x)){
@@ -3083,16 +3102,19 @@ states.menu = {
 states.game = {
 
   step(dt) {
-    if(!s_gameSong){
-      s_gameSong = true;
-      playSound(sounds.gameMusic, 1, 0, true);
-    }
+    // if(!s_gameSong){
+    //   s_gameSong = true;
+    //   playSound(sounds.gameMusic, 1, 0, true);
+    // }
 
     if(Key.justReleased(Key.f))state = 'gameover';
     //rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].update();  //1d array math y * width + x;
     player.update(dt);
     fuelTimer -= dt;
-    if(fuelTimer < 0)fuelTimer = 0;
+    if(fuelTimer < 0){
+      fuelTimer = 0;
+      state = 'gameover';
+    }
   },
 
   render(dt) {
@@ -3128,6 +3150,19 @@ states.game = {
         circle(x, y, 1, color);
       }
     }
+    //-----------------------
+    let k = 16000;
+    while(--k){
+      let t = 2 * Math.PI * Math.random();
+      let u = Math.random() * 100 + Math.random() * 100;
+      let r = u > 60 ? u : 120-u;
+
+
+      let x = r * Math.cos(t) + player.x | 0;
+      let y = r * Math.sin(t) + player.y | 0;
+      circle(x, y, 1, paldrk[ ram[SCREEN + x + (y+1) * WIDTH] ]);
+    }
+
     text([
       fuelTimer.toString(),
       192,
@@ -3227,7 +3262,7 @@ states.spritesheet = {
 
         if(Key.justReleased(Key.x)){
           roomSwitch();
-          state = 'menu'
+          state = 'menu';
         }
     },
 

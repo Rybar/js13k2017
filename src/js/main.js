@@ -17,7 +17,7 @@ init = () => {
   dt = 0;
   now = 0;
   t = 0;
-  state = 'loading';
+  state = 'menu';
   splodes = [];
 
 
@@ -32,7 +32,7 @@ init = () => {
 
   audioCtx = new AudioContext;
   drawSpriteSheet();
-  states.loading.init();
+  //states.loading.init();
   player.init();
 
   stats = new Stats();
