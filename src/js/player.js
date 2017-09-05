@@ -20,7 +20,7 @@ player = {
     this.minXvel = -200;
     this.b = {};
     this.facingLeft = false;
-    this.jumping = false;
+    this.jumping = true;
     this.angle = 0;
 
   },
@@ -95,6 +95,8 @@ player = {
 
 
       player.angle -= player.xvel / 30;
+
+      if(player.jumping)player.angle -= player.facingLeft? -player.yvel /30 : player.yvel / 30;
 
     // if(Key.isDown(Key.s) || Key.isDown(Key.DOWN)) {
     //   player.yvel = player.yspeed;
