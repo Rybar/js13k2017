@@ -17,7 +17,7 @@ init = () => {
   dt = 0;
   now = 0;
   t = 0;
-  state = 'spritesheet';
+  state = 'menu';
   splodes = [];
 
 

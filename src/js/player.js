@@ -10,17 +10,18 @@ player = {
     this.radius = 12;
     this.xvel = 0;
     this.yvel = 0;
-    this.xspeed = 200;
-    this.yspeed = 200;
+    this.xspeed = 100;
+    this.yspeed = 100;
     this.drag = .8;
     this.gravity = 8;
     this.maxYvel = 400;
-    this.maxXvel = 400;
+    this.maxXvel = 200;
     this.minYvel = -400;
-    this.minXvel = -400;
+    this.minXvel = -200;
     this.b = {};
     this.facingLeft = false;
     this.jumping = false;
+    this.angle = 0;
 
   },
 
@@ -84,9 +85,11 @@ player = {
         //playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
         //fuelAmount--;
       }
-
-
     }
+
+
+      player.angle -= player.xvel / 30;
+
     // if(Key.isDown(Key.s) || Key.isDown(Key.DOWN)) {
     //   player.yvel = player.yspeed;
     // }
@@ -115,7 +118,7 @@ player = {
     //fillRect(this.x-this.radius, this.y-this.radius, this.radius, this.radius, 8);
     renderSource = SPRITES;
     renderTarget = BUFFER;
-    spr(96+70,0,19,36,(this.x-this.radius)|0,(this.y-this.radius-12)|0, this.facingLeft );
+    rspr(0,0,32,32,player.x, player.y, 1, player.angle);
     //rect(this.x-this.radius,this.y-this.radius, this.radius*2, this.radius*2);
   },
 
