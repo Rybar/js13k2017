@@ -1031,6 +1031,9 @@ function drawSpriteSheet(){
   //arm
   fillTriangle(11+96,19, 18+96,27,  21+96,23, 8);
 
+  //fuelrod
+  fillRect(14+192,10,4,12,9);
+
   outline(SPRITES, BUFFER, 23,21,31,23);
   renderSource = BUFFER; spr();
 

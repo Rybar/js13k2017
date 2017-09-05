@@ -234,8 +234,8 @@ function drawFuel() {
     if(ram[COLLISION + i] == FUELCELL){
       let y = i / WIDTH |0;
       let x = i % WIDTH;
-      fillCircle(x, y, 3, 9);
-      circle(x, y, 3, 11);
+      renderSource = SPRITES;
+      rspr(192,0,32,32,x-2,y-5,1, t*90);
     }
   };
 }

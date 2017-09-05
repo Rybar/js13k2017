@@ -1546,6 +1546,9 @@ function drawSpriteSheet(){
   //arm
   fillTriangle(11+96,19, 18+96,27,  21+96,23, 8);
 
+  //fuelrod
+  fillRect(14+192,10,4,12,9);
+
   outline(SPRITES, BUFFER, 23,21,31,23);
   renderSource = BUFFER; spr();
 
@@ -2014,7 +2017,7 @@ init = () => {
   dt = 0;
   now = 0;
   t = 0;
-  state = 'menu';
+  state = 'spritesheet';
   splodes = [];
 
 
@@ -2333,8 +2336,8 @@ function drawFuel() {
     if(ram[COLLISION + i] == FUELCELL){
       let y = i / WIDTH |0;
       let x = i % WIDTH;
-      fillCircle(x, y, 3, 9);
-      circle(x, y, 3, 11);
+      renderSource = SPRITES;
+      rspr(192,0,32,32,x-2,y-5,1, t*90);
     }
   };
 }
