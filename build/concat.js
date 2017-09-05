@@ -2561,7 +2561,7 @@ player = {
   init (){
     this.x = 384/2;
     this.y =  30;
-    this.radius = 12;
+    this.radius = 8;
     this.xvel = 0;
     this.yvel = 0;
     this.xspeed = 100;
@@ -2625,11 +2625,17 @@ player = {
     //player movement
     if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
       player.facingLeft = false;
-        player.xvel =  player.xspeed;
+        if(this.jumping){
+          player.xvel =  player.xspeed;
+        }
+        else{player.xvel = 0;}
     }
     if (Key.isDown(Key.a) || Key.isDown(Key.LEFT)){
         this.facingLeft = true;
-        player.xvel =  - player.xspeed;
+        if(this.jumping){
+          player.xvel =  - player.xspeed;
+        }
+        else{player.xvel = 0;}
     }
     if(Key.isDown(Key.w) || Key.isDown(Key.UP)){
       if(!this.jumping && fuelTimer > 0){
