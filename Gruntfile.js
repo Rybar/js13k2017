@@ -20,12 +20,13 @@ module.exports = function(grunt) {
 			dist : {
 				src  : [
 					'src/js/lib/stats.js',
-
 					'src/js/first.js',
+
+
+					'src/js/lib/Engine.js',
+					'src/js/assets.js',
 					'src/js/lib/lcg.js',
 					'src/js/lib/sonantx.js',
-					'src/js/assets.js',
-					'src/js/lib/Engine.js',
 
 					'src/js/main.js',
 					'src/js/world/world.js',
@@ -38,8 +39,6 @@ module.exports = function(grunt) {
 					'src/js/states/gamestate.js',
 					'src/js/states/loadingstate.js',
 					'src/js/states/spritestate.js',
-
-					//'src/js/lib/CCapture.all.min.js',
 
 					'src/js/lib/input.js',
 					'src/js/lib/txt.js',

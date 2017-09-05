@@ -6,444 +6,512 @@ Stats.Panel=function(h,k,l){var c=Infinity,g=0,e=Math.round,a=e(window.devicePix
 
 (function(){
 
-var lcg = {
-  seed: Date.now(),
-  a: 1664525,
-  c: 1013904223,
-  m: Math.pow(2, 32),
+//--------------Engine.js-------------------
 
-  setSeed: function(seed) {
-    this.seed = seed;
-  },
+const WIDTH =     384;
+const HEIGHT =    256;
+const PAGES =     10;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
+const PAGESIZE = WIDTH*HEIGHT;
 
-  nextInt: function() {
-    // range [0, 2^32)
-    this.seed = (this.seed * this.a + this.c) % this.m;
-    return this.seed;
-  },
+const SCREEN = 0;
+const BUFFER = PAGESIZE;
+const DEBUG = PAGESIZE*2;
+const SCRATCH = PAGESIZE*3;
+const SCRATCH2 = PAGESIZE*4;
+const SPRITES = PAGESIZE*5;
+const COLLISION = PAGESIZE*6;
+const MIDGROUND = PAGESIZE*7;
+const FOREGROUND = PAGESIZE*8;
+const BACKGROUND = PAGESIZE*9;
 
-  nextFloat: function() {
-    // range [0, 1)
-    return this.nextInt() / this.m;
-  },
+//default palette index
+const palDefault = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
 
-  nextBool: function(percent) {
-    // percent is chance of getting true
-    if(percent == null) {
-      percent = 0.5;
-    }
-    return this.nextFloat() < percent;
-  },
+var
+C =               document.getElementById('canvas'),
+ctx =             C.getContext('2d'),
+renderTarget =    0x00000,
+renderSource =    PAGESIZE, //buffer is ahead one screen's worth of pixels
 
-  nextFloatRange: function(min, max) {
-    // range [min, max)
-    return min + this.nextFloat() * (max - min);
-  },
+//Richard Fhager's DB32 Palette http://http://pixeljoint.com/forum/forum_posts.asp?TID=16247
+//ofcourse you can change this to whatever you like, up to 256 colors.
+//one GOTCHA: colors are stored 0xAABBGGRR, so you'll have to flop the values from your typical hex colors.
 
-  nextIntRange: function(min, max) {
-    // range [min, max)
-    return Math.floor(this.nextFloatRange(min, max));
-  },
+colors =          [0xff000000, 0xff342022, 0xff3c2845, 0xff313966, 0xff3b568f, 0xff2671df, 0xff66a0d9, 0xff9ac3ee,
+                   0xff36f2fb, 0xff50e599, 0xff30be6a, 0xff6e9437, 0xff2f694b, 0xff244b52, 0xff393c32, 0xff743f3f,
+                   0xff826030, 0xffe16e5b, 0xffff9b63, 0xffe4cd5f, 0xfffcdbcb, 0xffffffff, 0xffb7ad9b, 0xff877e84,
+                   0xff6a6a69, 0xff525659, 0xff8a4276, 0xff3232ac, 0xff6357d9, 0xffba7bd7, 0xff4a978f, 0xff306f8a],
 
-  nextColor: function() {
-    // range [#000000, #ffffff]
-    var c = this.nextIntRange(0, Math.pow(2, 24)).toString(16).toUpperCase();
-    while(c.length < 6) {
-      c = "0" + c;
-    }
-    return "#" + c;
+//active palette index. maps to indices in colors[]. can alter this whenever for palette effects.
+pal =             [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
+paldrk =          [0,0,1,2,3,4,5,6,6,10,11,12,13,14,2,2,15,16,17,18,22,20,23,24,25,26,2,2,27,28,31,13]
+
+ctx.imageSmoothingEnabled = false;
+ctx.mozImageSmoothingEnabled = false;
+
+C.width = WIDTH;
+C.height = HEIGHT;
+var imageData =   ctx.getImageData(0, 0, WIDTH, HEIGHT),
+buf =             new ArrayBuffer(imageData.data.length),
+buf8 =            new Uint8Array(buf),
+data =            new Uint32Array(buf),
+ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
+
+//--------------graphics functions----------------
+
+  function clear(color){
+    ram.fill(color, renderTarget, renderTarget + PAGESIZE);
   }
-};
 
-//---------SONANT-X---------
-/*
-// Sonant-X
-//
-// Copyright (c) 2014 Nicolas Vanhoren
-//
-// Sonant-X is a fork of js-sonant by Marcus Geelnard and Jake Taylor. It is
-// still published using the same license (zlib license, see below).
-//
-// Copyright (c) 2011 Marcus Geelnard
-// Copyright (c) 2008-2009 Jake Taylor
-//
-// This software is provided 'as-is', without any express or implied
-// warranty. In no event will the authors be held liable for any damages
-// arising from the use of this software.
-//
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-//
-// 1. The origin of this software must not be misrepresented; you must not
-//    claim that you wrote the original software. If you use this software
-//    in a product, an acknowledgment in the product documentation would be
-//    appreciated but is not required.
-//
-// 2. Altered source versions must be plainly marked as such, and must not be
-//    misrepresented as being the original software.
-//
-// 3. This notice may not be removed or altered from any source
-//    distribution.
-*/
+  function pset(x, y, color) { //an index from colors[], 0-31
+    x = x|0; y = y|0; color = color|0;
 
-var sonantx = {};
-
-var WAVE_SPS = 44100;                    // Samples per second
-var WAVE_CHAN = 2;                       // Channels
-var MAX_TIME = 33; // maximum time, in millis, that the generator can use consecutively
-
-var audioCtx = null;
-
-// Oscillators
-function osc_sin(value){
-    return Math.sin(value * 6.283184);
-}
-
-function osc_square(value){
-    if(osc_sin(value) < 0) return -1;
-    return 1;
-}
-
-function osc_saw(value){
-    return (value % 1) - 0.5;
-}
-
-function osc_tri(value){
-    var v2 = (value % 1) * 4;
-    if(v2 < 2) return v2 - 1;
-    return 3 - v2;
-}
-
-// Array of oscillator functions
-var oscillators = [
-    osc_sin,
-    osc_square,
-    osc_saw,
-    osc_tri
-];
-
-function getnotefreq(n){
-    return 0.00390625 * Math.pow(1.059463094, n - 128);
-}
-
-function genBuffer(waveSize, callBack) {
-    setTimeout(function() {
-        // Create the channel work buffer
-        var buf = new Uint8Array(waveSize * WAVE_CHAN * 2);
-        var b = buf.length - 2;
-        var iterate = function() {
-            var begin = new Date();
-            var count = 0;
-            while(b >= 0)
-            {
-                buf[b] = 0;
-                buf[b + 1] = 128;
-                b -= 2;
-                count += 1;
-                if (count % 1000 === 0 && (new Date() - begin) > MAX_TIME) {
-                    setTimeout(iterate, 0);
-                    return;
-                }
-            }
-            setTimeout(function() {callBack(buf);}, 0);
-        };
-        setTimeout(iterate, 0);
-    }, 0);
-}
-
-function applyDelay(chnBuf, waveSamples, instr, rowLen, callBack) {
-    var p1 = (instr.fx_delay_time * rowLen) >> 1;
-    var t1 = instr.fx_delay_amt / 255;
-
-    var n1 = 0;
-    var iterate = function() {
-        var beginning = new Date();
-        var count = 0;
-        while(n1 < waveSamples - p1)
-        {
-            var b1 = 4 * n1;
-            var l = 4 * (n1 + p1);
-
-            // Left channel = left + right[-p1] * t1
-            var x1 = chnBuf[l] + (chnBuf[l+1] << 8) +
-                (chnBuf[b1+2] + (chnBuf[b1+3] << 8) - 32768) * t1;
-            chnBuf[l] = x1 & 255;
-            chnBuf[l+1] = (x1 >> 8) & 255;
-
-            // Right channel = right + left[-p1] * t1
-            x1 = chnBuf[l+2] + (chnBuf[l+3] << 8) +
-                (chnBuf[b1] + (chnBuf[b1+1] << 8) - 32768) * t1;
-            chnBuf[l+2] = x1 & 255;
-            chnBuf[l+3] = (x1 >> 8) & 255;
-            ++n1;
-            count += 1;
-            if (count % 1000 === 0 && (new Date() - beginning) > MAX_TIME) {
-                setTimeout(iterate, 0);
-                return;
-            }
-        }
-        setTimeout(callBack, 0);
-    };
-    setTimeout(iterate, 0);
-}
-
-sonantx.AudioGenerator = function(mixBuf) {
-    this.mixBuf = mixBuf;
-    this.waveSize = mixBuf.length / WAVE_CHAN / 2;
-};
-
-sonantx.AudioGenerator.prototype.getAudioBuffer = function(callBack) {
-    if (audioCtx === null)
-        audioCtx = new AudioContext();
-    var mixBuf = this.mixBuf;
-    var waveSize = this.waveSize;
-
-    var waveBytes = waveSize * WAVE_CHAN * 2;
-    var buffer = audioCtx.createBuffer(WAVE_CHAN, this.waveSize, WAVE_SPS); // Create Mono Source Buffer from Raw Binary
-    var lchan = buffer.getChannelData(0);
-    var rchan = buffer.getChannelData(1);
-    var b = 0;
-    var iterate = function() {
-        var beginning = new Date();
-        var count = 0;
-        while (b < (waveBytes / 2)) {
-            var y = 4 * (mixBuf[b * 4] + (mixBuf[(b * 4) + 1] << 8) - 32768);
-            y = y < -32768 ? -32768 : (y > 32767 ? 32767 : y);
-            lchan[b] = y / 32768;
-            y = 4 * (mixBuf[(b * 4) + 2] + (mixBuf[(b * 4) + 3] << 8) - 32768);
-            y = y < -32768 ? -32768 : (y > 32767 ? 32767 : y);
-            rchan[b] = y / 32768;
-            b += 1;
-            count += 1;
-            if (count % 1000 === 0 && new Date() - beginning > MAX_TIME) {
-                setTimeout(iterate, 0);
-                return;
-            }
-        }
-        setTimeout(function() {callBack(buffer);}, 0);
-    };
-    setTimeout(iterate, 0);
-};
-
-sonantx.SoundGenerator = function(instr, rowLen) {
-    this.instr = instr;
-    this.rowLen = rowLen || 5605;
-
-    this.osc_lfo = oscillators[instr.lfo_waveform];
-    this.osc1 = oscillators[instr.osc1_waveform];
-    this.osc2 = oscillators[instr.osc2_waveform];
-    this.attack = instr.env_attack;
-    this.sustain = instr.env_sustain;
-    this.release = instr.env_release;
-    this.panFreq = Math.pow(2, instr.fx_pan_freq - 8) / this.rowLen;
-    this.lfoFreq = Math.pow(2, instr.lfo_freq - 8) / this.rowLen;
-};
-
-sonantx.SoundGenerator.prototype.genSound = function(n, chnBuf, currentpos) {
-    var marker = new Date();
-    var c1 = 0;
-    var c2 = 0;
-
-    // Precalculate frequencues
-    var o1t = getnotefreq(n + (this.instr.osc1_oct - 8) * 12 + this.instr.osc1_det) * (1 + 0.0008 * this.instr.osc1_detune);
-    var o2t = getnotefreq(n + (this.instr.osc2_oct - 8) * 12 + this.instr.osc2_det) * (1 + 0.0008 * this.instr.osc2_detune);
-
-    // State variable init
-    var q = this.instr.fx_resonance / 255;
-    var low = 0;
-    var band = 0;
-    for (var j = this.attack + this.sustain + this.release - 1; j >= 0; --j)
-    {
-        var k = j + currentpos;
-
-        // LFO
-        var lfor = this.osc_lfo(k * this.lfoFreq) * this.instr.lfo_amt / 512 + 0.5;
-
-        // Envelope
-        var e = 1;
-        if(j < this.attack)
-            e = j / this.attack;
-        else if(j >= this.attack + this.sustain)
-            e -= (j - this.attack - this.sustain) / this.release;
-
-        // Oscillator 1
-        var t = o1t;
-        if(this.instr.lfo_osc1_freq) t += lfor;
-        if(this.instr.osc1_xenv) t *= e * e;
-        c1 += t;
-        var rsample = this.osc1(c1) * this.instr.osc1_vol;
-
-        // Oscillator 2
-        t = o2t;
-        if(this.instr.osc2_xenv) t *= e * e;
-        c2 += t;
-        rsample += this.osc2(c2) * this.instr.osc2_vol;
-
-        // Noise oscillator
-        if(this.instr.noise_fader) rsample += (2*Math.random()-1) * this.instr.noise_fader * e;
-
-        rsample *= e / 255;
-
-        // State variable filter
-        var f = this.instr.fx_freq;
-        if(this.instr.lfo_fx_freq) f *= lfor;
-        f = 1.5 * Math.sin(f * 3.141592 / WAVE_SPS);
-        low += f * band;
-        var high = q * (rsample - band) - low;
-        band += f * high;
-        switch(this.instr.fx_filter)
-        {
-            case 1: // Hipass
-                rsample = high;
-                break;
-            case 2: // Lopass
-                rsample = low;
-                break;
-            case 3: // Bandpass
-                rsample = band;
-                break;
-            case 4: // Notch
-                rsample = low + high;
-                break;
-            default:
-        }
-
-        // Panning & master volume
-        t = osc_sin(k * this.panFreq) * this.instr.fx_pan_amt / 512 + 0.5;
-        rsample *= 39 * this.instr.env_master;
-
-        // Add to 16-bit channel buffer
-        k = k * 4;
-        if (k + 3 < chnBuf.length) {
-            var x = chnBuf[k] + (chnBuf[k+1] << 8) + rsample * (1 - t);
-            chnBuf[k] = x & 255;
-            chnBuf[k+1] = (x >> 8) & 255;
-            x = chnBuf[k+2] + (chnBuf[k+3] << 8) + rsample * t;
-            chnBuf[k+2] = x & 255;
-            chnBuf[k+3] = (x >> 8) & 255;
-        }
+    if (x > 0 && x < WIDTH && y > 0 && y < HEIGHT) {
+      ram[renderTarget + y * WIDTH + x] = color;
     }
-};
+  }
 
-sonantx.SoundGenerator.prototype.getAudioGenerator = function(n, callBack) {
-    var bufferSize = (this.attack + this.sustain + this.release - 1) + (32 * this.rowLen);
-    var self = this;
-    genBuffer(bufferSize, function(buffer) {
-        self.genSound(n, buffer, 0);
-        applyDelay(buffer, bufferSize, self.instr, self.rowLen, function() {
-            callBack(new sonantx.AudioGenerator(buffer));
-        });
-    });
-};
+  function pget(x, y, page=renderTarget){
+    return ram[page + x + y * WIDTH];
+  }
 
-// sonantx.SoundGenerator.prototype.createAudio = function(n, callBack) {
-//     this.getAudioGenerator(n, function(ag) {
-//         callBack(ag.getAudio());
-//     });
-// };
+  function line(x1, y1, x2, y2, color) {
 
-sonantx.SoundGenerator.prototype.createAudioBuffer = function(n, callBack) {
-    this.getAudioGenerator(n, function(ag) {
-        ag.getAudioBuffer(callBack);
-    });
-};
+    x1 = x1|0;
+    x2 = x2|0;
+    y1 = y1|0;
+    y2 = y2|0;
 
-sonantx.MusicGenerator = function(song) {
-    this.song = song;
-    // Wave data configuration
-    this.waveSize = WAVE_SPS * song.songLen; // Total song size (in samples)
-};
-sonantx.MusicGenerator.prototype.generateTrack = function (instr, mixBuf, callBack) {
-    var self = this;
-    genBuffer(this.waveSize, function(chnBuf) {
-        // Preload/precalc some properties/expressions (for improved performance)
-        var waveSamples = self.waveSize,
-            waveBytes = self.waveSize * WAVE_CHAN * 2,
-            rowLen = self.song.rowLen,
-            endPattern = self.song.endPattern,
-            soundGen = new sonantx.SoundGenerator(instr, rowLen);
+    var dy = (y2 - y1);
+    var dx = (x2 - x1);
+    var stepx, stepy;
 
-        var currentpos = 0;
-        var p = 0;
-        var row = 0;
-        var recordSounds = function() {
-            var beginning = new Date();
-            while (true) {
-                if (row === 32) {
-                    row = 0;
-                    p += 1;
-                    continue;
-                }
-                if (p === endPattern - 1) {
-                    setTimeout(delay, 0);
-                    return;
-                }
-                var cp = instr.p[p];
-                if (cp) {
-                    var n = instr.c[cp - 1].n[row];
-                    if (n) {
-                        soundGen.genSound(n, chnBuf, currentpos);
-                    }
-                }
-                currentpos += rowLen;
-                row += 1;
-                if (new Date() - beginning > MAX_TIME) {
-                    setTimeout(recordSounds, 0);
-                    return;
-                }
+    if (dy < 0) {
+      dy = -dy;
+      stepy = -1;
+    } else {
+      stepy = 1;
+    }
+    if (dx < 0) {
+      dx = -dx;
+      stepx = -1;
+    } else {
+      stepx = 1;
+    }
+    dy <<= 1;        // dy is now 2*dy
+    dx <<= 1;        // dx is now 2*dx
+
+    pset(x1, y1, color);
+    if (dx > dy) {
+      var fraction = dy - (dx >> 1);  // same as 2*dy - dx
+      while (x1 != x2) {
+        if (fraction >= 0) {
+          y1 += stepy;
+          fraction -= dx;          // same as fraction -= 2*dx
+        }
+        x1 += stepx;
+        fraction += dy;              // same as fraction -= 2*dy
+        pset(x1, y1, color);
+      }
+      ;
+    } else {
+      fraction = dx - (dy >> 1);
+      while (y1 != y2) {
+        if (fraction >= 0) {
+          x1 += stepx;
+          fraction -= dy;
+        }
+        y1 += stepy;
+        fraction += dx;
+        pset(x1, y1, color);
+      }
+    }
+
+  }
+
+  function circle(xm, ym, r, color) {
+    var x = -r, y = 0, err = 2 - 2 * r;
+    /* II. Quadrant */
+    do {
+      pset(xm - x, ym + y, color);
+      /*   I. Quadrant */
+      pset(xm - y, ym - x, color);
+      /*  II. Quadrant */
+      pset(xm + x, ym - y, color);
+      /* III. Quadrant */
+      pset(xm + y, ym + x, color);
+      /*  IV. Quadrant */
+      r = err;
+      if (r <= y) err += ++y * 2 + 1;
+      /* e_xy+e_y < 0 */
+      if (r > x || err > y) err += ++x * 2 + 1;
+      /* e_xy+e_x > 0 or no 2nd y-step */
+
+    } while (x < 0);
+  }
+
+  function fillCircle(xm, ym, r, color) {
+    if(r < 0) return;
+    xm = xm|0; ym = ym|0, r = r|0; color = color|0;
+    var x = -r, y = 0, err = 2 - 2 * r;
+    /* II. Quadrant */
+    do {
+      line(xm-x, ym-y, xm+x, ym-y, color);
+      line(xm-x, ym+y, xm+x, ym+y, color);
+      r = err;
+      if (r <= y) err += ++y * 2 + 1;
+      if (r > x || err > y) err += ++x * 2 + 1;
+    } while (x < 0);
+  }
+
+  function rect(x, y, w, h, color) {
+    x1 = x|0;
+    y1 = y|0;
+    x2 = (x+w)|0;
+    y2 = (y+h)|0;
+
+
+    line(x1,y1, x2, y1, color);
+    line(x2, y1, x2, y2, color);
+    line(x1, y2, x2, y2, color);
+    line(x1, y1, x1, y2, color);
+  }
+
+  function fillRect(x, y, w, h, color) {
+    x1 = x|0;
+    y1 = y|0;
+    x2 = (x+w)|0;
+    y2 = (y+h)|0;
+
+    var i = Math.abs(y2 - y1);
+    line(x1, y1, x2, y1, color);
+
+    if(i > 0){
+      while (--i) {
+        line(x1, y1+i, x2, y1+i, color);
+      }
+    }
+
+    line(x1,y2, x2, y2, color);
+  }
+
+  function cRect(x,y,w,h,c,color){
+    for(let i = 0; i <= c; i++){
+      fillRect(x+i,y-i,w-i*2,h+i*2,color);
+    }
+  }
+
+  function outline(renderSource, renderTarget, color, color2=color, color3=color, color4=color){
+
+    for(let i = 0; i <= WIDTH; i++ ){
+      for(let j = 0; j <= HEIGHT; j++){
+        let left = i-1 + j * WIDTH;
+        let right = i+1 + j * WIDTH;
+        let bottom = i + (j+1) * WIDTH;
+        let top = i + (j-1) * WIDTH;
+        let current = i + j * WIDTH;
+
+        if(ram[renderSource + current]){
+          if(!ram[renderSource + left]){
+            ram[renderTarget + left] = color;
+          };
+          if(!ram[renderSource + right]){
+            ram[renderTarget + right] = color3;
+          };
+          if(!ram[renderSource + top]){
+            ram[renderTarget + top] = color2;
+          };
+          if(!ram[renderSource + bottom]){
+            ram[renderTarget + bottom] = color4;
+          };
+        }
+      }
+    }
+  }
+
+  function triangle(x1, y1, x2, y2, x3, y3, color) {
+    line(x1,y1, x2,y2, color);
+    line(x2,y2, x3,y3, color);
+    line(x3,y3, x1,y1, color);
+  }
+
+  function fillTriangle( x1, y1, x2, y2, x3, y3, color ) {
+
+    var canvasWidth = WIDTH;
+    // http://devmaster.net/forums/topic/1145-advanced-rasterization/
+    // 28.4 fixed-point coordinates
+    var x1 = Math.round( 16 * x1 );
+    var x2 = Math.round( 16 * x2 );
+    var x3 = Math.round( 16 * x3 );
+    var y1 = Math.round( 16 * y1 );
+    var y2 = Math.round( 16 * y2 );
+    var y3 = Math.round( 16 * y3 );
+    // Deltas
+    var dx12 = x1 - x2, dy12 = y2 - y1;
+    var dx23 = x2 - x3, dy23 = y3 - y2;
+    var dx31 = x3 - x1, dy31 = y1 - y3;
+    // Bounding rectangle
+    var minx = Math.max( ( Math.min( x1, x2, x3 ) + 0xf ) >> 4, 0 );
+    var maxx = Math.min( ( Math.max( x1, x2, x3 ) + 0xf ) >> 4, WIDTH );
+    var miny = Math.max( ( Math.min( y1, y2, y3 ) + 0xf ) >> 4, 0 );
+    var maxy = Math.min( ( Math.max( y1, y2, y3 ) + 0xf ) >> 4, HEIGHT );
+    // Block size, standard 8x8 (must be power of two)
+    var q = 8;
+    // Start in corner of 8x8 block
+    minx &= ~(q - 1);
+    miny &= ~(q - 1);
+    // Constant part of half-edge functions
+    var c1 = -dy12 * x1 - dx12 * y1;
+    var c2 = -dy23 * x2 - dx23 * y2;
+    var c3 = -dy31 * x3 - dx31 * y3;
+    // Correct for fill convention
+    if ( dy12 > 0 || ( dy12 == 0 && dx12 > 0 ) ) c1 ++;
+    if ( dy23 > 0 || ( dy23 == 0 && dx23 > 0 ) ) c2 ++;
+    if ( dy31 > 0 || ( dy31 == 0 && dx31 > 0 ) ) c3 ++;
+    // Note this doesn't kill subpixel precision, but only because we test for >=0 (not >0).
+    // It's a bit subtle. :)
+    c1 = (c1 - 1) >> 4;
+    c2 = (c2 - 1) >> 4;
+    c3 = (c3 - 1) >> 4;
+    // Set up min/max corners
+    var qm1 = q - 1; // for convenience
+    var nmin1 = 0, nmax1 = 0;
+    var nmin2 = 0, nmax2 = 0;
+    var nmin3 = 0, nmax3 = 0;
+    if (dx12 >= 0) nmax1 -= qm1*dx12; else nmin1 -= qm1*dx12;
+    if (dy12 >= 0) nmax1 -= qm1*dy12; else nmin1 -= qm1*dy12;
+    if (dx23 >= 0) nmax2 -= qm1*dx23; else nmin2 -= qm1*dx23;
+    if (dy23 >= 0) nmax2 -= qm1*dy23; else nmin2 -= qm1*dy23;
+    if (dx31 >= 0) nmax3 -= qm1*dx31; else nmin3 -= qm1*dx31;
+    if (dy31 >= 0) nmax3 -= qm1*dy31; else nmin3 -= qm1*dy31;
+    // Loop through blocks
+    var linestep = (canvasWidth-q);
+    for ( var y0 = miny; y0 < maxy; y0 += q ) {
+      for ( var x0 = minx; x0 < maxx; x0 += q ) {
+        // Edge functions at top-left corner
+        var cy1 = c1 + dx12 * y0 + dy12 * x0;
+        var cy2 = c2 + dx23 * y0 + dy23 * x0;
+        var cy3 = c3 + dx31 * y0 + dy31 * x0;
+        // Skip block when at least one edge completely out
+        if (cy1 < nmax1 || cy2 < nmax2 || cy3 < nmax3) continue;
+        // Offset at top-left corner
+        var offset = (x0 + y0 * canvasWidth);
+        // Accept whole block when fully covered
+        if (cy1 >= nmin1 && cy2 >= nmin2 && cy3 >= nmin3) {
+          for ( var iy = 0; iy < q; iy ++ ) {
+            for ( var ix = 0; ix < q; ix ++, offset ++ ) {
+              ram[renderTarget + offset] = color;
             }
-        };
-
-        var delay = function() {
-            applyDelay(chnBuf, waveSamples, instr, rowLen, finalize);
-        };
-
-        var b2 = 0;
-        var finalize = function() {
-            var beginning = new Date();
-            var count = 0;
-            // Add to mix buffer
-            while(b2 < waveBytes)
-            {
-                var x2 = mixBuf[b2] + (mixBuf[b2+1] << 8) + chnBuf[b2] + (chnBuf[b2+1] << 8) - 32768;
-                mixBuf[b2] = x2 & 255;
-                mixBuf[b2+1] = (x2 >> 8) & 255;
-                b2 += 2;
-                count += 1;
-                if (count % 1000 === 0 && (new Date() - beginning) > MAX_TIME) {
-                    setTimeout(finalize, 0);
-                    return;
-                }
+            offset += linestep;
+          }
+        } else { // Partially covered block
+          for ( var iy = 0; iy < q; iy ++ ) {
+            var cx1 = cy1;
+            var cx2 = cy2;
+            var cx3 = cy3;
+            for ( var ix = 0; ix < q; ix ++ ) {
+              if ( (cx1 | cx2 | cx3) >= 0 ) {
+                ram[renderTarget + offset] = color;
+              }
+              cx1 += dy12;
+              cx2 += dy23;
+              cx3 += dy31;
+              offset ++;
             }
-            setTimeout(callBack, 0);
-        };
-        setTimeout(recordSounds, 0);
-    });
-};
-sonantx.MusicGenerator.prototype.getAudioGenerator = function(callBack) {
-    var self = this;
-    genBuffer(this.waveSize, function(mixBuf) {
-        var t = 0;
-        var recu = function() {
-            if (t < self.song.songData.length) {
-                t += 1;
-                self.generateTrack(self.song.songData[t - 1], mixBuf, recu);
-            } else {
-                callBack(new sonantx.AudioGenerator(mixBuf));
+            cy1 += dx12;
+            cy2 += dx23;
+            cy3 += dx31;
+            offset += linestep;
+          }
+        }
+      }
+    }
+  }
+
+  function spr(sx = 0, sy = 0, sw = 384, sh = 256, x=0, y=0, flipx = false, flipy = false){
+
+    for(var i = 0; i < sh; i++){
+
+      for(var j = 0; j < sw; j++){
+
+        if(y+i < HEIGHT && x+j < WIDTH && y+i > -1 && x+j > -1){
+          if(flipx & flipy){
+
+            if(ram[(renderSource + ( ( sy + (sh-i) )*WIDTH+sx+(sw-j)))] > 0) {
+
+              ram[ (renderTarget + ((y+i)*WIDTH+x+j)) ] = pal[ ram[(renderSource + ((sy+(sh-i))*WIDTH+sx+(sw-j)))] ];
+
             }
-        };
-        recu();
-    });
+
+          }
+          else if(flipy && !flipx){
+
+            if(ram[(renderSource + ( ( sy + (sh-i) )*WIDTH+sx+j))] > 0) {
+
+              ram[ (renderTarget + ((y+i)*WIDTH+x+j)) ] = ram[(renderSource + ((sy+(sh-i))*WIDTH+sx+j))];
+
+            }
+
+          }
+          else if(flipx && !flipy){
+
+            if(ram[(renderSource + ((sy+i)*WIDTH+sx+(sw-j)))] > 0) {
+
+              ram[ (renderTarget + ((y+i)*WIDTH+x+j)) ] = ram[(renderSource + ((sy+i)*WIDTH+sx+(sw-j)))];
+
+            }
+
+          }
+          else if(!flipx && !flipy){
+
+            if(ram[(renderSource + ((sy+i)*WIDTH+sx+j))] > 0) {
+
+              ram[ (renderTarget + ((y+i)*WIDTH+x+j)) ] = pal[ ram[(renderSource + ((sy+i)*WIDTH+sx+j))] ];
+
+            }
+
+          }
+        }
+      }
+    }
+  }
+
+  function sspr(sx = 0, sy = 0, sw = 16, sh = 16, x=0, y=0, dw=16, dh=16, flipx = false, flipy = false){
+
+    var xratio = sw / dw;
+    var yratio = sh / dh;
+
+    for(var i = 0; i < dh; i++){
+      for(var j = 0; j < dw; j++){
+
+        px = (j*xratio)|0;
+        py = (i*yratio)|0;
+
+        if(y+i < HEIGHT && x+j < WIDTH && y+i > -1 && x+j > -1) {
+          if (ram[(renderSource + ((sy + py) * WIDTH + sx + px))] > 0) {
+            ram[(renderTarget + ((y + i) * WIDTH + x + j))] = ram[(renderSource + ((sy + py) * WIDTH + sx + px))]
+          }
+        }
+
+      }
+    }
+
+
+  }
+
+  function rspr( sx, sy, sw, sh, destCenterX, destCenterY, scale, angle ){
+
+    angle = angle * 0.0174533 //convert to radians in place
+    let sourceCenterX = (sw / 2)|0;
+    let sourceCenterY = (sh / 2)|0;
+
+   let destWidth = sw * scale;
+    let destHeight = sh * scale;
+
+   let halfWidth = (destWidth / 2 * 1.41421356237)|0;  //area will always be square, hypotenuse trick
+    let halfHeight = (destHeight / 2 * 1.41421356237)|0;
+
+   let startX = -halfWidth;
+    let endX = halfWidth;
+
+   let startY = -halfHeight;
+    let endY = halfHeight;
+
+   let scaleFactor = 1.0 / scale;
+
+   let cos = Math.cos(-angle) * scaleFactor;
+   let sin = Math.sin(-angle) * scaleFactor;
+
+   for(let y = startY; y < endY; y++){
+      for(let x = startX; x < endX; x++){
+
+       let u = sourceCenterX + Math.round(cos * x + sin * y);
+        let v = sourceCenterY + Math.round(-sin * x + cos * y);
+
+       let drawX = (x + destCenterX)|0;
+        let drawY = (y + destCenterY)|0;
+
+       if(u >= 0 && v >= 0 && u < sw && v < sh){
+          if( ram[renderSource + (u+sx) + (v+sy) * WIDTH] > 0) {
+            ram[renderTarget + drawX + drawY * WIDTH] = ram[renderSource + (u+sx) + (v+sy) * WIDTH]
+          }
+        }
+
+     } //end x loop
+
+   } //end outer y loop
+  }
+
+  function checker(x, y, w, h, nRow, nCol, color) {
+    //var w = 256;
+    //var h = 256;
+
+    nRow = nRow || 8;    // default number of rows
+    nCol = nCol || 8;    // default number of columns
+
+    w /= nCol;            // width of a block
+    h /= nRow;            // height of a block
+
+    for (var i = 0; i < nRow; ++i) {
+      for (var j = 0, col = nCol / 2; j < col; ++j) {
+        let bx = x + (2 * j * w + (i % 2 ? 0 : w) );
+        let by = i * h;
+        fillRect(bx, by, w-1, h-1, color);
+      }
+    }
+  }
+
+
+  function playSound(buffer, playbackRate = 1, pan = 0, loop = false) {
+
+    var source = audioCtx.createBufferSource();
+    var gainNode = audioCtx.createGain();
+    var panNode = audioCtx.createStereoPanner();
+
+    source.buffer = buffer;
+    source.connect(panNode);
+    panNode.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    //gainNode.connect(audioCtx.destination);
+    source.playbackRate.value = playbackRate;
+    source.loop = loop;
+    gainNode.gain.value = 1;
+    panNode.pan.value = pan;
+    source.start();
+    return {volume: gainNode, sound: source};
+}
+
+function render() {
+
+  var i = PAGESIZE;  // display is first page of ram
+
+  while (i--) {
+    /*
+    data is 32bit view of final screen buffer
+    for each pixel on screen, we look up it's color and assign it
+    */
+    data[i] = colors[pal[ram[i]]];
+
+  }
+
+  imageData.data.set(buf8);
+
+  ctx.putImageData(imageData, 0, 0);
+
+}
+
+
+
+Number.prototype.clamp = function(min, max) {
+  return Math.min(Math.max(this, min), max);
 };
 
-sonantx.MusicGenerator.prototype.createAudioBuffer = function(callBack) {
-    this.getAudioGenerator(function(ag) {
-        ag.getAudioBuffer(callBack);
-    });
-};
+Number.prototype.map = function(old_bottom, old_top, new_bottom, new_top) {
+  return (this - old_bottom) / (old_top - old_bottom) * (new_top - new_bottom) + new_bottom;
+}
 
-//---------END SONANT-X-----
+//--------END Engine.js-------------------
 
 var a_title = {
     "rowLen": 5513,
@@ -1465,9 +1533,9 @@ function drawSpriteSheet(){
   pset(12+5,3+3,21);
 
   //body
-  fillRect(10+32,17,3,1,5);
-  fillRect(8+32,19,7,7,5);
-  fillRect(9+32,23,5,5,0);
+  fillRect(10+34,17-2,3,1,5);
+  fillRect(8+34,19-2,7,7,5);
+  fillRect(9+34,23-2,5,5,0);
 
   //wheel
   fillCircle(11+128,28,5,13);
@@ -1486,529 +1554,446 @@ function drawSpriteSheet(){
   spr(32,0,32,32, 192-32+5, 3);
   spr(64,0,32,32, 192-32+5, 3);
   spr(0,0,32,32, 192-32, 0); //head
-}
-
-//--------------Engine.js-------------------
-
-const WIDTH =     384;
-const HEIGHT =    256;
-const PAGES =     10;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
-const PAGESIZE = WIDTH*HEIGHT;
-
-const SCREEN = 0;
-const BUFFER = PAGESIZE;
-const DEBUG = PAGESIZE*2;
-const SCRATCH = PAGESIZE*3;
-const SCRATCH2 = PAGESIZE*4;
-const SPRITES = PAGESIZE*5;
-const COLLISION = PAGESIZE*6;
-const MIDGROUND = PAGESIZE*7;
-const FOREGROUND = PAGESIZE*8;
-const BACKGROUND = PAGESIZE*9;
-//default palette index
-const palDefault = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
-
-var
-C =               document.getElementById('canvas'),
-ctx =             C.getContext('2d'),
-renderTarget =    0x00000,
-renderSource =    PAGESIZE, //buffer is ahead one screen's worth of pixels
-
-//Richard Fhager's DB32 Palette http://http://pixeljoint.com/forum/forum_posts.asp?TID=16247
-//ofcourse you can change this to whatever you like, up to 256 colors.
-//one GOTCHA: colors are stored 0xAABBGGRR, so you'll have to flop the values from your typical hex colors.
-
-colors =          [0xff000000, 0xff342022, 0xff3c2845, 0xff313966, 0xff3b568f, 0xff2671df, 0xff66a0d9, 0xff9ac3ee,
-                   0xff36f2fb, 0xff50e599, 0xff30be6a, 0xff6e9437, 0xff2f694b, 0xff244b52, 0xff393c32, 0xff743f3f,
-                   0xff826030, 0xffe16e5b, 0xffff9b63, 0xffe4cd5f, 0xfffcdbcb, 0xffffffff, 0xffb7ad9b, 0xff877e84,
-                   0xff6a6a69, 0xff525659, 0xff8a4276, 0xff3232ac, 0xff6357d9, 0xffba7bd7, 0xff4a978f, 0xff306f8a],
-
-//active palette index. maps to indices in colors[]. can alter this whenever for palette effects.
-pal =             [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
-paldrk =          [0,0,1,2,3,4,5,6,6,10,11,12,13,14,2,2,15,16,17,18,22,20,23,24,25,26,2,2,27,28,31,13]
-
-ctx.imageSmoothingEnabled = false;
-ctx.mozImageSmoothingEnabled = false;
-
-C.width = WIDTH;
-C.height = HEIGHT;
-var imageData =   ctx.getImageData(0, 0, WIDTH, HEIGHT),
-buf =             new ArrayBuffer(imageData.data.length),
-buf8 =            new Uint8Array(buf),
-data =            new Uint32Array(buf),
-ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
-
-//--------------graphics functions----------------
-
-  function clear(color){
-    ram.fill(color, renderTarget, renderTarget + PAGESIZE);
-  }
-
-  function pset(x, y, color) { //an index from colors[], 0-31
-    x = x|0; y = y|0; color = color|0;
-
-    if (x > 0 && x < WIDTH && y > 0 && y < HEIGHT) {
-      ram[renderTarget + y * WIDTH + x] = color;
-    }
-  }
-
-  function pget(x, y, page=renderTarget){
-    return ram[page + x + y * WIDTH];
-  }
-
-  function line(x1, y1, x2, y2, color) {
-
-    x1 = x1|0;
-    x2 = x2|0;
-    y1 = y1|0;
-    y2 = y2|0;
-
-    var dy = (y2 - y1);
-    var dx = (x2 - x1);
-    var stepx, stepy;
-
-    if (dy < 0) {
-      dy = -dy;
-      stepy = -1;
-    } else {
-      stepy = 1;
-    }
-    if (dx < 0) {
-      dx = -dx;
-      stepx = -1;
-    } else {
-      stepx = 1;
-    }
-    dy <<= 1;        // dy is now 2*dy
-    dx <<= 1;        // dx is now 2*dx
-
-    pset(x1, y1, color);
-    if (dx > dy) {
-      var fraction = dy - (dx >> 1);  // same as 2*dy - dx
-      while (x1 != x2) {
-        if (fraction >= 0) {
-          y1 += stepy;
-          fraction -= dx;          // same as fraction -= 2*dx
-        }
-        x1 += stepx;
-        fraction += dy;              // same as fraction -= 2*dy
-        pset(x1, y1, color);
-      }
-      ;
-    } else {
-      fraction = dx - (dy >> 1);
-      while (y1 != y2) {
-        if (fraction >= 0) {
-          x1 += stepx;
-          fraction -= dy;
-        }
-        y1 += stepy;
-        fraction += dx;
-        pset(x1, y1, color);
-      }
-    }
-
-  }
-
-  function circle(xm, ym, r, color) {
-    var x = -r, y = 0, err = 2 - 2 * r;
-    /* II. Quadrant */
-    do {
-      pset(xm - x, ym + y, color);
-      /*   I. Quadrant */
-      pset(xm - y, ym - x, color);
-      /*  II. Quadrant */
-      pset(xm + x, ym - y, color);
-      /* III. Quadrant */
-      pset(xm + y, ym + x, color);
-      /*  IV. Quadrant */
-      r = err;
-      if (r <= y) err += ++y * 2 + 1;
-      /* e_xy+e_y < 0 */
-      if (r > x || err > y) err += ++x * 2 + 1;
-      /* e_xy+e_x > 0 or no 2nd y-step */
-
-    } while (x < 0);
-  }
-
-  function fillCircle(xm, ym, r, color) {
-    if(r < 0) return;
-    xm = xm|0; ym = ym|0, r = r|0; color = color|0;
-    var x = -r, y = 0, err = 2 - 2 * r;
-    /* II. Quadrant */
-    do {
-      line(xm-x, ym-y, xm+x, ym-y, color);
-      line(xm-x, ym+y, xm+x, ym+y, color);
-      r = err;
-      if (r <= y) err += ++y * 2 + 1;
-      if (r > x || err > y) err += ++x * 2 + 1;
-    } while (x < 0);
-  }
-
-  function rect(x, y, w, h, color) {
-    x1 = x|0;
-    y1 = y|0;
-    x2 = (x+w)|0;
-    y2 = (y+h)|0;
-
-
-    line(x1,y1, x2, y1, color);
-    line(x2, y1, x2, y2, color);
-    line(x1, y2, x2, y2, color);
-    line(x1, y1, x1, y2, color);
-  }
-
-  function fillRect(x, y, w, h, color) {
-    x1 = x|0;
-    y1 = y|0;
-    x2 = (x+w)|0;
-    y2 = (y+h)|0;
-
-    var i = Math.abs(y2 - y1);
-    line(x1, y1, x2, y1, color);
-
-    if(i > 0){
-      while (--i) {
-        line(x1, y1+i, x2, y1+i, color);
-      }
-    }
-
-    line(x1,y2, x2, y2, color);
-  }
-
-  function cRect(x,y,w,h,c,color){
-    for(let i = 0; i <= c; i++){
-      fillRect(x+i,y-i,w-i*2,h+i*2,color);
-    }
-  }
-
-  function outline(renderSource, renderTarget, color, color2=color, color3=color, color4=color){
-
-    for(let i = 0; i <= WIDTH; i++ ){
-      for(let j = 0; j <= HEIGHT; j++){
-        let left = i-1 + j * WIDTH;
-        let right = i+1 + j * WIDTH;
-        let bottom = i + (j+1) * WIDTH;
-        let top = i + (j-1) * WIDTH;
-        let current = i + j * WIDTH;
-
-        if(ram[renderSource + current]){
-          if(!ram[renderSource + left]){
-            ram[renderTarget + left] = color;
-          };
-          if(!ram[renderSource + right]){
-            ram[renderTarget + right] = color3;
-          };
-          if(!ram[renderSource + top]){
-            ram[renderTarget + top] = color2;
-          };
-          if(!ram[renderSource + bottom]){
-            ram[renderTarget + bottom] = color4;
-          };
-        }
-      }
-    }
-  }
-
-  function triangle(x1, y1, x2, y2, x3, y3, color) {
-    line(x1,y1, x2,y2, color);
-    line(x2,y2, x3,y3, color);
-    line(x3,y3, x1,y1, color);
-  }
-
-  function fillTriangle( x1, y1, x2, y2, x3, y3, color ) {
-
-    var canvasWidth = WIDTH;
-    // http://devmaster.net/forums/topic/1145-advanced-rasterization/
-    // 28.4 fixed-point coordinates
-    var x1 = Math.round( 16 * x1 );
-    var x2 = Math.round( 16 * x2 );
-    var x3 = Math.round( 16 * x3 );
-    var y1 = Math.round( 16 * y1 );
-    var y2 = Math.round( 16 * y2 );
-    var y3 = Math.round( 16 * y3 );
-    // Deltas
-    var dx12 = x1 - x2, dy12 = y2 - y1;
-    var dx23 = x2 - x3, dy23 = y3 - y2;
-    var dx31 = x3 - x1, dy31 = y1 - y3;
-    // Bounding rectangle
-    var minx = Math.max( ( Math.min( x1, x2, x3 ) + 0xf ) >> 4, 0 );
-    var maxx = Math.min( ( Math.max( x1, x2, x3 ) + 0xf ) >> 4, WIDTH );
-    var miny = Math.max( ( Math.min( y1, y2, y3 ) + 0xf ) >> 4, 0 );
-    var maxy = Math.min( ( Math.max( y1, y2, y3 ) + 0xf ) >> 4, HEIGHT );
-    // Block size, standard 8x8 (must be power of two)
-    var q = 8;
-    // Start in corner of 8x8 block
-    minx &= ~(q - 1);
-    miny &= ~(q - 1);
-    // Constant part of half-edge functions
-    var c1 = -dy12 * x1 - dx12 * y1;
-    var c2 = -dy23 * x2 - dx23 * y2;
-    var c3 = -dy31 * x3 - dx31 * y3;
-    // Correct for fill convention
-    if ( dy12 > 0 || ( dy12 == 0 && dx12 > 0 ) ) c1 ++;
-    if ( dy23 > 0 || ( dy23 == 0 && dx23 > 0 ) ) c2 ++;
-    if ( dy31 > 0 || ( dy31 == 0 && dx31 > 0 ) ) c3 ++;
-    // Note this doesn't kill subpixel precision, but only because we test for >=0 (not >0).
-    // It's a bit subtle. :)
-    c1 = (c1 - 1) >> 4;
-    c2 = (c2 - 1) >> 4;
-    c3 = (c3 - 1) >> 4;
-    // Set up min/max corners
-    var qm1 = q - 1; // for convenience
-    var nmin1 = 0, nmax1 = 0;
-    var nmin2 = 0, nmax2 = 0;
-    var nmin3 = 0, nmax3 = 0;
-    if (dx12 >= 0) nmax1 -= qm1*dx12; else nmin1 -= qm1*dx12;
-    if (dy12 >= 0) nmax1 -= qm1*dy12; else nmin1 -= qm1*dy12;
-    if (dx23 >= 0) nmax2 -= qm1*dx23; else nmin2 -= qm1*dx23;
-    if (dy23 >= 0) nmax2 -= qm1*dy23; else nmin2 -= qm1*dy23;
-    if (dx31 >= 0) nmax3 -= qm1*dx31; else nmin3 -= qm1*dx31;
-    if (dy31 >= 0) nmax3 -= qm1*dy31; else nmin3 -= qm1*dy31;
-    // Loop through blocks
-    var linestep = (canvasWidth-q);
-    for ( var y0 = miny; y0 < maxy; y0 += q ) {
-      for ( var x0 = minx; x0 < maxx; x0 += q ) {
-        // Edge functions at top-left corner
-        var cy1 = c1 + dx12 * y0 + dy12 * x0;
-        var cy2 = c2 + dx23 * y0 + dy23 * x0;
-        var cy3 = c3 + dx31 * y0 + dy31 * x0;
-        // Skip block when at least one edge completely out
-        if (cy1 < nmax1 || cy2 < nmax2 || cy3 < nmax3) continue;
-        // Offset at top-left corner
-        var offset = (x0 + y0 * canvasWidth);
-        // Accept whole block when fully covered
-        if (cy1 >= nmin1 && cy2 >= nmin2 && cy3 >= nmin3) {
-          for ( var iy = 0; iy < q; iy ++ ) {
-            for ( var ix = 0; ix < q; ix ++, offset ++ ) {
-              ram[renderTarget + offset] = color;
-            }
-            offset += linestep;
-          }
-        } else { // Partially covered block
-          for ( var iy = 0; iy < q; iy ++ ) {
-            var cx1 = cy1;
-            var cx2 = cy2;
-            var cx3 = cy3;
-            for ( var ix = 0; ix < q; ix ++ ) {
-              if ( (cx1 | cx2 | cx3) >= 0 ) {
-                ram[renderTarget + offset] = color;
-              }
-              cx1 += dy12;
-              cx2 += dy23;
-              cx3 += dy31;
-              offset ++;
-            }
-            cy1 += dx12;
-            cy2 += dx23;
-            cy3 += dx31;
-            offset += linestep;
-          }
-        }
-      }
-    }
-  }
-
-  function spr(sx = 0, sy = 0, sw = 384, sh = 256, x=0, y=0, flipx = false, flipy = false){
-
-    for(var i = 0; i < sh; i++){
-
-      for(var j = 0; j < sw; j++){
-
-        if(y+i < HEIGHT && x+j < WIDTH && y+i > -1 && x+j > -1){
-          if(flipx & flipy){
-
-            if(ram[(renderSource + ( ( sy + (sh-i) )*WIDTH+sx+(sw-j)))] > 0) {
-
-              ram[ (renderTarget + ((y+i)*WIDTH+x+j)) ] = pal[ ram[(renderSource + ((sy+(sh-i))*WIDTH+sx+(sw-j)))] ];
-
-            }
-
-          }
-          else if(flipy && !flipx){
-
-            if(ram[(renderSource + ( ( sy + (sh-i) )*WIDTH+sx+j))] > 0) {
-
-              ram[ (renderTarget + ((y+i)*WIDTH+x+j)) ] = ram[(renderSource + ((sy+(sh-i))*WIDTH+sx+j))];
-
-            }
-
-          }
-          else if(flipx && !flipy){
-
-            if(ram[(renderSource + ((sy+i)*WIDTH+sx+(sw-j)))] > 0) {
-
-              ram[ (renderTarget + ((y+i)*WIDTH+x+j)) ] = ram[(renderSource + ((sy+i)*WIDTH+sx+(sw-j)))];
-
-            }
-
-          }
-          else if(!flipx && !flipy){
-
-            if(ram[(renderSource + ((sy+i)*WIDTH+sx+j))] > 0) {
-
-              ram[ (renderTarget + ((y+i)*WIDTH+x+j)) ] = pal[ ram[(renderSource + ((sy+i)*WIDTH+sx+j))] ];
-
-            }
-
-          }
-        }
-      }
-    }
-  }
-
-  function sspr(sx = 0, sy = 0, sw = 16, sh = 16, x=0, y=0, dw=16, dh=16, flipx = false, flipy = false){
-
-    var xratio = sw / dw;
-    var yratio = sh / dh;
-
-    for(var i = 0; i < dh; i++){
-      for(var j = 0; j < dw; j++){
-
-        px = (j*xratio)|0;
-        py = (i*yratio)|0;
-
-        if(y+i < HEIGHT && x+j < WIDTH && y+i > -1 && x+j > -1) {
-          if (ram[(renderSource + ((sy + py) * WIDTH + sx + px))] > 0) {
-            ram[(renderTarget + ((y + i) * WIDTH + x + j))] = ram[(renderSource + ((sy + py) * WIDTH + sx + px))]
-          }
-        }
-
-      }
-    }
-
-
-  }
-
-  function rspr( sx, sy, sw, sh, destCenterX, destCenterY, scale, angle ){
-
-    angle = angle * 0.0174533 //convert to radians in place
-    let sourceCenterX = sx + (sw / 2)|0;
-    let sourceCenterY = sy + (sh / 2)|0;
-
-   let destWidth = sw * scale;
-    let destHeight = sh * scale;
-
-   let halfWidth = (destWidth / 2 * 1.41421356237)|0 + 5;  //area will always be square, hypotenuse trick
-    let halfHeight = (destHeight / 2 * 1.41421356237)|0 + 5;
-
-   let startX = -halfWidth;
-    let endX = halfWidth;
-
-   let startY = -halfHeight;
-    let endY = halfHeight;
-
-   let scaleFactor = 1.0 / scale;
-
-   let cos = Math.cos(-angle) * scaleFactor;
-   let sin = Math.sin(-angle) * scaleFactor;
-
-   for(let y = startY; y < endY; y++){
-      for(let x = startX; x < endX; x++){
-
-       let u = sourceCenterX + Math.round(cos * x + sin * y);
-        let v = sourceCenterY + Math.round(-sin * x  + cos * y);
-
-       let drawX = (x + destCenterX)|0;
-        let drawY = (y + destCenterY)|0;
-
-       if(u >= 0 && v >= 0 && u < sw && v < sh){
-          if( ram[ (renderSource + (v * WIDTH + u)) ] > 0) {
-            ram[(renderTarget + (drawY * WIDTH + drawX)) ] = ram[(renderSource + ( v * WIDTH + u )) ]
-          }
-        }
-
-     } //end x loop
-
-   } //end outer y loop
-  }
-
-  function checker(x, y, w, h, nRow, nCol, color) {
-    //var w = 256;
-    //var h = 256;
-
-    nRow = nRow || 8;    // default number of rows
-    nCol = nCol || 8;    // default number of columns
-
-    w /= nCol;            // width of a block
-    h /= nRow;            // height of a block
-
-    for (var i = 0; i < nRow; ++i) {
-      for (var j = 0, col = nCol / 2; j < col; ++j) {
-        let bx = x + (2 * j * w + (i % 2 ? 0 : w) );
-        let by = i * h;
-        fillRect(bx, by, w-1, h-1, color);
-      }
-    }
-  }
-
-  function transitionOut(callback){
-      //let d = delay;
-      let i = 32;
-      //this bit does one step of the transition, making all the colors one step darker
-      while(i--){
-        pal[i] = pal[ paldrk[i] ];
-      }
-      //-------------------------------
-      console.log(pal);
-      //if(transition)return;
-      if(pal[21] == 0){
-        return callback();
-      }
-
-    setTimeout( function(){transitionOut(callback)}, 1000000);
-  }
-
-  function playSound(buffer, playbackRate = 1, pan = 0, loop = false) {
-
-    var source = audioCtx.createBufferSource();
-    var gainNode = audioCtx.createGain();
-    var panNode = audioCtx.createStereoPanner();
-
-    source.buffer = buffer;
-    source.connect(panNode);
-    panNode.connect(gainNode);
-    gainNode.connect(audioCtx.destination);
-
-    //gainNode.connect(audioCtx.destination);
-    source.playbackRate.value = playbackRate;
-    source.loop = loop;
-    gainNode.gain.value = 1;
-    panNode.pan.value = pan;
-    source.start();
-    return {volume: gainNode, sound: source};
-}
-
-function render() {
-
-  var i = PAGESIZE;  // display is first page of ram
-
-  while (i--) {
-    /*
-    data is 32bit view of final screen buffer
-    for each pixel on screen, we look up it's color and assign it
-    */
-    data[i] = colors[pal[ram[i]]];
-
-  }
-
-  imageData.data.set(buf8);
-
-  ctx.putImageData(imageData, 0, 0);
-
-}
-
-
-
-Number.prototype.clamp = function(min, max) {
-  return Math.min(Math.max(this, min), max);
 };
 
-Number.prototype.map = function(old_bottom, old_top, new_bottom, new_top) {
-  return (this - old_bottom) / (old_top - old_bottom) * (new_top - new_bottom) + new_bottom;
+var lcg = {
+  seed: Date.now(),
+  a: 1664525,
+  c: 1013904223,
+  m: Math.pow(2, 32),
+
+  setSeed: function(seed) {
+    this.seed = seed;
+  },
+
+  nextInt: function() {
+    // range [0, 2^32)
+    this.seed = (this.seed * this.a + this.c) % this.m;
+    return this.seed;
+  },
+
+  nextFloat: function() {
+    // range [0, 1)
+    return this.nextInt() / this.m;
+  },
+
+  nextBool: function(percent) {
+    // percent is chance of getting true
+    if(percent == null) {
+      percent = 0.5;
+    }
+    return this.nextFloat() < percent;
+  },
+
+  nextFloatRange: function(min, max) {
+    // range [min, max)
+    return min + this.nextFloat() * (max - min);
+  },
+
+  nextIntRange: function(min, max) {
+    // range [min, max)
+    return Math.floor(this.nextFloatRange(min, max));
+  },
+
+  nextColor: function() {
+    // range [#000000, #ffffff]
+    var c = this.nextIntRange(0, Math.pow(2, 24)).toString(16).toUpperCase();
+    while(c.length < 6) {
+      c = "0" + c;
+    }
+    return "#" + c;
+  }
+};
+
+//---------SONANT-X---------
+/*
+// Sonant-X
+//
+// Copyright (c) 2014 Nicolas Vanhoren
+//
+// Sonant-X is a fork of js-sonant by Marcus Geelnard and Jake Taylor. It is
+// still published using the same license (zlib license, see below).
+//
+// Copyright (c) 2011 Marcus Geelnard
+// Copyright (c) 2008-2009 Jake Taylor
+//
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
+//
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+//
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would be
+//    appreciated but is not required.
+//
+// 2. Altered source versions must be plainly marked as such, and must not be
+//    misrepresented as being the original software.
+//
+// 3. This notice may not be removed or altered from any source
+//    distribution.
+*/
+
+var sonantx = {};
+
+var WAVE_SPS = 44100;                    // Samples per second
+var WAVE_CHAN = 2;                       // Channels
+var MAX_TIME = 33; // maximum time, in millis, that the generator can use consecutively
+
+var audioCtx = null;
+
+// Oscillators
+function osc_sin(value){
+    return Math.sin(value * 6.283184);
 }
 
-//--------END Engine.js-------------------
+function osc_square(value){
+    if(osc_sin(value) < 0) return -1;
+    return 1;
+}
+
+function osc_saw(value){
+    return (value % 1) - 0.5;
+}
+
+function osc_tri(value){
+    var v2 = (value % 1) * 4;
+    if(v2 < 2) return v2 - 1;
+    return 3 - v2;
+}
+
+// Array of oscillator functions
+var oscillators = [
+    osc_sin,
+    osc_square,
+    osc_saw,
+    osc_tri
+];
+
+function getnotefreq(n){
+    return 0.00390625 * Math.pow(1.059463094, n - 128);
+}
+
+function genBuffer(waveSize, callBack) {
+    setTimeout(function() {
+        // Create the channel work buffer
+        var buf = new Uint8Array(waveSize * WAVE_CHAN * 2);
+        var b = buf.length - 2;
+        var iterate = function() {
+            var begin = new Date();
+            var count = 0;
+            while(b >= 0)
+            {
+                buf[b] = 0;
+                buf[b + 1] = 128;
+                b -= 2;
+                count += 1;
+                if (count % 1000 === 0 && (new Date() - begin) > MAX_TIME) {
+                    setTimeout(iterate, 0);
+                    return;
+                }
+            }
+            setTimeout(function() {callBack(buf);}, 0);
+        };
+        setTimeout(iterate, 0);
+    }, 0);
+}
+
+function applyDelay(chnBuf, waveSamples, instr, rowLen, callBack) {
+    var p1 = (instr.fx_delay_time * rowLen) >> 1;
+    var t1 = instr.fx_delay_amt / 255;
+
+    var n1 = 0;
+    var iterate = function() {
+        var beginning = new Date();
+        var count = 0;
+        while(n1 < waveSamples - p1)
+        {
+            var b1 = 4 * n1;
+            var l = 4 * (n1 + p1);
+
+            // Left channel = left + right[-p1] * t1
+            var x1 = chnBuf[l] + (chnBuf[l+1] << 8) +
+                (chnBuf[b1+2] + (chnBuf[b1+3] << 8) - 32768) * t1;
+            chnBuf[l] = x1 & 255;
+            chnBuf[l+1] = (x1 >> 8) & 255;
+
+            // Right channel = right + left[-p1] * t1
+            x1 = chnBuf[l+2] + (chnBuf[l+3] << 8) +
+                (chnBuf[b1] + (chnBuf[b1+1] << 8) - 32768) * t1;
+            chnBuf[l+2] = x1 & 255;
+            chnBuf[l+3] = (x1 >> 8) & 255;
+            ++n1;
+            count += 1;
+            if (count % 1000 === 0 && (new Date() - beginning) > MAX_TIME) {
+                setTimeout(iterate, 0);
+                return;
+            }
+        }
+        setTimeout(callBack, 0);
+    };
+    setTimeout(iterate, 0);
+}
+
+sonantx.AudioGenerator = function(mixBuf) {
+    this.mixBuf = mixBuf;
+    this.waveSize = mixBuf.length / WAVE_CHAN / 2;
+};
+
+sonantx.AudioGenerator.prototype.getAudioBuffer = function(callBack) {
+    if (audioCtx === null)
+        audioCtx = new AudioContext();
+    var mixBuf = this.mixBuf;
+    var waveSize = this.waveSize;
+
+    var waveBytes = waveSize * WAVE_CHAN * 2;
+    var buffer = audioCtx.createBuffer(WAVE_CHAN, this.waveSize, WAVE_SPS); // Create Mono Source Buffer from Raw Binary
+    var lchan = buffer.getChannelData(0);
+    var rchan = buffer.getChannelData(1);
+    var b = 0;
+    var iterate = function() {
+        var beginning = new Date();
+        var count = 0;
+        while (b < (waveBytes / 2)) {
+            var y = 4 * (mixBuf[b * 4] + (mixBuf[(b * 4) + 1] << 8) - 32768);
+            y = y < -32768 ? -32768 : (y > 32767 ? 32767 : y);
+            lchan[b] = y / 32768;
+            y = 4 * (mixBuf[(b * 4) + 2] + (mixBuf[(b * 4) + 3] << 8) - 32768);
+            y = y < -32768 ? -32768 : (y > 32767 ? 32767 : y);
+            rchan[b] = y / 32768;
+            b += 1;
+            count += 1;
+            if (count % 1000 === 0 && new Date() - beginning > MAX_TIME) {
+                setTimeout(iterate, 0);
+                return;
+            }
+        }
+        setTimeout(function() {callBack(buffer);}, 0);
+    };
+    setTimeout(iterate, 0);
+};
+
+sonantx.SoundGenerator = function(instr, rowLen) {
+    this.instr = instr;
+    this.rowLen = rowLen || 5605;
+
+    this.osc_lfo = oscillators[instr.lfo_waveform];
+    this.osc1 = oscillators[instr.osc1_waveform];
+    this.osc2 = oscillators[instr.osc2_waveform];
+    this.attack = instr.env_attack;
+    this.sustain = instr.env_sustain;
+    this.release = instr.env_release;
+    this.panFreq = Math.pow(2, instr.fx_pan_freq - 8) / this.rowLen;
+    this.lfoFreq = Math.pow(2, instr.lfo_freq - 8) / this.rowLen;
+};
+
+sonantx.SoundGenerator.prototype.genSound = function(n, chnBuf, currentpos) {
+    var marker = new Date();
+    var c1 = 0;
+    var c2 = 0;
+
+    // Precalculate frequencues
+    var o1t = getnotefreq(n + (this.instr.osc1_oct - 8) * 12 + this.instr.osc1_det) * (1 + 0.0008 * this.instr.osc1_detune);
+    var o2t = getnotefreq(n + (this.instr.osc2_oct - 8) * 12 + this.instr.osc2_det) * (1 + 0.0008 * this.instr.osc2_detune);
+
+    // State variable init
+    var q = this.instr.fx_resonance / 255;
+    var low = 0;
+    var band = 0;
+    for (var j = this.attack + this.sustain + this.release - 1; j >= 0; --j)
+    {
+        var k = j + currentpos;
+
+        // LFO
+        var lfor = this.osc_lfo(k * this.lfoFreq) * this.instr.lfo_amt / 512 + 0.5;
+
+        // Envelope
+        var e = 1;
+        if(j < this.attack)
+            e = j / this.attack;
+        else if(j >= this.attack + this.sustain)
+            e -= (j - this.attack - this.sustain) / this.release;
+
+        // Oscillator 1
+        var t = o1t;
+        if(this.instr.lfo_osc1_freq) t += lfor;
+        if(this.instr.osc1_xenv) t *= e * e;
+        c1 += t;
+        var rsample = this.osc1(c1) * this.instr.osc1_vol;
+
+        // Oscillator 2
+        t = o2t;
+        if(this.instr.osc2_xenv) t *= e * e;
+        c2 += t;
+        rsample += this.osc2(c2) * this.instr.osc2_vol;
+
+        // Noise oscillator
+        if(this.instr.noise_fader) rsample += (2*Math.random()-1) * this.instr.noise_fader * e;
+
+        rsample *= e / 255;
+
+        // State variable filter
+        var f = this.instr.fx_freq;
+        if(this.instr.lfo_fx_freq) f *= lfor;
+        f = 1.5 * Math.sin(f * 3.141592 / WAVE_SPS);
+        low += f * band;
+        var high = q * (rsample - band) - low;
+        band += f * high;
+        switch(this.instr.fx_filter)
+        {
+            case 1: // Hipass
+                rsample = high;
+                break;
+            case 2: // Lopass
+                rsample = low;
+                break;
+            case 3: // Bandpass
+                rsample = band;
+                break;
+            case 4: // Notch
+                rsample = low + high;
+                break;
+            default:
+        }
+
+        // Panning & master volume
+        t = osc_sin(k * this.panFreq) * this.instr.fx_pan_amt / 512 + 0.5;
+        rsample *= 39 * this.instr.env_master;
+
+        // Add to 16-bit channel buffer
+        k = k * 4;
+        if (k + 3 < chnBuf.length) {
+            var x = chnBuf[k] + (chnBuf[k+1] << 8) + rsample * (1 - t);
+            chnBuf[k] = x & 255;
+            chnBuf[k+1] = (x >> 8) & 255;
+            x = chnBuf[k+2] + (chnBuf[k+3] << 8) + rsample * t;
+            chnBuf[k+2] = x & 255;
+            chnBuf[k+3] = (x >> 8) & 255;
+        }
+    }
+};
+
+sonantx.SoundGenerator.prototype.getAudioGenerator = function(n, callBack) {
+    var bufferSize = (this.attack + this.sustain + this.release - 1) + (32 * this.rowLen);
+    var self = this;
+    genBuffer(bufferSize, function(buffer) {
+        self.genSound(n, buffer, 0);
+        applyDelay(buffer, bufferSize, self.instr, self.rowLen, function() {
+            callBack(new sonantx.AudioGenerator(buffer));
+        });
+    });
+};
+
+// sonantx.SoundGenerator.prototype.createAudio = function(n, callBack) {
+//     this.getAudioGenerator(n, function(ag) {
+//         callBack(ag.getAudio());
+//     });
+// };
+
+sonantx.SoundGenerator.prototype.createAudioBuffer = function(n, callBack) {
+    this.getAudioGenerator(n, function(ag) {
+        ag.getAudioBuffer(callBack);
+    });
+};
+
+sonantx.MusicGenerator = function(song) {
+    this.song = song;
+    // Wave data configuration
+    this.waveSize = WAVE_SPS * song.songLen; // Total song size (in samples)
+};
+sonantx.MusicGenerator.prototype.generateTrack = function (instr, mixBuf, callBack) {
+    var self = this;
+    genBuffer(this.waveSize, function(chnBuf) {
+        // Preload/precalc some properties/expressions (for improved performance)
+        var waveSamples = self.waveSize,
+            waveBytes = self.waveSize * WAVE_CHAN * 2,
+            rowLen = self.song.rowLen,
+            endPattern = self.song.endPattern,
+            soundGen = new sonantx.SoundGenerator(instr, rowLen);
+
+        var currentpos = 0;
+        var p = 0;
+        var row = 0;
+        var recordSounds = function() {
+            var beginning = new Date();
+            while (true) {
+                if (row === 32) {
+                    row = 0;
+                    p += 1;
+                    continue;
+                }
+                if (p === endPattern - 1) {
+                    setTimeout(delay, 0);
+                    return;
+                }
+                var cp = instr.p[p];
+                if (cp) {
+                    var n = instr.c[cp - 1].n[row];
+                    if (n) {
+                        soundGen.genSound(n, chnBuf, currentpos);
+                    }
+                }
+                currentpos += rowLen;
+                row += 1;
+                if (new Date() - beginning > MAX_TIME) {
+                    setTimeout(recordSounds, 0);
+                    return;
+                }
+            }
+        };
+
+        var delay = function() {
+            applyDelay(chnBuf, waveSamples, instr, rowLen, finalize);
+        };
+
+        var b2 = 0;
+        var finalize = function() {
+            var beginning = new Date();
+            var count = 0;
+            // Add to mix buffer
+            while(b2 < waveBytes)
+            {
+                var x2 = mixBuf[b2] + (mixBuf[b2+1] << 8) + chnBuf[b2] + (chnBuf[b2+1] << 8) - 32768;
+                mixBuf[b2] = x2 & 255;
+                mixBuf[b2+1] = (x2 >> 8) & 255;
+                b2 += 2;
+                count += 1;
+                if (count % 1000 === 0 && (new Date() - beginning) > MAX_TIME) {
+                    setTimeout(finalize, 0);
+                    return;
+                }
+            }
+            setTimeout(callBack, 0);
+        };
+        setTimeout(recordSounds, 0);
+    });
+};
+sonantx.MusicGenerator.prototype.getAudioGenerator = function(callBack) {
+    var self = this;
+    genBuffer(this.waveSize, function(mixBuf) {
+        var t = 0;
+        var recu = function() {
+            if (t < self.song.songData.length) {
+                t += 1;
+                self.generateTrack(self.song.songData[t - 1], mixBuf, recu);
+            } else {
+                callBack(new sonantx.AudioGenerator(mixBuf));
+            }
+        };
+        recu();
+    });
+};
+
+sonantx.MusicGenerator.prototype.createAudioBuffer = function(callBack) {
+    this.getAudioGenerator(function(ag) {
+        ag.getAudioBuffer(callBack);
+    });
+};
+
+//---------END SONANT-X-----
 
 //-----main.js---------------
 
@@ -2023,13 +2008,13 @@ init = () => {
   totalSounds = 3;
   score = 0; //
   //fuelAmount = 12000000000;
-  fuelTimer = 30;
+  fuelTimer = 100;
   parts = 0;
   last = 0;
   dt = 0;
   now = 0;
   t = 0;
-  state = 'menu';
+  state = 'spritesheet';
   splodes = [];
 
 
@@ -2113,7 +2098,7 @@ loop = e => {
 //----- END main.js---------------
 
 world = [
-  6,0,0,0,0,0,0,0,0,0,
+  8,0,0,0,0,0,0,0,0,0,
   0,2,0,0,0,0,1,0,0,0,
   0,0,0,1,0,0,0,0,2,0,
   0,0,0,0,0,0,1,0,0,0,
@@ -2259,6 +2244,8 @@ rooms = [
       denseGreeble();
 
       foregroundGreeble();
+
+      archi(245,110,25);
     }
   },
 
@@ -2302,6 +2289,16 @@ function roomSwitch(direction){
 
   renderTarget = COLLISION;
   rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].draw();
+
+}
+
+function archi(x,y,color){
+  renderTarget = FOREGROUND;
+  cRect(x-4,y-4,40,100,23);
+
+  for(n=p=i=0;p<2e3;i%2||pset(x+p%23,y+p/23|0,color),p++){
+    p^n||(n=p+([...'F0AL1314B2C2B16001177AeBSB1SB1R11AREàBDCCB5CAM6A51CBCB513333ZAQAÜAQFMEWB5DCCBC4IA515CC613333ZAFBIAKBO3BJFEBFEJBMAHAH3AFBGAGB5FAJBCA5O6BMBCA5IB5F4FAH3AGBH2HBH2IAG34G4LBIBHBIACC17K4N3ELAD1C1B1B7F7CB7GACDCEBACI13CA6AF13FBAF13BF3B7cCEANC11C0117CI0AP1ANEPILCGCIBKBGB1I1BE6BG6BDAC1312D2B2B2HAC12LADADALAIAN71AK5E1BD'].map(v=>['AAAAAA','AA','ACA','AE','AGA','DB','BB','AB'][v]||v).join('').charCodeAt(i++)&63))
+  }
 
 }
 
@@ -2672,7 +2669,7 @@ player = {
     //fillRect(this.x-this.radius, this.y-this.radius, this.radius, this.radius, 8);
     renderSource = SPRITES;
     renderTarget = BUFFER;
-    spr(0,0,19,34,(this.x-this.radius)|0,(this.y-this.radius-12)|0, this.facingLeft );
+    spr(96+70,0,19,36,(this.x-this.radius)|0,(this.y-this.radius-12)|0, this.facingLeft );
     //rect(this.x-this.radius,this.y-this.radius, this.radius*2, this.radius*2);
   },
 
@@ -2840,6 +2837,35 @@ splode.prototype.draw = function(){
 
   }
 
+  function blast(x = 0,y = 0,size = 10,speed = 10, color = 21, filled=false){
+    this.x = x;
+    this.y = y;
+    this.maxSize = size;
+    this.speed = 10;
+    this.counter = this.speed;
+    this.color = color;
+    this.size = 1;
+    this.filled = filled;
+
+    s = this;
+  }
+
+  blast.prototype.draw = function(){
+    this.size++;
+    if(this.size > this.maxSize)return;
+      if(this.filled){
+        fillCircle(this.x,this.y, this.size, this.color);
+      }else{
+        circle(this.x,this.y, this.size, this.color);
+      }
+      this.counter--;
+      if(this.counter==0){
+        this.size++;
+        this.counter = this.speed;
+      }
+
+    }
+
 // function Particle() {
 //
 //   this.inUse = false;
@@ -2966,7 +2992,7 @@ states.menu = {
         //titleSong.sound.stop();
         //transition = true;
       }
-      if(Key.justReleased(Key.x)){
+      if(Key.justReleased(Key.r)){
         state = 'spritesheet';
       }
       // if(transition){
@@ -3111,22 +3137,20 @@ states.game = {
     //rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].update();  //1d array math y * width + x;
     player.update(dt);
     fuelTimer -= dt;
-    if(fuelTimer < 0){
-      fuelTimer = 0;
-      state = 'gameover';
-    }
+    // if(fuelTimer < 0){
+    //   fuelTimer = 0;
+    //   state = 'gameover';
+    // }
   },
 
   render(dt) {
-
-    //renderTarget = SCREEN; clear(0);
+    renderTarget = SCREEN; clear(0);
     renderSource = BACKGROUND; spr();
     renderTarget = BUFFER; clear(0);
     drawFuel();
     renderSource = MIDGROUND; spr();
     player.draw();
     renderSource = FOREGROUND; spr();
-
 
     renderTarget= SCREEN;
 
@@ -3150,31 +3174,32 @@ states.game = {
         circle(x, y, 1, color);
       }
     }
-    //-----------------------
-    let k = 9000;
-    while(--k){
-      let t = 2 * Math.PI * Math.random();
-      let u = Math.random() * 250 + Math.random() * 250;
-      let r = u > 60 ? u : 120-u;
 
 
-      let x = r * Math.cos(t) + player.x | 0;
-      let y = r * Math.sin(t) + player.y | 0;
-      circle(x, y, 1, paldrk[ ram[SCREEN + x + (y+1) * WIDTH] ]);
-    }
-
+      //-----------------------
+    // let k = 9000;
+    // while(--k){
+    //   let t = 2 * Math.PI * Math.random();
+    //   let u = Math.random() * 250 + Math.random() * 250;
+    //   let r = u > 60 ? u : 120-u;
+    //
+    //
+    //   let x = r * Math.cos(t) + player.x | 0;
+    //   let y = r * Math.sin(t) + player.y | 0;
+    //   circle(x, y, 1, paldrk[ ram[SCREEN + x + (y+1) * WIDTH] ]);
+    // }
+    renderTarget = SCREEN;
     text([
-      fuelTimer.toString(),
-      192,
+      fuelTimer.toFixed(2).toString(),
+      WIDTH/2,
       10,
-      1,
-      1,
-      1,
+      2,
+      2,
       'center',
+      'top',
       1,
       9,
-      0
-    ])
+    ]);
     splodes.forEach(function(s){s.draw()});
 
     // if(pal[31] != 31){
@@ -3182,9 +3207,8 @@ states.game = {
     //   while(i--){
     //     if(pal[i] != i)pal[i]++;
     //   }
-    // }
-  }
-};
+  },
+}
 
 
 
@@ -3273,14 +3297,21 @@ states.spritesheet = {
         checker(0,0,384,256,256/32|0,384/32|0,1);
         renderSource = SPRITES; spr();
         spr(0,0,22,34, 300,100);
-        rspr(0,0,32,32, 16,128-16, 1, 15+t*90);
-        rspr(32,0,32,32, 48,128-16, 1, 15+t*90);
-        rspr(64,0,32,32, 48+32,128-16, 1, 15+t*90);
+
+        rspr(0,0,32,32, 16,128-16, 1, 15+t*90); //head. works.
+
+        rspr(32,0,32,32, 48,128-16, 1, 15+t*90);  //body. bugged
+
+        rspr(64,0,32,32, 48+32,128-16, 1, 15+t*90); //wheel hub. bugged.
+
+        // for(n=p=i=0;p<2e3;i%2||pset(p%23,p/23|0,21),p++){
+        //   p^n||(n=p+([...'F0AL1314B2C2B16001177AeBSB1SB1R11AREàBDCCB5CAM6A51CBCB513333ZAQAÜAQFMEWB5DCCBC4IA515CC613333ZAFBIAKBO3BJFEBFEJBMAHAH3AFBGAGB5FAJBCA5O6BMBCA5IB5F4FAH3AGBH2HBH2IAG34G4LBIBHBIACC17K4N3ELAD1C1B1B7F7CB7GACDCEBACI13CA6AF13FBAF13BF3B7cCEANC11C0117CI0AP1ANEPILCGCIBKBGB1I1BE6BG6BDAC1312D2B2B2HAC12LADADALAIAN71AK5E1BD'].map(v=>['AAAAAA','AA','ACA','AE','AGA','DB','BB','AB'][v]||v).join('').charCodeAt(i++)&63))
+        // }
 
         for(var i = 0; i < 32; i++){
           text([
             i.toString(),
-            i < 16 ? ( 3+16*i ) : ( 3 + 16* (i-16) ) ,
+            i < 16 ? ( 3+16*i ) : ( 3 + 16* (i-16) ),
             i < 16 ? 200 : 200 + 16,
             1,
             1,

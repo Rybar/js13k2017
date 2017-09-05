@@ -15,6 +15,7 @@ const COLLISION = PAGESIZE*6;
 const MIDGROUND = PAGESIZE*7;
 const FOREGROUND = PAGESIZE*8;
 const BACKGROUND = PAGESIZE*9;
+
 //default palette index
 const palDefault = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
 
@@ -393,14 +394,14 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
   function rspr( sx, sy, sw, sh, destCenterX, destCenterY, scale, angle ){
 
     angle = angle * 0.0174533 //convert to radians in place
-    let sourceCenterX = sx + (sw / 2)|0;
-    let sourceCenterY = sy + (sh / 2)|0;
+    let sourceCenterX = (sw / 2)|0;
+    let sourceCenterY = (sh / 2)|0;
 
    let destWidth = sw * scale;
     let destHeight = sh * scale;
 
-   let halfWidth = (destWidth / 2 * 1.41421356237)|0 + 5;  //area will always be square, hypotenuse trick
-    let halfHeight = (destHeight / 2 * 1.41421356237)|0 + 5;
+   let halfWidth = (destWidth / 2 * 1.41421356237)|0;  //area will always be square, hypotenuse trick
+    let halfHeight = (destHeight / 2 * 1.41421356237)|0;
 
    let startX = -halfWidth;
     let endX = halfWidth;
@@ -417,14 +418,14 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
       for(let x = startX; x < endX; x++){
 
        let u = sourceCenterX + Math.round(cos * x + sin * y);
-        let v = sourceCenterY + Math.round(-sin * x  + cos * y);
+        let v = sourceCenterY + Math.round(-sin * x + cos * y);
 
        let drawX = (x + destCenterX)|0;
         let drawY = (y + destCenterY)|0;
 
        if(u >= 0 && v >= 0 && u < sw && v < sh){
-          if( ram[ (renderSource + (v * WIDTH + u)) ] > 0) {
-            ram[(renderTarget + (drawY * WIDTH + drawX)) ] = ram[(renderSource + ( v * WIDTH + u )) ]
+          if( ram[renderSource + (u+sx) + (v+sy) * WIDTH] > 0) {
+            ram[renderTarget + drawX + drawY * WIDTH] = ram[renderSource + (u+sx) + (v+sy) * WIDTH]
           }
         }
 
@@ -452,22 +453,6 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
     }
   }
 
-  function transitionOut(callback){
-      //let d = delay;
-      let i = 32;
-      //this bit does one step of the transition, making all the colors one step darker
-      while(i--){
-        pal[i] = pal[ paldrk[i] ];
-      }
-      //-------------------------------
-      console.log(pal);
-      //if(transition)return;
-      if(pal[21] == 0){
-        return callback();
-      }
-
-    setTimeout( function(){transitionOut(callback)}, 1000000);
-  }
 
   function playSound(buffer, playbackRate = 1, pan = 0, loop = false) {
 

@@ -1,5 +1,5 @@
 world = [
-  6,0,0,0,0,0,0,0,0,0,
+  8,0,0,0,0,0,0,0,0,0,
   0,2,0,0,0,0,1,0,0,0,
   0,0,0,1,0,0,0,0,2,0,
   0,0,0,0,0,0,1,0,0,0,
@@ -145,6 +145,8 @@ rooms = [
       denseGreeble();
 
       foregroundGreeble();
+
+      archi(245,110,25);
     }
   },
 
@@ -188,6 +190,16 @@ function roomSwitch(direction){
 
   renderTarget = COLLISION;
   rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].draw();
+
+}
+
+function archi(x,y,color){
+  renderTarget = FOREGROUND;
+  cRect(x-4,y-4,40,100,23);
+
+  for(n=p=i=0;p<2e3;i%2||pset(x+p%23,y+p/23|0,color),p++){
+    p^n||(n=p+([...'F0AL1314B2C2B16001177AeBSB1SB1R11AREàBDCCB5CAM6A51CBCB513333ZAQAÜAQFMEWB5DCCBC4IA515CC613333ZAFBIAKBO3BJFEBFEJBMAHAH3AFBGAGB5FAJBCA5O6BMBCA5IB5F4FAH3AGBH2HBH2IAG34G4LBIBHBIACC17K4N3ELAD1C1B1B7F7CB7GACDCEBACI13CA6AF13FBAF13BF3B7cCEANC11C0117CI0AP1ANEPILCGCIBKBGB1I1BE6BG6BDAC1312D2B2B2HAC12LADADALAIAN71AK5E1BD'].map(v=>['AAAAAA','AA','ACA','AE','AGA','DB','BB','AB'][v]||v).join('').charCodeAt(i++)&63))
+  }
 
 }
 

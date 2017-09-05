@@ -12,22 +12,20 @@ states.game = {
     //rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].update();  //1d array math y * width + x;
     player.update(dt);
     fuelTimer -= dt;
-    if(fuelTimer < 0){
-      fuelTimer = 0;
-      state = 'gameover';
-    }
+    // if(fuelTimer < 0){
+    //   fuelTimer = 0;
+    //   state = 'gameover';
+    // }
   },
 
   render(dt) {
-
-    //renderTarget = SCREEN; clear(0);
+    renderTarget = SCREEN; clear(0);
     renderSource = BACKGROUND; spr();
     renderTarget = BUFFER; clear(0);
     drawFuel();
     renderSource = MIDGROUND; spr();
     player.draw();
     renderSource = FOREGROUND; spr();
-
 
     renderTarget= SCREEN;
 
@@ -51,31 +49,32 @@ states.game = {
         circle(x, y, 1, color);
       }
     }
-    //-----------------------
-    let k = 9000;
-    while(--k){
-      let t = 2 * Math.PI * Math.random();
-      let u = Math.random() * 250 + Math.random() * 250;
-      let r = u > 60 ? u : 120-u;
 
 
-      let x = r * Math.cos(t) + player.x | 0;
-      let y = r * Math.sin(t) + player.y | 0;
-      circle(x, y, 1, paldrk[ ram[SCREEN + x + (y+1) * WIDTH] ]);
-    }
-
+      //-----------------------
+    // let k = 9000;
+    // while(--k){
+    //   let t = 2 * Math.PI * Math.random();
+    //   let u = Math.random() * 250 + Math.random() * 250;
+    //   let r = u > 60 ? u : 120-u;
+    //
+    //
+    //   let x = r * Math.cos(t) + player.x | 0;
+    //   let y = r * Math.sin(t) + player.y | 0;
+    //   circle(x, y, 1, paldrk[ ram[SCREEN + x + (y+1) * WIDTH] ]);
+    // }
+    renderTarget = SCREEN;
     text([
-      fuelTimer.toString(),
-      192,
+      fuelTimer.toFixed(2).toString(),
+      WIDTH/2,
       10,
-      1,
-      1,
-      1,
+      2,
+      2,
       'center',
+      'top',
       1,
       9,
-      0
-    ])
+    ]);
     splodes.forEach(function(s){s.draw()});
 
     // if(pal[31] != 31){
@@ -83,9 +82,8 @@ states.game = {
     //   while(i--){
     //     if(pal[i] != i)pal[i]++;
     //   }
-    // }
-  }
-};
+  },
+}
 
 
 

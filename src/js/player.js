@@ -115,7 +115,7 @@ player = {
     //fillRect(this.x-this.radius, this.y-this.radius, this.radius, this.radius, 8);
     renderSource = SPRITES;
     renderTarget = BUFFER;
-    spr(0,0,19,34,(this.x-this.radius)|0,(this.y-this.radius-12)|0, this.facingLeft );
+    spr(96+70,0,19,36,(this.x-this.radius)|0,(this.y-this.radius-12)|0, this.facingLeft );
     //rect(this.x-this.radius,this.y-this.radius, this.radius*2, this.radius*2);
   },
 

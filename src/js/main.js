@@ -11,13 +11,13 @@ init = () => {
   totalSounds = 3;
   score = 0; //
   //fuelAmount = 12000000000;
-  fuelTimer = 30;
+  fuelTimer = 100;
   parts = 0;
   last = 0;
   dt = 0;
   now = 0;
   t = 0;
-  state = 'menu';
+  state = 'spritesheet';
   splodes = [];
 
 

@@ -16,7 +16,7 @@ states.menu = {
         //titleSong.sound.stop();
         //transition = true;
       }
-      if(Key.justReleased(Key.x)){
+      if(Key.justReleased(Key.r)){
         state = 'spritesheet';
       }
       // if(transition){

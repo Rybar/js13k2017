@@ -1018,9 +1018,9 @@ function drawSpriteSheet(){
   pset(12+5,3+3,21);
 
   //body
-  fillRect(10+32,17,3,1,5);
-  fillRect(8+32,19,7,7,5);
-  fillRect(9+32,23,5,5,0);
+  fillRect(10+34,17-2,3,1,5);
+  fillRect(8+34,19-2,7,7,5);
+  fillRect(9+34,23-2,5,5,0);
 
   //wheel
   fillCircle(11+128,28,5,13);
@@ -1039,4 +1039,4 @@ function drawSpriteSheet(){
   spr(32,0,32,32, 192-32+5, 3);
   spr(64,0,32,32, 192-32+5, 3);
   spr(0,0,32,32, 192-32, 0); //head
-}
+};

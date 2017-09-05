@@ -27,6 +27,35 @@ splode.prototype.draw = function(){
 
   }
 
+  function blast(x = 0,y = 0,size = 10,speed = 10, color = 21, filled=false){
+    this.x = x;
+    this.y = y;
+    this.maxSize = size;
+    this.speed = 10;
+    this.counter = this.speed;
+    this.color = color;
+    this.size = 1;
+    this.filled = filled;
+
+    s = this;
+  }
+
+  blast.prototype.draw = function(){
+    this.size++;
+    if(this.size > this.maxSize)return;
+      if(this.filled){
+        fillCircle(this.x,this.y, this.size, this.color);
+      }else{
+        circle(this.x,this.y, this.size, this.color);
+      }
+      this.counter--;
+      if(this.counter==0){
+        this.size++;
+        this.counter = this.speed;
+      }
+
+    }
+
 // function Particle() {
 //
 //   this.inUse = false;
