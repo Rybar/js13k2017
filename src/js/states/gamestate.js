@@ -8,7 +8,7 @@ states.game = {
     //   playSound(sounds.gameMusic, 1, 0, true);
     // }
 
-    if(Key.justReleased(Key.f))state = 'gameover';
+    if(Key.isDown(Key.f))state = 'spritesheet';
     //rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].update();  //1d array math y * width + x;
     player.update(dt);
     fuelTimer -= dt;

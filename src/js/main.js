@@ -5,6 +5,8 @@ states = {};
 
 init = () => {
 
+  lcg.setSeed(1019);
+  lcg.nextInt();
 
   sounds = {};
   soundsLoaded = 0;

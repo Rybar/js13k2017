@@ -2,17 +2,20 @@ states.spritesheet = {
 
     step: function(dt) {
 
-        if(Key.justReleased(Key.x)){
+        if(Key.isDown(Key.x)){
           roomSwitch();
           state = 'menu';
         }
+
+        if(Key.isDown(Key.p))state = 'game';
+
     },
 
     render: function(dt) {
 
         renderTarget = SCREEN;
         clear(0);
-        checker(0,0,384,256,256/32|0,384/32|0,1);
+        //checker(0,0,384,256,256/32|0,384/32|0,1);
         renderSource = SPRITES; spr();
         spr(0,0,22,34, 300,100);
 

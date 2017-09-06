@@ -10,7 +10,7 @@ Stats.Panel=function(h,k,l){var c=Infinity,g=0,e=Math.round,a=e(window.devicePix
 
 const WIDTH =     384;
 const HEIGHT =    256;
-const PAGES =     10;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
+const PAGES =     11;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
 const PAGESIZE = WIDTH*HEIGHT;
 
 const SCREEN = 0;
@@ -18,7 +18,7 @@ const BUFFER = PAGESIZE;
 const DEBUG = PAGESIZE*2;
 const SCRATCH = PAGESIZE*3;
 const SCRATCH2 = PAGESIZE*4;
-const SPRITES = PAGESIZE*5;
+const SPRITES = PAGESIZE*10;
 const COLLISION = PAGESIZE*6;
 const MIDGROUND = PAGESIZE*7;
 const FOREGROUND = PAGESIZE*8;
@@ -64,11 +64,11 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
   }
 
   function pset(x, y, color) { //an index from colors[], 0-31
-    x = x|0; y = y|0; color = color|0;
+    x = (x|0).clamp(0,WIDTH-1);
+    y = (y|0).clamp(0,HEIGHT-1);
+    color = color|0;
 
-    if (x > 0 && x < WIDTH && y > 0 && y < HEIGHT) {
-      ram[renderTarget + y * WIDTH + x] = color;
-    }
+    ram[renderTarget + y * WIDTH + x] = color;
   }
 
   function pget(x, y, page=renderTarget){
@@ -408,8 +408,8 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
    let destWidth = sw * scale;
     let destHeight = sh * scale;
 
-   let halfWidth = (destWidth / 2 * 1.41421356237)|0;  //area will always be square, hypotenuse trick
-    let halfHeight = (destHeight / 2 * 1.41421356237)|0;
+   let halfWidth = (destWidth / 2 * 1.41421356237)|0 + 5;  //area will always be square, hypotenuse trick
+    let halfHeight = (destHeight / 2 * 1.41421356237)|0 + 5;
 
    let startX = -halfWidth;
     let endX = halfWidth;
@@ -1515,6 +1515,7 @@ fontBitmap = "111111000111111100011000111110100011111010001111101111110000100001
 
 
 function drawSpriteSheet(){
+  clear(0);
   renderTarget = SPRITES;
   renderSource = SPRITES;
   //head
@@ -1544,7 +1545,7 @@ function drawSpriteSheet(){
   circle(11+64,28,1,5);
 
   //arm
-  fillTriangle(11+96,19, 18+96,27,  21+96,23, 8);
+  fillTriangle(9+96,19, 18+96,27,  21+96,23, 8);
 
   //fuelrod
   fillRect(14+192,10,4,12,9);
@@ -1553,10 +1554,23 @@ function drawSpriteSheet(){
   renderSource = BUFFER; spr();
 
   renderSource = SPRITES;
-  spr(64+32,0,32,32, 192-32+5, 3);
-  spr(32,0,32,32, 192-32+5, 3);
-  spr(64,0,32,32, 192-32+5, 3);
+  spr(128,0,32,40, 192-32+5, 4); //wheel
+  spr(32,0,32,32, 192-32+2, 5); //body
+  spr(64,0,32,32, 192-32+5, 4); //wheel arm
+  spr(64+32,0,32,32, 192-32+5, 3); //arm
   spr(0,0,32,32, 192-32, 0); //head
+
+  //spr(128,0,32,40, 192-32+5, 4+40); //wheel
+  spr(32,0,32,32, 192-32+2, 5+40); //body
+  //spr(64,0,32,32, 192-32+5, 4+40); //wheel arm
+  //spr(64+32,0,32,32, 192-32+5, 3+40); //arm
+  spr(0,0,32,32, 192-32, 0+40); //head
+
+  //spr(128,0,32,40, 192-32+5, 4+40); //wheel
+  spr(32,0,32,32, 192-32+2, 5+80); //body
+  //spr(64,0,32,32, 192-32+5, 4+40); //wheel arm
+  spr(64+32,0,32,32, 192-32+5, 3+80); //arm
+  spr(0,0,32,32, 192-32, 0+80); //head
 };
 
 var lcg = {
@@ -2005,6 +2019,8 @@ states = {};
 
 init = () => {
 
+  lcg.setSeed(1019);
+  lcg.nextInt();
 
   sounds = {};
   soundsLoaded = 0;
@@ -2101,7 +2117,7 @@ loop = e => {
 //----- END main.js---------------
 
 world = [
-  8,0,0,0,0,0,0,0,0,0,
+  8,7,0,0,0,0,0,0,0,0,
   0,2,0,0,0,0,1,0,0,0,
   0,0,0,1,0,0,0,0,2,0,
   0,0,0,0,0,0,1,0,0,0,
@@ -2113,6 +2129,11 @@ const LEFT = 1;
 const RIGHT = 2;
 const UP = 3;
 const DOWN = 4;
+
+const HEADMODE = 1;
+const BODYMODE = 2;
+const ARMMODE = 3;
+const THRUSTERMODE = 4;
 
 const WALLS = 21;
 const FUELCELL = 8;
@@ -2229,7 +2250,8 @@ rooms = [
 
           bgstars();
           denseGreeble();
-          foregroundGreeble();
+          bigGreeble();
+          //foregroundGreeble();
 
 
 
@@ -2245,10 +2267,13 @@ rooms = [
       bgstars();
 
       denseGreeble();
+      denseGreeble();
+      bigGreeble();
 
-      foregroundGreeble();
 
-      archi(245,110,25);
+      //foregroundGreeble();
+
+      //archi(245,110,25);
     }
   },
 
@@ -2256,12 +2281,11 @@ rooms = [
 ] // end rooms;
 
 function roomSwitch(direction){
-    renderTarget = COLLISION; clear(0);
-    renderTarget = SCRATCH; clear(0);
-    renderTarget = SCRATCH2; clear(0);
-    renderTarget = FOREGROUND; clear(0);
-    renderTarget = MIDGROUND; clear(0);
-    renderTarget = BUFFER; clear(0);
+    let j = PAGESIZE * PAGES;
+    while(--j){
+      ram[j] = 0;
+    }
+    drawSpriteSheet();
 
     switch(direction){
 
@@ -2337,6 +2361,7 @@ function drawFuel() {
       let y = i / WIDTH |0;
       let x = i % WIDTH;
       renderSource = SPRITES;
+      renderTarget = SCREEN;
       rspr(192,0,32,32,x-2,y-5,1, t*90);
     }
   };
@@ -2347,63 +2372,60 @@ function denseGreeble(){
   renderTarget = SCRATCH;
   clear(0);
   var i = 3000;
-  lcg.setSeed(1019);
+  //lcg.setSeed(1019);
   while(--i){
     let x = lcg.nextIntRange(0,WIDTH),
         y = lcg.nextIntRange(0,HEIGHT)
 
     if(pget(x,y,COLLISION) == WALLS){
-      cRect(
-        x + lcg.nextIntRange(-5,0),
-        y + lcg.nextIntRange(-10,0),
-        lcg.nextIntRange(0,15),
-        lcg.nextIntRange(0,10),
+    fillRect(
+        x + lcg.nextIntRange(-2,2),
+        y + lcg.nextIntRange(-2,2),
+        lcg.nextIntRange(2,6),
         1,
-        lcg.nextIntRange(22, 24)
+        2
       );
     }
   } //render greeble over walls
   renderTarget = SCRATCH2;
   clear(0);
-  outline(SCRATCH, SCRATCH2, 25, 20,26,2);
+  outline(SCRATCH, SCRATCH2, 1);
 
   renderTarget = MIDGROUND;
   renderSource = SCRATCH; spr();
   renderSource = SCRATCH2; spr();
-  //-------------------------
+
   renderTarget = SCRATCH;
-  clear(0);
   var i = 3000;
-  lcg.setSeed(1019);
+  //lcg.setSeed(1019);
   while(--i){
     let x = lcg.nextIntRange(0,WIDTH),
         y = lcg.nextIntRange(0,HEIGHT)
 
-    if(ram[COLLISION + x + y * WIDTH] == WALLS){
-      cRect(
-        x + lcg.nextIntRange(-5,0),
-        y + lcg.nextIntRange(-10,0),
-        lcg.nextIntRange(0,15),
-        lcg.nextIntRange(0,10),
+    if(pget(x,y,COLLISION) == WALLS){
+    fillRect(
+        x + lcg.nextIntRange(-2,2),
+        y + lcg.nextIntRange(-2,2),
         1,
-        lcg.nextIntRange(22, 24)
+        lcg.nextIntRange(2,5),
+        2
       );
     }
-  }
-
+  } //render greeble over walls
   renderTarget = SCRATCH2;
   clear(0);
-  outline(SCRATCH, SCRATCH2, 25, 20,26,2);
+  outline(SCRATCH, SCRATCH2, 1,4,1,1);
 
   renderTarget = MIDGROUND;
   renderSource = SCRATCH; spr();
   renderSource = SCRATCH2; spr();
+
 }
 
 function foregroundGreeble(){
   renderTarget = SCRATCH; clear(0);  //draw foreground elements
-  var i = 1000;
-  lcg.setSeed(1019);
+  var i = 400;
+  // lcg.setSeed(1019);
   while(--i){
     let x = lcg.nextIntRange(0,WIDTH),
         y = lcg.nextIntRange(0,HEIGHT)
@@ -2412,16 +2434,58 @@ function foregroundGreeble(){
       fillRect(
         x + lcg.nextIntRange(-5,0),
         y + lcg.nextIntRange(-20,0),
-        lcg.nextIntRange(0,5),
-        lcg.nextIntRange(0,20),
-        lcg.nextIntRange(22, 24)
+        lcg.nextIntRange(1,2),
+        lcg.nextIntRange(1,20),
+        22
       );
-      fillCircle(x,y-10,2, lcg.nextIntRange(22,24));
+      circle(x,y-10,1, 22);
     }
   }
   renderTarget = SCRATCH2; clear(0);
   outline(SCRATCH, SCRATCH2, 25, 20, 26, 2);
   renderTarget = FOREGROUND;
+  renderSource = SCRATCH; spr();
+  renderSource = SCRATCH2; spr();
+}
+
+function bigGreeble(){
+  renderTarget = SCRATCH; clear(0);  //draw foreground elements
+  var i = 1500;
+  //lcg.setSeed(1019);
+  while(--i){
+    let x = lcg.nextIntRange(0,WIDTH),
+        y = lcg.nextIntRange(0,HEIGHT)
+
+    if(ram[COLLISION + x + y * WIDTH] == WALLS){
+      cRect(
+        x,
+        y,
+        lcg.nextIntRange(5,13),
+        lcg.nextIntRange(2,4),
+        1,
+        25
+      );
+
+    }
+  }
+    let j = 2000;
+    while(--j){
+      let x = lcg.nextIntRange(0,WIDTH),
+          y = lcg.nextIntRange(0,HEIGHT)
+
+      if(ram[COLLISION + x + y * WIDTH] == WALLS){
+        fillRect(
+          x,
+          y,
+          lcg.nextIntRange(3,7),
+          lcg.nextIntRange(1,3),
+          0
+          );
+        }
+      }
+  renderTarget = SCRATCH2; clear(0);
+  outline(SCRATCH, SCRATCH2, 1, 23, 24);
+  renderTarget = MIDGROUND;
   renderSource = SCRATCH; spr();
   renderSource = SCRATCH2; spr();
 }
@@ -2555,16 +2619,14 @@ function drawMessage(message, color){
 //     return 0.00390625 * Math.pow(1.059463094, n + 200); //200 magic number gets note 1 in audible range around middle C
 // }
 
-/*global player */
-/*global Key */
-
-
+//-----------------------player.js---------------------
 player = {
 
   init (){
     this.x = 384/2;
     this.y =  30;
-    this.radius = 8;
+    this.radius = 20;
+    this.hitRadius = 8;
     this.xvel = 0;
     this.yvel = 0;
     this.xspeed = 100;
@@ -2579,10 +2641,15 @@ player = {
     this.facingLeft = false;
     this.jumping = true;
     this.angle = 0;
+    this.mode = HEADMODE;
 
   },
 
   update (dt) {
+    if(Key.isDown(Key.z))player.mode = THRUSTERMODE;
+    if(Key.isDown(Key.x))player.mode = BODYMODE;
+
+
     this.updateB();
     this.oldX = this.x;
     this.oldY = this.y;
@@ -2626,38 +2693,92 @@ player = {
     //console.info(this.collides());
 
     //player movement
-    if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
-      player.facingLeft = false;
-        if(this.jumping){
-          player.xvel =  player.xspeed;
+    switch(player.mode){
+
+      case HEADMODE:
+          if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
+            player.facingLeft = false;
+              if(this.jumping){
+                player.xvel =  player.xspeed;
+              }
+              else{player.xvel = 0;}
+          }
+          if (Key.isDown(Key.a) || Key.isDown(Key.LEFT)){
+              this.facingLeft = true;
+              if(this.jumping){
+                player.xvel =  - player.xspeed;
+              }
+              else{player.xvel = 0;}
+          }
+          if(Key.isDown(Key.w) || Key.isDown(Key.UP)){
+            if(!this.jumping && fuelTimer > 0){
+              this.jumping = true;
+              s_jump = true;
+              player.yvel = -player.yspeed;
+              //playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
+              //fuelAmount--;
+            }
+          }
+
+            player.angle -= player.xvel / 30;
+            if(player.jumping)player.angle -= player.facingLeft? -player.yvel /30 : player.yvel / 30;
+      break;
+
+      case BODYMODE:
+        player.maxXvel = 150;
+        player.minYvel = -150;
+        player.xspeed = 150;
+        player.yspeed = 150;
+        if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
+          player.facingLeft = false;
+              player.xvel =  player.xspeed;
         }
-        else{player.xvel = 0;}
-    }
-    if (Key.isDown(Key.a) || Key.isDown(Key.LEFT)){
-        this.facingLeft = true;
-        if(this.jumping){
-          player.xvel =  - player.xspeed;
+        if (Key.isDown(Key.a) || Key.isDown(Key.LEFT)){
+            this.facingLeft = true;
+              player.xvel =  - player.xspeed;
         }
-        else{player.xvel = 0;}
+        if(Key.isDown(Key.w) || Key.isDown(Key.UP)){
+          if(!this.jumping && fuelTimer > 0){
+            fuelTimer -= 0.7;
+            this.jumping = true;
+            s_jump = true;
+            player.yvel = -player.yspeed;
+            //playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
+            //fuelAmount--;
+          }
+
+        }
+        if(this.yvel > 50)this.jumping=false;
+
+      break;
+
+      case ARMMODE:
+
+      break;
+
+      case THRUSTERMODE:
+        player.maxXvel = 400;
+        player.minYvel = -600;
+        player.xspeed = 300;
+        player.yspeed = 300;
+        if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
+          player.facingLeft = false;
+              player.xvel =  player.xspeed;
+        }
+        if (Key.isDown(Key.a) || Key.isDown(Key.LEFT)){
+            this.facingLeft = true;
+              player.xvel =  - player.xspeed;
+        }
+        if(Key.isDown(Key.w) || Key.isDown(Key.UP)){
+            player.yvel = -player.yspeed;
+            //playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
+            //fuelAmount--;
+
+        }
+      break;
+
     }
-    if(Key.isDown(Key.w) || Key.isDown(Key.UP)){
-      if(!this.jumping && fuelTimer > 0){
-        this.jumping = true;
-        s_jump = true;
-        player.yvel = -player.yspeed;
-        //playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
-        //fuelAmount--;
-      }
-    }
 
-
-      player.angle -= player.xvel / 30;
-
-      if(player.jumping)player.angle -= player.facingLeft? -player.yvel /30 : player.yvel / 30;
-
-    // if(Key.isDown(Key.s) || Key.isDown(Key.DOWN)) {
-    //   player.yvel = player.yspeed;
-    // }
 
     //world wrap for player
     if(player.x > WIDTH){
@@ -2680,16 +2801,48 @@ player = {
   },
 
   draw (dt) {
-    //fillRect(this.x-this.radius, this.y-this.radius, this.radius, this.radius, 8);
-    renderSource = SPRITES;
-    renderTarget = BUFFER;
-    rspr(0,0,32,32,player.x, player.y, 1, player.angle);
-    //rect(this.x-this.radius,this.y-this.radius, this.radius*2, this.radius*2);
+    switch(player.mode){
+      case HEADMODE:
+      renderSource = SPRITES;
+      rspr(0,0,32,32,player.x, player.y, 1, player.angle);
+      break;
+      case BODYMODE:
+        renderSource = SPRITES;
+        //spr(128,0,32,40, player.b.x+5-16, player.b.y+4-30); //wheel
+        spr(32,0,32,32, player.b.x+2-16, player.b.y+5-24); //body
+        //spr(64,0,32,32, player.b.x+5-16, player.b.y+4-30); //wheel arm
+        //spr(64+32,0,32,32, player.b.x+5-16 + (this.facingLeft ? -12 : 0), player.b.y+3-30, this.facingLeft); //arm
+        spr(0,0,32,32, player.b.x-16, player.b.y-24, player.facingLeft); //head
+
+      break;
+      case ARMMODE:
+        renderSource = SPRITES;
+
+        //spr(128,0,32,40, player.b.x+5-16, player.b.y+4-30); //wheel
+        spr(32,0,32,32, player.b.x+2-16, player.b.y+5-30); //body
+        //spr(64,0,32,32, player.b.x+5-16, player.b.y+4-30); //wheel arm
+        spr(64+32,0,32,32, player.b.x+5-16 + (this.facingLeft ? -12 : 0), player.b.y+3-30, this.facingLeft); //arm
+        spr(0,0,32,32, player.b.x-16, player.b.y-30, player.facingLeft); //head
+
+      break;
+      case THRUSTERMODE:
+        renderSource = SPRITES;
+        //rspr(0,0,32,32,player.x, player.y, 1, player.angle);
+        //spr(192-32, 0, 32, 40, player.b.x-16, player.b.y-16, this.facingLeft);
+
+        spr(128,0,32,40, player.b.x+5-16, player.b.y+4-30); //wheel
+        spr(32,0,32,32, player.b.x+2-16, player.b.y+5-30); //body
+        spr(64,0,32,32, player.b.x+5-16, player.b.y+4-30); //wheel arm
+        spr(64+32,0,32,32, player.b.x+5-16 + (this.facingLeft ? -12 : 0), player.b.y+3-30, this.facingLeft); //arm
+        spr(0,0,32,32, player.b.x-16, player.b.y-30, player.facingLeft); //head
+      break;
+    }
+
   },
 
   collides () {
-    for(var i = -this.radius; i < this.radius; i++){
-      for(var j = -this.radius; j < this.radius; j++){
+    for(var i = -this.hitRadius; i < this.hitRadius; i++){
+      for(var j = -this.hitRadius; j < this.hitRadius; j++){
         let check = ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH]
         if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
           player.jumping = false;
@@ -3006,22 +3159,16 @@ states.menu = {
         //titleSong.sound.stop();
         //transition = true;
       }
-      if(Key.justReleased(Key.r)){
-        state = 'spritesheet';
-      }
-      // if(transition){
-      //   transitionOut();
-      //   transition = false;
-      // }
+
 
   },
 
   render: function(dt) {
     renderTarget = COLLISION; clear(0);
-    renderTarget = 0x0; clear(0);
+    renderTarget = SCREEN; clear(0);
+    renderTarget = BACKGROUND; clear(0);
     renderTarget = BUFFER; clear(0);
     renderTarget = SCRATCH; clear(0);
-    renderTarget = SCREEN; clear(0);
 
     renderTarget = COLLISION;
     text([
@@ -3033,66 +3180,23 @@ states.menu = {
             'center',
             'top',
             6,
-            25,
+            WALLS,
         ]);
 
     renderTarget = BUFFER;
     renderSource = COLLISION; spr();
 
-    renderTarget = SCRATCH2;
+     lcg.setSeed(21);
 
-    lcg.setSeed(21);
-    var j = 6000;
-    while(--j){
-      let x = lcg.nextIntRange(0,WIDTH),
-          y = lcg.nextIntRange(0,HEIGHT)
-
-      if(ram[COLLISION + x + y * WIDTH]){
-        fillRect(
-          x + lcg.nextIntRange(-2,2),
-          y + lcg.nextIntRange(-1,1),
-          1,
-          lcg.nextIntRange(0,3),
-          lcg.nextIntRange(24, 25)
-        );
-      }
-    }
-    outline(SCRATCH2, SCRATCH, 25, 20, 23, 18);
-    renderTarget = BUFFER;
-    renderSource = SCRATCH2; spr();
-    renderSource = SCRATCH; spr();
-
-    renderTarget = SCRATCH2;
-
-    lcg.setSeed(20);
-    var j = 6000;
-    while(--j){
-      let x = lcg.nextIntRange(0,WIDTH),
-          y = lcg.nextIntRange(0,HEIGHT)
-
-      if(ram[COLLISION + x + y * WIDTH]){
-        fillRect(
-          x + lcg.nextIntRange(-1,1),
-          y + lcg.nextIntRange(0,1),
-          lcg.nextIntRange(1,5),
-          1,
-          lcg.nextIntRange(22, 24)
-        );
-      }
-    }
-    outline(SCRATCH2, SCRATCH, 25, 20, 23, 18);
-    renderTarget = BUFFER;
-    renderSource = SCRATCH2; spr();
-    renderSource = SCRATCH; spr();
 
     player.draw();
     renderSource = SPRITES;
     let bots = 8;
     while(--bots){
-      spr(0,0,25,36, 192+25*bots, 40);
+      spr(96+64,0,25,36, 192+25*bots, 40);
     }
 
-    rspr(1,1,25,36, 64,64, 1, 45);
+    //rspr(1,1,25,36, 64,64, 1, 45);
 
 
     text([
@@ -3107,7 +3211,7 @@ states.menu = {
             21,
         ]);
 
-        renderTarget = SCREEN;
+        renderTarget = SCRATCH;
         var i = 8000;
         while(--i){
           pset((lcg.nextIntRange(0,384)+t*10|0)%384, lcg.nextIntRange(0,256), 1);
@@ -3121,7 +3225,9 @@ states.menu = {
           pset((lcg.nextIntRange(0,384)+t*30|0)%384, lcg.nextIntRange(0,256), 21);
         }
 
+        renderTarget = SCREEN;
         outline(BUFFER, SCREEN, 15);
+        renderSource = SCRATCH; spr();
         renderSource = BUFFER; spr();
 
         //   if(pal[31] == 0){
@@ -3147,7 +3253,7 @@ states.game = {
     //   playSound(sounds.gameMusic, 1, 0, true);
     // }
 
-    if(Key.justReleased(Key.f))state = 'gameover';
+    if(Key.isDown(Key.f))state = 'spritesheet';
     //rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].update();  //1d array math y * width + x;
     player.update(dt);
     fuelTimer -= dt;
@@ -3298,17 +3404,20 @@ states.spritesheet = {
 
     step: function(dt) {
 
-        if(Key.justReleased(Key.x)){
+        if(Key.isDown(Key.x)){
           roomSwitch();
           state = 'menu';
         }
+
+        if(Key.isDown(Key.p))state = 'game';
+
     },
 
     render: function(dt) {
 
         renderTarget = SCREEN;
         clear(0);
-        checker(0,0,384,256,256/32|0,384/32|0,1);
+        //checker(0,0,384,256,256/32|0,384/32|0,1);
         renderSource = SPRITES; spr();
         spr(0,0,22,34, 300,100);
 

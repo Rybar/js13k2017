@@ -1,13 +1,11 @@
-/*global player */
-/*global Key */
-
-
+//-----------------------player.js---------------------
 player = {
 
   init (){
     this.x = 384/2;
     this.y =  30;
-    this.radius = 8;
+    this.radius = 20;
+    this.hitRadius = 8;
     this.xvel = 0;
     this.yvel = 0;
     this.xspeed = 100;
@@ -22,10 +20,15 @@ player = {
     this.facingLeft = false;
     this.jumping = true;
     this.angle = 0;
+    this.mode = HEADMODE;
 
   },
 
   update (dt) {
+    if(Key.isDown(Key.z))player.mode = THRUSTERMODE;
+    if(Key.isDown(Key.x))player.mode = BODYMODE;
+
+
     this.updateB();
     this.oldX = this.x;
     this.oldY = this.y;
@@ -69,38 +72,92 @@ player = {
     //console.info(this.collides());
 
     //player movement
-    if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
-      player.facingLeft = false;
-        if(this.jumping){
-          player.xvel =  player.xspeed;
+    switch(player.mode){
+
+      case HEADMODE:
+          if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
+            player.facingLeft = false;
+              if(this.jumping){
+                player.xvel =  player.xspeed;
+              }
+              else{player.xvel = 0;}
+          }
+          if (Key.isDown(Key.a) || Key.isDown(Key.LEFT)){
+              this.facingLeft = true;
+              if(this.jumping){
+                player.xvel =  - player.xspeed;
+              }
+              else{player.xvel = 0;}
+          }
+          if(Key.isDown(Key.w) || Key.isDown(Key.UP)){
+            if(!this.jumping && fuelTimer > 0){
+              this.jumping = true;
+              s_jump = true;
+              player.yvel = -player.yspeed;
+              //playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
+              //fuelAmount--;
+            }
+          }
+
+            player.angle -= player.xvel / 30;
+            if(player.jumping)player.angle -= player.facingLeft? -player.yvel /30 : player.yvel / 30;
+      break;
+
+      case BODYMODE:
+        player.maxXvel = 150;
+        player.minYvel = -150;
+        player.xspeed = 150;
+        player.yspeed = 150;
+        if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
+          player.facingLeft = false;
+              player.xvel =  player.xspeed;
         }
-        else{player.xvel = 0;}
-    }
-    if (Key.isDown(Key.a) || Key.isDown(Key.LEFT)){
-        this.facingLeft = true;
-        if(this.jumping){
-          player.xvel =  - player.xspeed;
+        if (Key.isDown(Key.a) || Key.isDown(Key.LEFT)){
+            this.facingLeft = true;
+              player.xvel =  - player.xspeed;
         }
-        else{player.xvel = 0;}
+        if(Key.isDown(Key.w) || Key.isDown(Key.UP)){
+          if(!this.jumping && fuelTimer > 0){
+            fuelTimer -= 0.7;
+            this.jumping = true;
+            s_jump = true;
+            player.yvel = -player.yspeed;
+            //playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
+            //fuelAmount--;
+          }
+
+        }
+        if(this.yvel > 50)this.jumping=false;
+
+      break;
+
+      case ARMMODE:
+
+      break;
+
+      case THRUSTERMODE:
+        player.maxXvel = 400;
+        player.minYvel = -600;
+        player.xspeed = 300;
+        player.yspeed = 300;
+        if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
+          player.facingLeft = false;
+              player.xvel =  player.xspeed;
+        }
+        if (Key.isDown(Key.a) || Key.isDown(Key.LEFT)){
+            this.facingLeft = true;
+              player.xvel =  - player.xspeed;
+        }
+        if(Key.isDown(Key.w) || Key.isDown(Key.UP)){
+            player.yvel = -player.yspeed;
+            //playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
+            //fuelAmount--;
+
+        }
+      break;
+
     }
-    if(Key.isDown(Key.w) || Key.isDown(Key.UP)){
-      if(!this.jumping && fuelTimer > 0){
-        this.jumping = true;
-        s_jump = true;
-        player.yvel = -player.yspeed;
-        //playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
-        //fuelAmount--;
-      }
-    }
 
-
-      player.angle -= player.xvel / 30;
-
-      if(player.jumping)player.angle -= player.facingLeft? -player.yvel /30 : player.yvel / 30;
-
-    // if(Key.isDown(Key.s) || Key.isDown(Key.DOWN)) {
-    //   player.yvel = player.yspeed;
-    // }
 
     //world wrap for player
     if(player.x > WIDTH){
@@ -123,16 +180,48 @@ player = {
   },
 
   draw (dt) {
-    //fillRect(this.x-this.radius, this.y-this.radius, this.radius, this.radius, 8);
-    renderSource = SPRITES;
-    renderTarget = BUFFER;
-    rspr(0,0,32,32,player.x, player.y, 1, player.angle);
-    //rect(this.x-this.radius,this.y-this.radius, this.radius*2, this.radius*2);
+    switch(player.mode){
+      case HEADMODE:
+      renderSource = SPRITES;
+      rspr(0,0,32,32,player.x, player.y, 1, player.angle);
+      break;
+      case BODYMODE:
+        renderSource = SPRITES;
+        //spr(128,0,32,40, player.b.x+5-16, player.b.y+4-30); //wheel
+        spr(32,0,32,32, player.b.x+2-16, player.b.y+5-24); //body
+        //spr(64,0,32,32, player.b.x+5-16, player.b.y+4-30); //wheel arm
+        //spr(64+32,0,32,32, player.b.x+5-16 + (this.facingLeft ? -12 : 0), player.b.y+3-30, this.facingLeft); //arm
+        spr(0,0,32,32, player.b.x-16, player.b.y-24, player.facingLeft); //head
+
+      break;
+      case ARMMODE:
+        renderSource = SPRITES;
+
+        //spr(128,0,32,40, player.b.x+5-16, player.b.y+4-30); //wheel
+        spr(32,0,32,32, player.b.x+2-16, player.b.y+5-30); //body
+        //spr(64,0,32,32, player.b.x+5-16, player.b.y+4-30); //wheel arm
+        spr(64+32,0,32,32, player.b.x+5-16 + (this.facingLeft ? -12 : 0), player.b.y+3-30, this.facingLeft); //arm
+        spr(0,0,32,32, player.b.x-16, player.b.y-30, player.facingLeft); //head
+
+      break;
+      case THRUSTERMODE:
+        renderSource = SPRITES;
+        //rspr(0,0,32,32,player.x, player.y, 1, player.angle);
+        //spr(192-32, 0, 32, 40, player.b.x-16, player.b.y-16, this.facingLeft);
+
+        spr(128,0,32,40, player.b.x+5-16, player.b.y+4-30); //wheel
+        spr(32,0,32,32, player.b.x+2-16, player.b.y+5-30); //body
+        spr(64,0,32,32, player.b.x+5-16, player.b.y+4-30); //wheel arm
+        spr(64+32,0,32,32, player.b.x+5-16 + (this.facingLeft ? -12 : 0), player.b.y+3-30, this.facingLeft); //arm
+        spr(0,0,32,32, player.b.x-16, player.b.y-30, player.facingLeft); //head
+      break;
+    }
+
   },
 
   collides () {
-    for(var i = -this.radius; i < this.radius; i++){
-      for(var j = -this.radius; j < this.radius; j++){
+    for(var i = -this.hitRadius; i < this.hitRadius; i++){
+      for(var j = -this.hitRadius; j < this.hitRadius; j++){
         let check = ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH]
         if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
           player.jumping = false;

@@ -1000,6 +1000,7 @@ fontBitmap = "111111000111111100011000111110100011111010001111101111110000100001
 
 
 function drawSpriteSheet(){
+  clear(0);
   renderTarget = SPRITES;
   renderSource = SPRITES;
   //head
@@ -1029,7 +1030,7 @@ function drawSpriteSheet(){
   circle(11+64,28,1,5);
 
   //arm
-  fillTriangle(11+96,19, 18+96,27,  21+96,23, 8);
+  fillTriangle(9+96,19, 18+96,27,  21+96,23, 8);
 
   //fuelrod
   fillRect(14+192,10,4,12,9);
@@ -1038,8 +1039,21 @@ function drawSpriteSheet(){
   renderSource = BUFFER; spr();
 
   renderSource = SPRITES;
-  spr(64+32,0,32,32, 192-32+5, 3);
-  spr(32,0,32,32, 192-32+5, 3);
-  spr(64,0,32,32, 192-32+5, 3);
+  spr(128,0,32,40, 192-32+5, 4); //wheel
+  spr(32,0,32,32, 192-32+2, 5); //body
+  spr(64,0,32,32, 192-32+5, 4); //wheel arm
+  spr(64+32,0,32,32, 192-32+5, 3); //arm
   spr(0,0,32,32, 192-32, 0); //head
+
+  //spr(128,0,32,40, 192-32+5, 4+40); //wheel
+  spr(32,0,32,32, 192-32+2, 5+40); //body
+  //spr(64,0,32,32, 192-32+5, 4+40); //wheel arm
+  //spr(64+32,0,32,32, 192-32+5, 3+40); //arm
+  spr(0,0,32,32, 192-32, 0+40); //head
+
+  //spr(128,0,32,40, 192-32+5, 4+40); //wheel
+  spr(32,0,32,32, 192-32+2, 5+80); //body
+  //spr(64,0,32,32, 192-32+5, 4+40); //wheel arm
+  spr(64+32,0,32,32, 192-32+5, 3+80); //arm
+  spr(0,0,32,32, 192-32, 0+80); //head
 };

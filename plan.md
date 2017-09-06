@@ -14,14 +14,20 @@ you discover that you're not alone, and find a community of other discarded robo
 MVP todo:
 set up beginning! -must portray type of game and wow judges immediately.
 exploration-type games don't fare well, excitement needs to happen right when game begins.
-long fall, showing surface of planet and junk caverns, 
+long fall, showing surface of planet and junk caverns
 
-room structure to allow for items
-item collection
-text help -bottom of screen messages, guide player, hint at story
-explore possibilty of PCG world gen; both rooms and world level
-player abilities awarded for item collection
-win state
+part collection / play stages:
+  rolly head. limited capacity to hop around, must find energy source before system failure (timer)
+  body, aux thrusters online. (higher jump)
+  arm, energy capacity increased, phase disruptor armed (for mining)
+  lower body / wheel: self-sustaining power online, flight enabled (no longer need energy packs)
+
+win state:
+  -rejoin your bot crew, or investigate other mystery -might run out of dev time for this bit
+
+
+
+
 
 
 item collection

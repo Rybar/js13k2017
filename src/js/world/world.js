@@ -1,5 +1,5 @@
 world = [
-  8,0,0,0,0,0,0,0,0,0,
+  8,7,0,0,0,0,0,0,0,0,
   0,2,0,0,0,0,1,0,0,0,
   0,0,0,1,0,0,0,0,2,0,
   0,0,0,0,0,0,1,0,0,0,
@@ -11,6 +11,11 @@ const LEFT = 1;
 const RIGHT = 2;
 const UP = 3;
 const DOWN = 4;
+
+const HEADMODE = 1;
+const BODYMODE = 2;
+const ARMMODE = 3;
+const THRUSTERMODE = 4;
 
 const WALLS = 21;
 const FUELCELL = 8;
@@ -127,7 +132,8 @@ rooms = [
 
           bgstars();
           denseGreeble();
-          foregroundGreeble();
+          bigGreeble();
+          //foregroundGreeble();
 
 
 
@@ -143,10 +149,13 @@ rooms = [
       bgstars();
 
       denseGreeble();
+      denseGreeble();
+      bigGreeble();
 
-      foregroundGreeble();
 
-      archi(245,110,25);
+      //foregroundGreeble();
+
+      //archi(245,110,25);
     }
   },
 
@@ -154,12 +163,11 @@ rooms = [
 ] // end rooms;
 
 function roomSwitch(direction){
-    renderTarget = COLLISION; clear(0);
-    renderTarget = SCRATCH; clear(0);
-    renderTarget = SCRATCH2; clear(0);
-    renderTarget = FOREGROUND; clear(0);
-    renderTarget = MIDGROUND; clear(0);
-    renderTarget = BUFFER; clear(0);
+    let j = PAGESIZE * PAGES;
+    while(--j){
+      ram[j] = 0;
+    }
+    drawSpriteSheet();
 
     switch(direction){
 
@@ -235,6 +243,7 @@ function drawFuel() {
       let y = i / WIDTH |0;
       let x = i % WIDTH;
       renderSource = SPRITES;
+      renderTarget = SCREEN;
       rspr(192,0,32,32,x-2,y-5,1, t*90);
     }
   };
@@ -245,63 +254,60 @@ function denseGreeble(){
   renderTarget = SCRATCH;
   clear(0);
   var i = 3000;
-  lcg.setSeed(1019);
+  //lcg.setSeed(1019);
   while(--i){
     let x = lcg.nextIntRange(0,WIDTH),
         y = lcg.nextIntRange(0,HEIGHT)
 
     if(pget(x,y,COLLISION) == WALLS){
-      cRect(
-        x + lcg.nextIntRange(-5,0),
-        y + lcg.nextIntRange(-10,0),
-        lcg.nextIntRange(0,15),
-        lcg.nextIntRange(0,10),
+    fillRect(
+        x + lcg.nextIntRange(-2,2),
+        y + lcg.nextIntRange(-2,2),
+        lcg.nextIntRange(2,6),
         1,
-        lcg.nextIntRange(22, 24)
+        2
       );
     }
   } //render greeble over walls
   renderTarget = SCRATCH2;
   clear(0);
-  outline(SCRATCH, SCRATCH2, 25, 20,26,2);
+  outline(SCRATCH, SCRATCH2, 1);
 
   renderTarget = MIDGROUND;
   renderSource = SCRATCH; spr();
   renderSource = SCRATCH2; spr();
-  //-------------------------
+
   renderTarget = SCRATCH;
-  clear(0);
   var i = 3000;
-  lcg.setSeed(1019);
+  //lcg.setSeed(1019);
   while(--i){
     let x = lcg.nextIntRange(0,WIDTH),
         y = lcg.nextIntRange(0,HEIGHT)
 
-    if(ram[COLLISION + x + y * WIDTH] == WALLS){
-      cRect(
-        x + lcg.nextIntRange(-5,0),
-        y + lcg.nextIntRange(-10,0),
-        lcg.nextIntRange(0,15),
-        lcg.nextIntRange(0,10),
+    if(pget(x,y,COLLISION) == WALLS){
+    fillRect(
+        x + lcg.nextIntRange(-2,2),
+        y + lcg.nextIntRange(-2,2),
         1,
-        lcg.nextIntRange(22, 24)
+        lcg.nextIntRange(2,5),
+        2
       );
     }
-  }
-
+  } //render greeble over walls
   renderTarget = SCRATCH2;
   clear(0);
-  outline(SCRATCH, SCRATCH2, 25, 20,26,2);
+  outline(SCRATCH, SCRATCH2, 1,4,1,1);
 
   renderTarget = MIDGROUND;
   renderSource = SCRATCH; spr();
   renderSource = SCRATCH2; spr();
+
 }
 
 function foregroundGreeble(){
   renderTarget = SCRATCH; clear(0);  //draw foreground elements
-  var i = 1000;
-  lcg.setSeed(1019);
+  var i = 400;
+  // lcg.setSeed(1019);
   while(--i){
     let x = lcg.nextIntRange(0,WIDTH),
         y = lcg.nextIntRange(0,HEIGHT)
@@ -310,16 +316,58 @@ function foregroundGreeble(){
       fillRect(
         x + lcg.nextIntRange(-5,0),
         y + lcg.nextIntRange(-20,0),
-        lcg.nextIntRange(0,5),
-        lcg.nextIntRange(0,20),
-        lcg.nextIntRange(22, 24)
+        lcg.nextIntRange(1,2),
+        lcg.nextIntRange(1,20),
+        22
       );
-      fillCircle(x,y-10,2, lcg.nextIntRange(22,24));
+      circle(x,y-10,1, 22);
     }
   }
   renderTarget = SCRATCH2; clear(0);
   outline(SCRATCH, SCRATCH2, 25, 20, 26, 2);
   renderTarget = FOREGROUND;
+  renderSource = SCRATCH; spr();
+  renderSource = SCRATCH2; spr();
+}
+
+function bigGreeble(){
+  renderTarget = SCRATCH; clear(0);  //draw foreground elements
+  var i = 1500;
+  //lcg.setSeed(1019);
+  while(--i){
+    let x = lcg.nextIntRange(0,WIDTH),
+        y = lcg.nextIntRange(0,HEIGHT)
+
+    if(ram[COLLISION + x + y * WIDTH] == WALLS){
+      cRect(
+        x,
+        y,
+        lcg.nextIntRange(5,13),
+        lcg.nextIntRange(2,4),
+        1,
+        25
+      );
+
+    }
+  }
+    let j = 2000;
+    while(--j){
+      let x = lcg.nextIntRange(0,WIDTH),
+          y = lcg.nextIntRange(0,HEIGHT)
+
+      if(ram[COLLISION + x + y * WIDTH] == WALLS){
+        fillRect(
+          x,
+          y,
+          lcg.nextIntRange(3,7),
+          lcg.nextIntRange(1,3),
+          0
+          );
+        }
+      }
+  renderTarget = SCRATCH2; clear(0);
+  outline(SCRATCH, SCRATCH2, 1, 23, 24);
+  renderTarget = MIDGROUND;
   renderSource = SCRATCH; spr();
   renderSource = SCRATCH2; spr();
 }

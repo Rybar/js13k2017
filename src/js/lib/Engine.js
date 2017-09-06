@@ -2,7 +2,7 @@
 
 const WIDTH =     384;
 const HEIGHT =    256;
-const PAGES =     10;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
+const PAGES =     11;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
 const PAGESIZE = WIDTH*HEIGHT;
 
 const SCREEN = 0;
@@ -10,7 +10,7 @@ const BUFFER = PAGESIZE;
 const DEBUG = PAGESIZE*2;
 const SCRATCH = PAGESIZE*3;
 const SCRATCH2 = PAGESIZE*4;
-const SPRITES = PAGESIZE*5;
+const SPRITES = PAGESIZE*10;
 const COLLISION = PAGESIZE*6;
 const MIDGROUND = PAGESIZE*7;
 const FOREGROUND = PAGESIZE*8;
@@ -56,11 +56,11 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
   }
 
   function pset(x, y, color) { //an index from colors[], 0-31
-    x = x|0; y = y|0; color = color|0;
+    x = (x|0).clamp(0,WIDTH-1);
+    y = (y|0).clamp(0,HEIGHT-1);
+    color = color|0;
 
-    if (x > 0 && x < WIDTH && y > 0 && y < HEIGHT) {
-      ram[renderTarget + y * WIDTH + x] = color;
-    }
+    ram[renderTarget + y * WIDTH + x] = color;
   }
 
   function pget(x, y, page=renderTarget){
@@ -400,8 +400,8 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
    let destWidth = sw * scale;
     let destHeight = sh * scale;
 
-   let halfWidth = (destWidth / 2 * 1.41421356237)|0;  //area will always be square, hypotenuse trick
-    let halfHeight = (destHeight / 2 * 1.41421356237)|0;
+   let halfWidth = (destWidth / 2 * 1.41421356237)|0 + 5;  //area will always be square, hypotenuse trick
+    let halfHeight = (destHeight / 2 * 1.41421356237)|0 + 5;
 
    let startX = -halfWidth;
     let endX = halfWidth;
