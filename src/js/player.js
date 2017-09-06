@@ -8,8 +8,8 @@ player = {
     this.hitRadius = 8;
     this.xvel = 0;
     this.yvel = 0;
-    this.xspeed = 100;
-    this.yspeed = 100;
+    this.xspeed = 80;
+    this.yspeed = 80;
     this.drag = .8;
     this.gravity = 8;
     this.maxYvel = 400;
@@ -19,14 +19,17 @@ player = {
     this.b = {};
     this.facingLeft = false;
     this.jumping = true;
+    this.jumpCooldown = 0;
     this.angle = 0;
     this.mode = HEADMODE;
 
   },
 
   update (dt) {
-    if(Key.isDown(Key.z))player.mode = THRUSTERMODE;
-    if(Key.isDown(Key.x))player.mode = BODYMODE;
+    if(Key.isDown(Key.ONE))player.mode = HEADMODE;
+    if(Key.isDown(Key.TWO))player.mode = BODYMODE;
+    if(Key.isDown(Key.THREE))player.mode = ARMMODE;
+    if(Key.isDown(Key.FOUR))player.mode = THRUSTERMODE;
 
 
     this.updateB();
@@ -75,6 +78,7 @@ player = {
     switch(player.mode){
 
       case HEADMODE:
+        
           if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
             player.facingLeft = false;
               if(this.jumping){
@@ -90,9 +94,10 @@ player = {
               else{player.xvel = 0;}
           }
           if(Key.isDown(Key.w) || Key.isDown(Key.UP)){
-            if(!this.jumping && fuelTimer > 0){
+            if(!this.jumping && fuelTimer > 0 && player.jumpCooldown < 0){
               this.jumping = true;
               s_jump = true;
+              player.jumpCooldown = 50;
               player.yvel = -player.yspeed;
               //playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
               //fuelAmount--;
@@ -101,6 +106,8 @@ player = {
 
             player.angle -= player.xvel / 30;
             if(player.jumping)player.angle -= player.facingLeft? -player.yvel /30 : player.yvel / 30;
+            player.jumpCooldown--;
+            
       break;
 
       case BODYMODE:
@@ -116,7 +123,7 @@ player = {
             this.facingLeft = true;
               player.xvel =  - player.xspeed;
         }
-        if(Key.isDown(Key.w) || Key.isDown(Key.UP)){
+        if(Key.isDown(Key.w) || Key.isDown(Key.UP) || Key.isDown(Key.UP)){
           if(!this.jumping && fuelTimer > 0){
             fuelTimer -= 0.7;
             this.jumping = true;

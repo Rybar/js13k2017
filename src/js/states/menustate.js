@@ -16,16 +16,22 @@ states.menu = {
         //titleSong.sound.stop();
         //transition = true;
       }
-
+      if(Key.justReleased(Key.r)){
+        state = 'spritesheet';
+      }
+      // if(transition){
+      //   transitionOut();
+      //   transition = false;
+      // }
 
   },
 
   render: function(dt) {
     renderTarget = COLLISION; clear(0);
-    renderTarget = SCREEN; clear(0);
-    renderTarget = BACKGROUND; clear(0);
+    renderTarget = 0x0; clear(0);
     renderTarget = BUFFER; clear(0);
     renderTarget = SCRATCH; clear(0);
+    renderTarget = SCREEN; clear(0);
 
     renderTarget = COLLISION;
     text([
@@ -37,23 +43,66 @@ states.menu = {
             'center',
             'top',
             6,
-            WALLS,
+            25,
         ]);
 
     renderTarget = BUFFER;
     renderSource = COLLISION; spr();
 
-     lcg.setSeed(21);
+    renderTarget = SCRATCH2;
 
+    lcg.setSeed(21);
+    var j = 6000;
+    while(--j){
+      let x = lcg.nextIntRange(0,WIDTH),
+          y = lcg.nextIntRange(0,HEIGHT)
+
+      if(ram[COLLISION + x + y * WIDTH]){
+        fillRect(
+          x + lcg.nextIntRange(-2,2),
+          y + lcg.nextIntRange(-1,1),
+          1,
+          lcg.nextIntRange(0,3),
+          lcg.nextIntRange(24, 25)
+        );
+      }
+    }
+    outline(SCRATCH2, SCRATCH, 25, 20, 23, 18);
+    renderTarget = BUFFER;
+    renderSource = SCRATCH2; spr();
+    renderSource = SCRATCH; spr();
+
+    renderTarget = SCRATCH2;
+
+    lcg.setSeed(20);
+    var j = 6000;
+    while(--j){
+      let x = lcg.nextIntRange(0,WIDTH),
+          y = lcg.nextIntRange(0,HEIGHT)
+
+      if(ram[COLLISION + x + y * WIDTH]){
+        fillRect(
+          x + lcg.nextIntRange(-1,1),
+          y + lcg.nextIntRange(0,1),
+          lcg.nextIntRange(1,5),
+          1,
+          lcg.nextIntRange(22, 24)
+        );
+      }
+    }
+    outline(SCRATCH2, SCRATCH, 25, 20, 23, 18);
+    renderTarget = BUFFER;
+    renderSource = SCRATCH2; spr();
+    renderSource = SCRATCH; spr();
 
     player.draw();
     renderSource = SPRITES;
     let bots = 8;
     while(--bots){
-      spr(96+64,0,25,36, 192+25*bots, 40);
+      spr(192-32,0,32,40, 192+25*bots, 40);
     }
 
-    //rspr(1,1,25,36, 64,64, 1, 45);
+    rspr(1,1,25,36, 64,64, 1, 45);
 
 
     text([
@@ -68,7 +117,7 @@ states.menu = {
             21,
         ]);
 
-        renderTarget = SCRATCH;
+        renderTarget = SCREEN;
         var i = 8000;
         while(--i){
           pset((lcg.nextIntRange(0,384)+t*10|0)%384, lcg.nextIntRange(0,256), 1);
@@ -82,9 +131,7 @@ states.menu = {
           pset((lcg.nextIntRange(0,384)+t*30|0)%384, lcg.nextIntRange(0,256), 21);
         }
 
-        renderTarget = SCREEN;
         outline(BUFFER, SCREEN, 15);
-        renderSource = SCRATCH; spr();
         renderSource = BUFFER; spr();
 
         //   if(pal[31] == 0){
