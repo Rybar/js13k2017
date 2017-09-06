@@ -6,18 +6,23 @@ you spend the game finding enough body parts to escape and explore a wasteland o
 
 immediately the goal seems to be to find your body parts and get back to above.
 
-making it above, you're dismantled again, cavern explore restarts. -LOSE BUT CONTINUE
+secondary: explore mysterious environment, once fully repaired, -asteroid base thingy? something in the sky.
 
-you discover that you're not alone, and find a community of other discarded robots -WIN
-  score: parts discovered + time
+TODO:
+  hazard!
+    melty acid
+  finish bot platform
+  lightning/explosion effect
+  screenshake
+  one more particle type for gets, jumps, thrusters
+  world building
+   level progression for part finding
+    
 
-MVP todo:
-set up beginning! -must portray type of game and wow judges immediately.
-exploration-type games don't fare well, excitement needs to happen right when game begins.
-long fall, showing surface of planet and junk caverns
 
 part collection / play stages:
   rolly head. limited capacity to hop around, must find energy source before system failure (timer)
+    re-use lightning effect for jumps/hits
   body, aux thrusters online. (higher jump)
   arm, energy capacity increased, phase disruptor armed (for mining)
   lower body / wheel: self-sustaining power online, flight enabled (no longer need energy packs)
