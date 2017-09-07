@@ -2019,7 +2019,7 @@ states = {};
 
 init = () => {
 
-  lcg.setSeed(1019);
+  //lcg.setSeed(1019);
   lcg.nextInt();
 
   sounds = {};
@@ -2262,10 +2262,13 @@ rooms = [
     draw: function(dt){
       fillRect(0,205,384,10,WALLS);
       fillCircle(250,150,64,WALLS);
+      fillCircle(250,150,50,FUELCRYSTAL);
+
       pset(50, 180, FUELCELL);
 
       bgstars();
 
+      drawFuelCrystals();
       denseGreeble();
       denseGreeble();
       bigGreeble();
@@ -2317,6 +2320,19 @@ function roomSwitch(direction){
   renderTarget = COLLISION;
   rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].draw();
 
+}
+
+function reDraw(){
+  renderTarget = BACKGROUND; clear(0);
+  renderTarget = MIDGROUND; clear(0);
+  renderTarget = FOREGROUND; clear(0);
+  //
+  bgstars();
+  drawTerra();
+  drawFuelCrystals();
+  denseGreeble();
+  denseGreeble();
+  foregroundGreeble();
 }
 
 function archi(x,y,color){
@@ -2699,7 +2715,7 @@ player = {
     switch(player.mode){
 
       case HEADMODE:
-        
+
           if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
             player.facingLeft = false;
               if(this.jumping){
@@ -2728,7 +2744,7 @@ player = {
             player.angle -= player.xvel / 30;
             if(player.jumping)player.angle -= player.facingLeft? -player.yvel /30 : player.yvel / 30;
             player.jumpCooldown--;
-            
+
       break;
 
       case BODYMODE:
@@ -2746,7 +2762,7 @@ player = {
         }
         if(Key.isDown(Key.w) || Key.isDown(Key.UP) || Key.isDown(Key.UP)){
           if(!this.jumping && fuelTimer > 0){
-            fuelTimer -= 0.7;
+            fuelTimer -= 1;
             this.jumping = true;
             s_jump = true;
             player.yvel = -player.yspeed;
@@ -2760,6 +2776,35 @@ player = {
       break;
 
       case ARMMODE:
+
+        player.maxXvel = 150;
+        player.minYvel = -150;
+        player.xspeed = 150;
+        player.yspeed = 150;
+        if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
+          player.facingLeft = false;
+              player.xvel =  player.xspeed;
+        }
+        if (Key.isDown(Key.a) || Key.isDown(Key.LEFT)){
+            this.facingLeft = true;
+              player.xvel =  - player.xspeed;
+        }
+        if(Key.isDown(Key.w) || Key.isDown(Key.UP) || Key.isDown(Key.SPACE)){
+          if(!this.jumping && fuelTimer > 0){
+            fuelTimer -= 0.7;
+            this.jumping = true;
+            s_jump = true;
+            player.yvel = -player.yspeed;
+            //playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
+            //fuelAmount--;
+          }
+        }
+        if(Key.isDown(Key.x)){
+          splodes.push( new splode(player.x + (player.facingLeft ? -16 : 16), player.y) );
+          renderTarget = COLLISION;
+          fillCircle(player.x + (player.facingLeft ? -16 : 16), player.y, 16, 0);
+          reDraw(); //update room drawing
+        }
 
       break;
 
@@ -2815,28 +2860,19 @@ player = {
       break;
       case BODYMODE:
         renderSource = SPRITES;
-        //spr(128,0,32,40, player.b.x+5-16, player.b.y+4-30); //wheel
         spr(32,0,32,32, player.b.x+2-16, player.b.y+5-24); //body
-        //spr(64,0,32,32, player.b.x+5-16, player.b.y+4-30); //wheel arm
-        //spr(64+32,0,32,32, player.b.x+5-16 + (this.facingLeft ? -12 : 0), player.b.y+3-30, this.facingLeft); //arm
         spr(0,0,32,32, player.b.x-16, player.b.y-24, player.facingLeft); //head
 
       break;
       case ARMMODE:
         renderSource = SPRITES;
-
-        //spr(128,0,32,40, player.b.x+5-16, player.b.y+4-30); //wheel
-        spr(32,0,32,32, player.b.x+2-16, player.b.y+5-30); //body
-        //spr(64,0,32,32, player.b.x+5-16, player.b.y+4-30); //wheel arm
-        spr(64+32,0,32,32, player.b.x+5-16 + (this.facingLeft ? -12 : 0), player.b.y+3-30, this.facingLeft); //arm
-        spr(0,0,32,32, player.b.x-16, player.b.y-30, player.facingLeft); //head
+        spr(32,0,32,32, player.b.x+2-16, player.b.y+5-20); //body
+        spr(64+32,0,32,32, player.b.x+5-16 + (this.facingLeft ? -12 : 0), player.b.y+3-20, this.facingLeft); //arm
+        spr(0,0,32,32, player.b.x-16, player.b.y-20, player.facingLeft); //head
 
       break;
       case THRUSTERMODE:
         renderSource = SPRITES;
-        //rspr(0,0,32,32,player.x, player.y, 1, player.angle);
-        //spr(192-32, 0, 32, 40, player.b.x-16, player.b.y-16, this.facingLeft);
-
         spr(128,0,32,40, player.b.x+5-16, player.b.y+4-30); //wheel
         spr(32,0,32,32, player.b.x+2-16, player.b.y+5-30); //body
         spr(64,0,32,32, player.b.x+5-16, player.b.y+4-30); //wheel arm

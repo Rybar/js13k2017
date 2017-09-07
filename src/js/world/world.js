@@ -144,10 +144,13 @@ rooms = [
     draw: function(dt){
       fillRect(0,205,384,10,WALLS);
       fillCircle(250,150,64,WALLS);
+      fillCircle(250,150,50,FUELCRYSTAL);
+
       pset(50, 180, FUELCELL);
 
       bgstars();
 
+      drawFuelCrystals();
       denseGreeble();
       denseGreeble();
       bigGreeble();
@@ -199,6 +202,19 @@ function roomSwitch(direction){
   renderTarget = COLLISION;
   rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].draw();
 
+}
+
+function reDraw(){
+  renderTarget = BACKGROUND; clear(0);
+  renderTarget = MIDGROUND; clear(0);
+  renderTarget = FOREGROUND; clear(0);
+  //
+  bgstars();
+  drawTerra();
+  drawFuelCrystals();
+  denseGreeble();
+  denseGreeble();
+  foregroundGreeble();
 }
 
 function archi(x,y,color){
