@@ -5,15 +5,18 @@ states = {};
 
 init = () => {
 
-  //lcg.setSeed(1019);
-  lcg.nextInt();
+  lcg = new LCG(1019);
+  //lcg.nextInt();
+
+  roomNG = new LCG();
+  roomNG.setSeed(1019);
 
   sounds = {};
   soundsLoaded = 0;
   totalSounds = 3;
   score = 0; //
   //fuelAmount = 12000000000;
-  fuelTimer = 100;
+  fuelTimer = 1000;
   parts = 0;
   last = 0;
   dt = 0;

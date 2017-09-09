@@ -8,7 +8,6 @@ function splode(x = 0,y = 0,size = 10,speed = 10, color = 21, filled=false){
   this.size = 1;
   this.filled = filled;
 
-  s = this;
 }
 
 splode.prototype.draw = function(){

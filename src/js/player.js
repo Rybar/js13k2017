@@ -21,7 +21,9 @@ player = {
     this.jumping = true;
     this.jumpCooldown = 0;
     this.angle = 0;
-    this.mode = HEADMODE;
+    this.mode = ARMMODE;
+    this.gunCooldown = 0;
+    this.minedFuel = false;
 
   },
 
@@ -78,6 +80,8 @@ player = {
     switch(player.mode){
 
       case HEADMODE:
+          player.yspeed = 80;
+          player.xspeed = 80;
 
           if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
             player.facingLeft = false;
@@ -97,8 +101,11 @@ player = {
             if(!this.jumping && fuelTimer > 0 && player.jumpCooldown < 0){
               this.jumping = true;
               s_jump = true;
-              player.jumpCooldown = 50;
+              player.jumpCooldown = 5;
               player.yvel = -player.yspeed;
+              splodes.push(new splode(player.x+3,player.y+4, 7, 1, 9))
+              splodes.push(new splode(player.x-3,player.y+4, 7, 1, 9))
+
               //playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
               //fuelAmount--;
             }
@@ -152,7 +159,7 @@ player = {
             this.facingLeft = true;
               player.xvel =  - player.xspeed;
         }
-        if(Key.isDown(Key.w) || Key.isDown(Key.UP) || Key.isDown(Key.SPACE)){
+        if(Key.isDown(Key.w) || Key.isDown(Key.UP) || Key.isDown(Key.SPACE) || Key.isDown(Key.z)){
           if(!this.jumping && fuelTimer > 0){
             fuelTimer -= 0.7;
             this.jumping = true;
@@ -163,11 +170,46 @@ player = {
           }
         }
         if(Key.isDown(Key.x)){
-          splodes.push( new splode(player.x + (player.facingLeft ? -16 : 16), player.y) );
+          fuelTimer-=0.01;
+          splodes.push( new splode(
+            player.x + (player.facingLeft ? -16 : 16) + (Math.random()*2-1)|0,
+            player.y + (Math.random()*15-8)|0,
+            6,5
+          )
+        )
           renderTarget = COLLISION;
-          fillCircle(player.x + (player.facingLeft ? -16 : 16), player.y, 16, 0);
-          reDraw(); //update room drawing
+          console.log( pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) )
+          if( pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) == FUELCRYSTAL) player.minedFuel = true;
+          fillCircle(player.x + (player.facingLeft ? -10 : 10),
+          player.y + (Math.random()*20-15)|0, 10, 0);
+
+          if(player.gunCooldown < 0){
+            player.gunCooldown = 4;
+            redraw(); //update room drawing every 4 frames
+          }
         }
+        if(Key.isDown(Key.c)){
+          fuelTimer-=0.2;
+          splodes.push( new splode(
+            player.x + (player.facingLeft ? -16 : 16) + (Math.random()*2-1)|0,
+            player.y + (Math.random()*15-8)|0,
+            6,5
+          )
+        )
+          renderTarget = COLLISION;
+          fillCircle(player.x + (player.facingLeft ? -10 + -player.radius : 10 + player.radius),
+          player.y + (Math.random()*20-15)|0, 10, WALLS);
+          if(player.gunCooldown < 0){
+            player.gunCooldown = 4;
+            redraw(); //update room drawing every 4 frames
+          }
+        }
+        if(player.minedFuel){
+          pset(player.x + (player.facingLeft ? -10 : 10), player.y - 5, FUELCELL);
+          fuelTimer += 25;
+          player.minedFuel=false;
+        }
+        player.gunCooldown--;
 
       break;
 
@@ -247,8 +289,11 @@ player = {
   },
 
   collides () {
+    var offset = 0;
+    if(this.b.x + this.hitRadius > WIDTH) this.b.y -= 1;
     for(var i = -this.hitRadius; i < this.hitRadius; i++){
       for(var j = -this.hitRadius; j < this.hitRadius; j++){
+
         let check = ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH]
         if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
           player.jumping = false;
@@ -371,7 +416,7 @@ player = {
 
         splodes.push( new splode(o.x, o.y) );
 
-        fuelTimer += 0.5;
+        fuelTimer += 25;
         //playSound(sounds.jump, 1, player.x.map(0, WIDTH, -1, 1), false); //pan sound based on position
 
 

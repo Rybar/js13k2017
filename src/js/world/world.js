@@ -1,5 +1,5 @@
 world = [
-  8,7,0,0,0,0,0,0,0,0,
+  5,5,5,5,0,0,0,0,0,0,
   0,2,0,0,0,0,1,0,0,0,
   0,0,0,1,0,0,0,0,2,0,
   0,0,0,0,0,0,1,0,0,0,
@@ -21,6 +21,10 @@ const WALLS = 21;
 const FUELCELL = 8;
 const FUELCRYSTAL = 9;
 const TERRA = 4;
+
+const BODY = 27;
+const ARM = 28;
+const THRUSTER = 29;
 
 const WORLDWIDTH = 9;
 const WORLDHEIGHT = 5; // 0 index.
@@ -95,6 +99,10 @@ rooms = [
   {
     draw: function(dt){
 
+        fillRect(0,205,384,10,WALLS);
+        fillRect(192,100,100,200,FUELCRYSTAL);
+        pset(50, 180, FUELCELL);
+
     }
   },
   //6
@@ -148,12 +156,7 @@ rooms = [
 
       pset(50, 180, FUELCELL);
 
-      bgstars();
 
-      drawFuelCrystals();
-      denseGreeble();
-      denseGreeble();
-      bigGreeble();
 
 
       //foregroundGreeble();
@@ -166,6 +169,8 @@ rooms = [
 ] // end rooms;
 
 function roomSwitch(direction){
+  lcg.setSeed(1019);
+
     let j = PAGESIZE * PAGES;
     while(--j){
       ram[j] = 0;
@@ -201,10 +206,15 @@ function roomSwitch(direction){
 
   renderTarget = COLLISION;
   rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].draw();
+  redraw();
+
 
 }
 
-function reDraw(){
+function redraw(){
+
+  lcg.setSeed(1019 + currentRoom[0] + currentRoom[1] * 1234.5678);
+  //roomNG.setSeed(1019);
   renderTarget = BACKGROUND; clear(0);
   renderTarget = MIDGROUND; clear(0);
   renderTarget = FOREGROUND; clear(0);
@@ -214,7 +224,9 @@ function reDraw(){
   drawFuelCrystals();
   denseGreeble();
   denseGreeble();
+  bigGreeble()
   foregroundGreeble();
+  //
 }
 
 function archi(x,y,color){
@@ -266,20 +278,23 @@ function drawFuel() {
 }
 
 function denseGreeble(){
+
   renderSource = COLLISION;
   renderTarget = SCRATCH;
   clear(0);
+
   var i = 3000;
-  //lcg.setSeed(1019);
   while(--i){
     let x = lcg.nextIntRange(0,WIDTH),
         y = lcg.nextIntRange(0,HEIGHT)
 
     if(pget(x,y,COLLISION) == WALLS){
+      roomNG.setSeed(lcg.seed + x + y * 1234.5678);
+
     fillRect(
-        x + lcg.nextIntRange(-2,2),
-        y + lcg.nextIntRange(-2,2),
-        lcg.nextIntRange(2,6),
+        x + roomNG.nextIntRange(-2,2),
+        y + roomNG.nextIntRange(-2,2),
+        roomNG.nextIntRange(2,6),
         1,
         2
       );
@@ -293,26 +308,26 @@ function denseGreeble(){
   renderSource = SCRATCH; spr();
   renderSource = SCRATCH2; spr();
 
-  renderTarget = SCRATCH;
   var i = 3000;
-  //lcg.setSeed(1019);
   while(--i){
     let x = lcg.nextIntRange(0,WIDTH),
         y = lcg.nextIntRange(0,HEIGHT)
 
     if(pget(x,y,COLLISION) == WALLS){
+      roomNG.setSeed(lcg.seed + x + y * 1234.5678);
+
     fillRect(
-        x + lcg.nextIntRange(-2,2),
-        y + lcg.nextIntRange(-2,2),
+        x + roomNG.nextIntRange(-2,2),
+        y + roomNG.nextIntRange(-2,2),
         1,
-        lcg.nextIntRange(2,5),
+        roomNG.nextIntRange(2,6),
         2
       );
     }
   } //render greeble over walls
   renderTarget = SCRATCH2;
   clear(0);
-  outline(SCRATCH, SCRATCH2, 1,4,1,1);
+  outline(SCRATCH, SCRATCH2, 1);
 
   renderTarget = MIDGROUND;
   renderSource = SCRATCH; spr();
@@ -329,11 +344,12 @@ function foregroundGreeble(){
         y = lcg.nextIntRange(0,HEIGHT)
 
     if(ram[COLLISION + x + y * WIDTH] == WALLS){
+      roomNG.setSeed(lcg.seed + x + y * 1234.5678);
       fillRect(
-        x + lcg.nextIntRange(-5,0),
-        y + lcg.nextIntRange(-20,0),
-        lcg.nextIntRange(1,2),
-        lcg.nextIntRange(1,20),
+        x + roomNG.nextIntRange(-5,0),
+        y + roomNG.nextIntRange(-20,0),
+        roomNG.nextIntRange(1,2),
+        roomNG.nextIntRange(1,20),
         22
       );
       circle(x,y-10,1, 22);
@@ -355,11 +371,12 @@ function bigGreeble(){
         y = lcg.nextIntRange(0,HEIGHT)
 
     if(ram[COLLISION + x + y * WIDTH] == WALLS){
+      roomNG.setSeed(lcg.seed + x + y * 1234.5678);
       cRect(
         x,
         y,
-        lcg.nextIntRange(5,13),
-        lcg.nextIntRange(2,4),
+        roomNG.nextIntRange(5,13),
+        roomNG.nextIntRange(2,4),
         1,
         25
       );
@@ -372,11 +389,12 @@ function bigGreeble(){
           y = lcg.nextIntRange(0,HEIGHT)
 
       if(ram[COLLISION + x + y * WIDTH] == WALLS){
+        roomNG.setSeed(lcg.seed + x + y * 1234.5678);
         fillRect(
           x,
           y,
-          lcg.nextIntRange(3,7),
-          lcg.nextIntRange(1,3),
+          roomNG.nextIntRange(3,7),
+          roomNG.nextIntRange(1,3),
           0
           );
         }
@@ -392,7 +410,8 @@ function drawTerra(){
   let i = PAGESIZE;
   while(--i){
     if(ram[COLLISION + i] == TERRA){
-      ram[MIDGROUND + i] = lcg.nextIntRange(2,4);
+      roomNG.setSeed(lcg.seed + i * 1234.5678);
+      ram[MIDGROUND + i] = roomNG.nextIntRange(2,4);
     }
   }
 }
@@ -402,7 +421,8 @@ function drawFuelCrystals(){
   let i = PAGESIZE;
   while(--i){
     if(ram[COLLISION + i] == FUELCRYSTAL){
-      ram[MIDGROUND + i] = lcg.nextIntRange(9,11);
+      roomNG.setSeed(lcg.seed + i * 1234.5678);
+      ram[MIDGROUND + i] = roomNG.nextIntRange(9,11);
     }
   }
 
