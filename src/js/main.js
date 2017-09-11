@@ -16,14 +16,16 @@ init = () => {
   totalSounds = 3;
   score = 0; //
   //fuelAmount = 12000000000;
-  fuelTimer = 1000;
+  fuelTimer = 100;
   parts = 0;
   last = 0;
   dt = 0;
   now = 0;
   t = 0;
-  state = 'menu';
+  state = 'loading';
   splodes = [];
+  messages = [];
+  begin = false;
 
 
   //FLAGS--------------------------------------------------------------
@@ -37,11 +39,11 @@ init = () => {
 
   audioCtx = new AudioContext;
   drawSpriteSheet();
-  //states.loading.init();
+  states.loading.init();
   player.init();
 
-  stats = new Stats();
-  document.body.appendChild( stats.dom );
+  //stats = new Stats();
+  //document.body.appendChild( stats.dom );
 
    loop();
 
@@ -62,7 +64,7 @@ window.addEventListener('focus', function (event) {
 }, false);
 
 loop = e => {
-  stats.begin();
+  //stats.begin();
 
   if(paused){
     pal = paldrk;
@@ -85,7 +87,6 @@ loop = e => {
     //game timer
     let now = new Date().getTime();
     dt = Math.min(1, (now - last) / 1000);
-    //if(dt > 14/1000)dt = 16/1000;
     t += dt;
 
     states[state].step(dt);
@@ -99,7 +100,7 @@ loop = e => {
   }
   render(e);
 
-  stats.end();
+  //stats.end();
   requestAnimationFrame(loop);
 }
 

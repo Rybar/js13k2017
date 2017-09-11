@@ -4,25 +4,21 @@ states.menu = {
 
   step: function(dt) {
 
-      // if(!s_titleSong){
-      //   titleSong = playSound(sounds.titleMusic, 1, 0, true);
-      //   s_titleSong = true;
-      // }
-
+      if(!s_titleSong){
+        titleSong = playSound(sounds.titleMusic, 1, 0, true);
+        s_titleSong = true;
+      }
+      
       //game update
       if(Key.justReleased(Key.p)){
+        begin = true;
         roomSwitch();
         state = 'game';
-        //titleSong.sound.stop();
-        //transition = true;
+        titleSong.sound.stop();
       }
       if(Key.justReleased(Key.r)){
         state = 'spritesheet';
       }
-      // if(transition){
-      //   transitionOut();
-      //   transition = false;
-      // }
 
   },
 
@@ -102,7 +98,6 @@ states.menu = {
       spr(192-32,0,32,40, 192+25*bots, 40);
     }
 
-    rspr(1,1,25,36, 64,64, 1, 45);
 
 
     text([
@@ -134,13 +129,12 @@ states.menu = {
         outline(BUFFER, SCREEN, 15);
         renderSource = BUFFER; spr();
 
-        //   if(pal[31] == 0){
-        //   roomSwitch();
-        //   state = 'game'
-        //   transition = false;
-        // }
 
-        //outline(BUFFER, SCRATCH, 8);1
+        // if(player.y > HEIGHT){
+        //   //begin = false;
+        //   roomSwitch();
+        //   state = 'game';
+        // }
   },
 
 };

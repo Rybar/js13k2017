@@ -1,23 +1,34 @@
-function splode(x = 0,y = 0,size = 10,speed = 10, color = 21, filled=false){
+function splode(x = 0,y = 0,size = 10,speed = 10, color = 21, filled=false, square=false){
   this.x = x;
   this.y = y;
   this.maxSize = size;
-  this.speed = 10;
+  this.speed = speed;
   this.counter = this.speed;
   this.color = color;
   this.size = 1;
   this.filled = filled;
+  this.square = square;
 
 }
 
 splode.prototype.draw = function(){
   this.size++;
   if(this.size > this.maxSize)return;
-    if(this.filled){
-      fillCircle(this.x,this.y, this.size, this.color);
-    }else{
-      circle(this.x,this.y, this.size, this.color);
+
+    if(this.square){
+      if(this.filled){
+        fillRect(this.x-this.size/2, this.y-this.size/2, this.size, this.size, this.color);
+      }else{
+        rect(this.x-this.size/2, this.y-this.size/2, this.size, this.size,  this.color);
+      }
+    } else {
+      if(this.filled){
+        fillCircle(this.x,this.y, this.size, this.color);
+      }else{
+        circle(this.x,this.y, this.size, this.color);
+      }
     }
+
     this.counter--;
     if(this.counter==0){
       this.size++;
@@ -26,7 +37,7 @@ splode.prototype.draw = function(){
 
   }
 
-  function blast(x = 0,y = 0,size = 10,speed = 10, color = 21, filled=false){
+  function splodeRect(x = 0,y = 0,size = 10,speed = 10, color = 21, filled=false){
     this.x = x;
     this.y = y;
     this.maxSize = size;
@@ -39,13 +50,13 @@ splode.prototype.draw = function(){
     s = this;
   }
 
-  blast.prototype.draw = function(){
+  splodeRect.prototype.draw = function(){
     this.size++;
     if(this.size > this.maxSize)return;
       if(this.filled){
-        fillCircle(this.x,this.y, this.size, this.color);
+        fillRect(this.x-this.size,this.y-this.size, this.size, this.size, this.color);
       }else{
-        circle(this.x,this.y, this.size, this.color);
+        rect(this.x-this.size,this.y-this.size, this.size, this.color);
       }
       this.counter--;
       if(this.counter==0){
@@ -55,75 +66,35 @@ splode.prototype.draw = function(){
 
     }
 
-// function Particle() {
-//
-//   this.inUse = false;
-//
-//   this.init = function(){
-//     this.x = -500;
-//     this.y = -500;
-//     this.dead = true;
-//     this.xvel = 0;
-//     this.yvel = 1;
-//     this.life = 1;
-//   }
-//
-//   Particle.prototype.spawn = function(opt) {
-//     this.x = opt.x;
-//     this.y = opt.y;
-//     this.xvel = opt.xvel;
-//     this.yvel = opt.yvel;
-//     this.inUse = true;
-//     this.life = opt.life || 1;
-//     this.remaining = opt.life || 1;
-//     this.radius = opt.radius || 1;
-//     this.color = opt.color || 21;
-//     this.dead = false;
-//   }
-//
-//   Particle.prototype.use = function(dt){
-//     if(this.dead) {
-//       return true;
-//     }
-//     else {
-//       this.remaining -= dt;
-//       this.x += dt * this.xvel;
-//       this.y += dt * this.yvel;
-//       this.draw();
-//       //console.log('bullet used/updated');
-//         if(this.remaining <= 0) {
-//           this.dead = true;
-//           return true;
-//         }
-//         if(this.y < 0){
-//           this.dead = true;
-//         }
-//         if(this.x >= 0 && this.x <= WIDTH && this.y >=0 && this.y <= 256){  //is it on screen?
-//           if(ram[0x40000 + ( (this.y|0) * WIDTH + (this.x|0) )] > 0) {  //is it overlapping something drawn into the collision buffer?
-//
-//             this.dead = true;
-//             drawExplode(this.x, this.y);
-//           }
-//         }
-//
-//     }
-//     return false;
-//   }
-//
-//
-//   Particle.prototype.clear = function(){
-//     this.x = -500;
-//     this.y = -500;
-//     this.dead = true;
-//     this.xvel = 0;
-//     this.yvel = 0;
-//     this.life = 1;
-//     this.inUse = false;
-//   }
-//
-//   Particle.prototype.draw = function(){
-//     circle(this.x, this.y, 0|Math.random()*4, 21);
-//   }
-//
-//
-// }
+function message(text = '', color = 9, time = 200){ //time is gameframes
+
+  this.text = text;
+  this.color = color;
+  this.time = time;
+  this.string = '';
+  this.counter = 0;
+
+}
+
+message.prototype.draw = function(index){
+
+  renderTarget = SCREEN;
+  this.time--;
+  this.counter+=2;
+  if(this.time < 0)return messages.splice(index, 1);
+  else{
+    this.string = this.text.substring(0,this.counter);
+    text([
+      this.string,
+      WIDTH/2,
+      20 + 12*index,
+      2,
+      2,
+      'center',
+      'top',
+      1,
+      this.color,
+    ]);
+  }
+
+}

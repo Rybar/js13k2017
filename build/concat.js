@@ -1,9 +1,3 @@
-// stats.js - http://github.com/mrdoob/stats.js
-var Stats=function(){function h(a){c.appendChild(a.dom);return a}function k(a){for(var d=0;d<c.children.length;d++)c.children[d].style.display=d===a?"block":"none";l=a}var l=0,c=document.createElement("div");c.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000";c.addEventListener("click",function(a){a.preventDefault();k(++l%c.children.length)},!1);var g=(performance||Date).now(),e=g,a=0,r=h(new Stats.Panel("FPS","#0ff","#002")),f=h(new Stats.Panel("MS","#0f0","#020"));
-    if(self.performance&&self.performance.memory)var t=h(new Stats.Panel("MB","#f08","#201"));k(0);return{REVISION:16,dom:c,addPanel:h,showPanel:k,begin:function(){g=(performance||Date).now()},end:function(){a++;var c=(performance||Date).now();f.update(c-g,200);if(c>e+1E3&&(r.update(1E3*a/(c-e),100),e=c,a=0,t)){var d=performance.memory;t.update(d.usedJSHeapSize/1048576,d.jsHeapSizeLimit/1048576)}return c},update:function(){g=this.end()},domElement:c,setMode:k}};
-Stats.Panel=function(h,k,l){var c=Infinity,g=0,e=Math.round,a=e(window.devicePixelRatio||1),r=80*a,f=48*a,t=3*a,u=2*a,d=3*a,m=15*a,n=74*a,p=30*a,q=document.createElement("canvas");q.width=r;q.height=f;q.style.cssText="width:80px;height:48px";var b=q.getContext("2d");b.font="bold "+9*a+"px Helvetica,Arial,sans-serif";b.textBaseline="top";b.fillStyle=l;b.fillRect(0,0,r,f);b.fillStyle=k;b.fillText(h,t,u);b.fillRect(d,m,n,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d,m,n,p);return{dom:q,update:function(f,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=k;b.fillText(e(f)+" "+h+" ("+e(c)+"-"+e(g)+")",t,u);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,e((1-f/v)*p))}}};"object"===typeof module&&(module.exports=Stats);
-
 (function(){
 
 //--------------Engine.js-------------------
@@ -1209,8 +1203,8 @@ var a_title = {
 };
 
 var a_gamesong = {
-    "rowLen": 5513,
-    "endPattern": 21,
+    "rowLen": 6615,
+    "endPattern": 32,
     "songData": [
         {
             "osc1_oct": 7,
@@ -1229,12 +1223,12 @@ var a_gamesong = {
             "env_attack": 200,
             "env_sustain": 2000,
             "env_release": 2418,
-            "env_master": 73,
+            "env_master": 60,
             "fx_filter": 2,
-            "fx_freq": 6620,
+            "fx_freq": 3859,
             "fx_resonance": 130,
             "fx_delay_time": 6,
-            "fx_delay_amt": 48,
+            "fx_delay_amt": 128,
             "fx_pan_freq": 4,
             "fx_pan_amt": 0,
             "lfo_osc1_freq": 0,
@@ -1243,6 +1237,18 @@ var a_gamesong = {
             "lfo_amt": 0,
             "lfo_waveform": 0,
             "p": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
                 1,
                 2,
                 1,
@@ -1251,14 +1257,8 @@ var a_gamesong = {
                 2,
                 1,
                 2,
-                1,
-                2,
-                1,
-                2,
-                1,
-                2,
-                1,
-                2,
+                3,
+                4,
                 1,
                 2,
                 1,
@@ -1334,6 +1334,78 @@ var a_gamesong = {
                         144,
                         0,
                         146,
+                        0
+                    ]
+                },
+                {
+                    "n": [
+                        137,
+                        0,
+                        140,
+                        0,
+                        144,
+                        0,
+                        147,
+                        0,
+                        151,
+                        0,
+                        147,
+                        0,
+                        149,
+                        0,
+                        144,
+                        0,
+                        152,
+                        0,
+                        144,
+                        0,
+                        151,
+                        0,
+                        152,
+                        0,
+                        149,
+                        0,
+                        142,
+                        0,
+                        144,
+                        0,
+                        140,
+                        0
+                    ]
+                },
+                {
+                    "n": [
+                        142,
+                        0,
+                        137,
+                        0,
+                        142,
+                        0,
+                        144,
+                        0,
+                        147,
+                        0,
+                        144,
+                        0,
+                        146,
+                        0,
+                        142,
+                        0,
+                        140,
+                        0,
+                        142,
+                        0,
+                        137,
+                        0,
+                        142,
+                        0,
+                        147,
+                        0,
+                        144,
+                        0,
+                        146,
+                        0,
+                        142,
                         0
                     ]
                 }
@@ -1354,7 +1426,7 @@ var a_gamesong = {
             "osc2_waveform": 1,
             "noise_fader": 0,
             "env_attack": 197,
-            "env_sustain": 1776,
+            "env_sustain": 3158,
             "env_release": 1403,
             "env_master": 45,
             "fx_filter": 0,
@@ -1370,6 +1442,14 @@ var a_gamesong = {
             "lfo_amt": 0,
             "lfo_waveform": 0,
             "p": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
                 1,
                 2,
                 1,
@@ -1389,7 +1469,8 @@ var a_gamesong = {
                 1,
                 2,
                 1,
-                2
+                0,
+                1
             ],
             "c": [
                 {
@@ -1465,11 +1546,548 @@ var a_gamesong = {
                     ]
                 }
             ]
+        },
+        {
+            "osc1_oct": 7,
+            "osc1_det": 0,
+            "osc1_detune": 0,
+            "osc1_xenv": 0,
+            "osc1_vol": 192,
+            "osc1_waveform": 2,
+            "osc2_oct": 7,
+            "osc2_det": 0,
+            "osc2_detune": 5,
+            "osc2_xenv": 0,
+            "osc2_vol": 192,
+            "osc2_waveform": 2,
+            "noise_fader": 0,
+            "env_attack": 88,
+            "env_sustain": 6338,
+            "env_release": 444,
+            "env_master": 131,
+            "fx_filter": 2,
+            "fx_freq": 4425,
+            "fx_resonance": 219,
+            "fx_delay_time": 3,
+            "fx_delay_amt": 61,
+            "fx_pan_freq": 0,
+            "fx_pan_amt": 23,
+            "lfo_osc1_freq": 0,
+            "lfo_fx_freq": 1,
+            "lfo_freq": 7,
+            "lfo_amt": 97,
+            "lfo_waveform": 0,
+            "p": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                3,
+                4,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                2,
+                3,
+                4
+            ],
+            "c": [
+                {
+                    "n": [
+                        152,
+                        151,
+                        152,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        151,
+                        0,
+                        0,
+                        152,
+                        0,
+                        0,
+                        149,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        149,
+                        0,
+                        152,
+                        0,
+                        0,
+                        156,
+                        0,
+                        0,
+                        159,
+                        0
+                    ]
+                },
+                {
+                    "n": [
+                        158,
+                        154,
+                        149,
+                        0,
+                        0,
+                        0,
+                        149,
+                        151,
+                        152,
+                        0,
+                        154,
+                        151,
+                        0,
+                        152,
+                        149,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        149,
+                        152,
+                        151,
+                        149,
+                        0,
+                        149,
+                        147,
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "n": [
+                        152,
+                        151,
+                        152,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        149,
+                        152,
+                        156,
+                        161
+                    ]
+                },
+                {
+                    "n": [
+                        158,
+                        154,
+                        149,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                }
+            ]
+        },
+        {
+            "osc1_oct": 7,
+            "osc1_det": 0,
+            "osc1_detune": 0,
+            "osc1_xenv": 0,
+            "osc1_vol": 255,
+            "osc1_waveform": 2,
+            "osc2_oct": 7,
+            "osc2_det": 0,
+            "osc2_detune": 9,
+            "osc2_xenv": 0,
+            "osc2_vol": 154,
+            "osc2_waveform": 2,
+            "noise_fader": 0,
+            "env_attack": 0,
+            "env_sustain": 99915,
+            "env_release": 128335,
+            "env_master": 115,
+            "fx_filter": 2,
+            "fx_freq": 1052,
+            "fx_resonance": 166,
+            "fx_delay_time": 5,
+            "fx_delay_amt": 0,
+            "fx_pan_freq": 3,
+            "fx_pan_amt": 178,
+            "lfo_osc1_freq": 0,
+            "lfo_fx_freq": 0,
+            "lfo_freq": 0,
+            "lfo_amt": 0,
+            "lfo_waveform": 0,
+            "p": [
+                0,
+                0,
+                1,
+                0,
+                2,
+                0,
+                1,
+                2,
+                1,
+                2,
+                1,
+                2,
+                1,
+                2,
+                1,
+                2,
+                1,
+                2,
+                1,
+                2,
+                1,
+                2,
+                1,
+                2,
+                1,
+                2,
+                1,
+                2,
+                1,
+                0,
+                2
+            ],
+            "c": [
+                {
+                    "n": [
+                        113,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "n": [
+                        118,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                }
+            ]
+        },
+        {
+            "osc1_oct": 8,
+            "osc1_det": 0,
+            "osc1_detune": 0,
+            "osc1_xenv": 1,
+            "osc1_vol": 82,
+            "osc1_waveform": 2,
+            "osc2_oct": 8,
+            "osc2_det": 0,
+            "osc2_detune": 0,
+            "osc2_xenv": 0,
+            "osc2_vol": 0,
+            "osc2_waveform": 0,
+            "noise_fader": 255,
+            "env_attack": 0,
+            "env_sustain": 0,
+            "env_release": 2193,
+            "env_master": 63,
+            "fx_filter": 3,
+            "fx_freq": 5200,
+            "fx_resonance": 63,
+            "fx_delay_time": 2,
+            "fx_delay_amt": 29,
+            "fx_pan_freq": 0,
+            "fx_pan_amt": 0,
+            "lfo_osc1_freq": 0,
+            "lfo_fx_freq": 0,
+            "lfo_freq": 0,
+            "lfo_amt": 0,
+            "lfo_waveform": 0,
+            "p": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1
+            ],
+            "c": [
+                {
+                    "n": [
+                        0,
+                        159,
+                        0,
+                        159,
+                        0,
+                        159,
+                        0,
+                        159,
+                        0,
+                        159,
+                        0,
+                        159,
+                        0,
+                        159,
+                        0,
+                        159,
+                        0,
+                        159,
+                        0,
+                        159,
+                        0,
+                        159,
+                        0,
+                        159,
+                        0,
+                        159,
+                        0,
+                        159,
+                        0,
+                        159,
+                        0,
+                        159
+                    ]
+                }
+            ]
+        },
+        {
+            "osc1_oct": 8,
+            "osc1_det": 0,
+            "osc1_detune": 0,
+            "osc1_xenv": 0,
+            "osc1_vol": 0,
+            "osc1_waveform": 0,
+            "osc2_oct": 8,
+            "osc2_det": 0,
+            "osc2_detune": 0,
+            "osc2_xenv": 0,
+            "osc2_vol": 0,
+            "osc2_waveform": 0,
+            "noise_fader": 255,
+            "env_attack": 100000,
+            "env_sustain": 100000,
+            "env_release": 100000,
+            "env_master": 215,
+            "fx_filter": 2,
+            "fx_freq": 817,
+            "fx_resonance": 16,
+            "fx_delay_time": 2,
+            "fx_delay_amt": 0,
+            "fx_pan_freq": 0,
+            "fx_pan_amt": 255,
+            "lfo_osc1_freq": 0,
+            "lfo_fx_freq": 1,
+            "lfo_freq": 2,
+            "lfo_amt": 119,
+            "lfo_waveform": 0,
+            "p": [
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1
+            ],
+            "c": [
+                {
+                    "n": [
+                        111,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                }
+            ]
         }
     ],
-    "songLen": 85
+    "songLen": 155
 }
-
 var a_jump = {
     "osc1_oct": 7,
     "osc1_det": 0,
@@ -2031,14 +2649,16 @@ init = () => {
   totalSounds = 3;
   score = 0; //
   //fuelAmount = 12000000000;
-  fuelTimer = 1000;
+  fuelTimer = 100;
   parts = 0;
   last = 0;
   dt = 0;
   now = 0;
   t = 0;
-  state = 'menu';
+  state = 'loading';
   splodes = [];
+  messages = [];
+  begin = false;
 
 
   //FLAGS--------------------------------------------------------------
@@ -2052,11 +2672,11 @@ init = () => {
 
   audioCtx = new AudioContext;
   drawSpriteSheet();
-  //states.loading.init();
+  states.loading.init();
   player.init();
 
-  stats = new Stats();
-  document.body.appendChild( stats.dom );
+  //stats = new Stats();
+  //document.body.appendChild( stats.dom );
 
    loop();
 
@@ -2077,7 +2697,7 @@ window.addEventListener('focus', function (event) {
 }, false);
 
 loop = e => {
-  stats.begin();
+  //stats.begin();
 
   if(paused){
     pal = paldrk;
@@ -2100,7 +2720,6 @@ loop = e => {
     //game timer
     let now = new Date().getTime();
     dt = Math.min(1, (now - last) / 1000);
-    //if(dt > 14/1000)dt = 16/1000;
     t += dt;
 
     states[state].step(dt);
@@ -2114,19 +2733,55 @@ loop = e => {
   }
   render(e);
 
-  stats.end();
+  //stats.end();
   requestAnimationFrame(loop);
 }
 
 //----- END main.js---------------
 
 world = [
-  5,5,5,5,0,0,0,0,0,0,
-  0,2,0,0,0,0,1,0,0,0,
-  0,0,0,1,0,0,0,0,2,0,
-  0,0,0,0,0,0,1,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,
-  6,7,8,7,6,6,8,6,6,6
+// 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//0
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//1
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//2
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//3
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//4
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,01,01,01,01,01,02,02,02,02,00,00,00,00,00,00,00,00,00,00,00,00,00,//5
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//6
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//7
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//8
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//9
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//10
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,01,01,01,01,01,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//11
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//12
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//13
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//14
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//15
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//16
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//17
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//18
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//19
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//20
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//21
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//22
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//23
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//24
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//25
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//26
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//27
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//28
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//29
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//30
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//31
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//32
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//33
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//34
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//36
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//37
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//38
+  00,01,02,03,04,05,06,07,08,09,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//39
+
+
 ];
 
 const LEFT = 1;
@@ -2148,10 +2803,10 @@ const BODY = 27;
 const ARM = 28;
 const THRUSTER = 29;
 
-const WORLDWIDTH = 9;
-const WORLDHEIGHT = 5; // 0 index.
+const WORLDWIDTH = 39;
+const WORLDHEIGHT = 39; // 0 index.
 
-currentRoom = [0,0]; //start room
+currentRoom = [20,0]; //
 
 rooms = [
   //0
@@ -2170,12 +2825,14 @@ rooms = [
   //1
   {
     draw: function(dt){
-      fillCircle(192,128,50,WALLS);
+      fillRect(0,205,384,100,WALLS);
       bgstars();
 
       denseGreeble();
 
       foregroundGreeble();
+
+
 
     }
   },
@@ -2183,11 +2840,13 @@ rooms = [
   //2
   {
     draw: function(dt){
-        circle(192,128,64,WALLS);
+        fillRect(0,205,384,100,WALLS);
+        pset(25+Math.random()*325, 190, FUELCELL);
+        pset(25+Math.random()*325, 190, FUELCELL);
+        pset(25+Math.random()*325, 190, FUELCELL);
+
         bgstars();
-
         denseGreeble();
-
         foregroundGreeble();
     }
   },
@@ -2211,9 +2870,7 @@ rooms = [
       fillRect(250,0,127,256,WALLS);
 
       bgstars();
-
       denseGreeble();
-
       foregroundGreeble();
     }
   },
@@ -2231,15 +2888,12 @@ rooms = [
   {
     draw: function(dt){
           fillRect(0,205,384,100,WALLS);
-          fillRect(0,150,100,100,TERRA);
-          fillRect(300,150,100,100,FUELCRYSTAL);
 
-          let i = 100;
-          while(--i){
-            x = lcg.nextIntRange(0,WIDTH);
-            y = lcg.nextIntRange(100,200);
-            pset(x,y, FUELCELL);
-          }
+
+          pset(100, 190, BODY);
+          pset(200, 190, ARM);
+          pset(300, 190, THRUSTER);
+
 
           bgstars();
           drawTerra();
@@ -2386,18 +3040,36 @@ function bgstars(){
   }
 }
 
-function drawFuel() {
+function drawThings() {
   let i = PAGESIZE;
   while(--i){
-    if(ram[COLLISION + i] == FUELCELL){
-      let y = i / WIDTH |0;
-      let x = i % WIDTH;
-      renderSource = SPRITES;
-      renderTarget = SCREEN;
+    let thing = ram[COLLISION + i]
+    let y = i / WIDTH |0;
+    let x = i % WIDTH;
+    renderSource = SPRITES;
+    renderTarget = SCREEN;
+
+    switch(thing){
+      case FUELCELL:
       rspr(192,0,32,32,x-2,y-5,1, t*90);
+      break;
+
+      case BODY:
+      rspr(32,0,32,32,x-2,y-5,1, t*90);
+      break;
+
+      case ARM:
+      rspr(192-64-32,0,32,32,x-2,y-5,1, t*90);
+      break;
+
+      case THRUSTER:
+      rspr(192-64-32,0,32,32,x-2,y-5,1, t*90);
+      break;
+
+      }
     }
   };
-}
+
 
 function denseGreeble(){
 
@@ -2550,11 +3222,6 @@ function drawFuelCrystals(){
 
 }
 
-function drawMessage(message, color){
-
-
-}
-
 // var songGen = new sonantx.MusicGenerator(song1);
 //
 // songGen.createAudioBuffer(function(buffer) {
@@ -2682,10 +3349,9 @@ player = {
     this.jumping = true;
     this.jumpCooldown = 0;
     this.angle = 0;
-    this.mode = ARMMODE;
+    this.mode = HEADMODE;
     this.gunCooldown = 0;
     this.minedFuel = false;
-
   },
 
   update (dt) {
@@ -2700,7 +3366,6 @@ player = {
     this.oldY = this.y;
 
     this.xvel *= player.drag;
-    //this.yvel *= player.drag;
 
     this.yvel += player.gravity;
     this.yvel = this.yvel.clamp(this.minYvel, this.maxYvel);
@@ -2731,325 +3396,410 @@ player = {
       }
     }
     this.overlapResolution();
-
-
     this.updateB();
 
-    //console.info(this.collides());
-
-    //player movement
+    //player movement-----------------------------------------------------------
     switch(player.mode){
 
       case HEADMODE:
-          player.yspeed = 80;
-          player.xspeed = 80;
+      player.yspeed = 80;
+      player.xspeed = 80;
 
-          if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
-            player.facingLeft = false;
-              if(this.jumping){
-                player.xvel =  player.xspeed;
-              }
-              else{player.xvel = 0;}
-          }
-          if (Key.isDown(Key.a) || Key.isDown(Key.LEFT)){
-              this.facingLeft = true;
-              if(this.jumping){
-                player.xvel =  - player.xspeed;
-              }
-              else{player.xvel = 0;}
-          }
-          if(Key.isDown(Key.w) || Key.isDown(Key.UP)){
-            if(!this.jumping && fuelTimer > 0 && player.jumpCooldown < 0){
-              this.jumping = true;
-              s_jump = true;
-              player.jumpCooldown = 5;
-              player.yvel = -player.yspeed;
-              splodes.push(new splode(player.x+3,player.y+4, 7, 1, 9))
-              splodes.push(new splode(player.x-3,player.y+4, 7, 1, 9))
+      if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
+        player.facingLeft = false;
+        if(this.jumping){
+          player.xvel =  player.xspeed;
+        }
+        else{player.xvel = 0;}
+      }
+      if (Key.isDown(Key.a) || Key.isDown(Key.LEFT)){
+        this.facingLeft = true;
+        if(this.jumping){
+          player.xvel =  - player.xspeed;
+        }
+        else{player.xvel = 0;}
+      }
+      if(Key.isDown(Key.w) || Key.isDown(Key.UP) || Key.isDown(Key.z)){
+        if(!this.jumping && fuelTimer > 0 && player.jumpCooldown < 0){
+          this.jumping = true;
+          s_jump = true;
+          player.jumpCooldown = 5;
+          player.yvel = -player.yspeed;
+          splodes.push(new splode(player.x+3,player.y+4, 7, 1, 9))
+          splodes.push(new splode(player.x-3,player.y+4, 7, 1, 9))
 
-              //playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
-              //fuelAmount--;
-            }
-          }
+          playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
+        }
+      }
 
-            player.angle -= player.xvel / 30;
-            if(player.jumping)player.angle -= player.facingLeft? -player.yvel /30 : player.yvel / 30;
-            player.jumpCooldown--;
+      player.angle -= player.xvel / 30;
+      if(player.jumping)player.angle -= player.facingLeft? -player.yvel /30 : player.yvel / 30;
+      player.jumpCooldown--;
 
       break;
 
       case BODYMODE:
-        player.maxXvel = 150;
-        player.minYvel = -150;
-        player.xspeed = 150;
-        player.yspeed = 150;
-        if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
-          player.facingLeft = false;
-              player.xvel =  player.xspeed;
+      player.maxXvel = 150;
+      player.minYvel = -150;
+      player.xspeed = 150;
+      player.yspeed = 150;
+      if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
+        player.facingLeft = false;
+        player.xvel =  player.xspeed;
+      }
+      if (Key.isDown(Key.a) || Key.isDown(Key.LEFT)){
+        this.facingLeft = true;
+        player.xvel =  - player.xspeed;
+      }
+      if(Key.isDown(Key.w) || Key.isDown(Key.UP) || Key.isDown(Key.z)){
+        if(!this.jumping && fuelTimer > 0){
+          fuelTimer -= 1;
+          this.jumping = true;
+          s_jump = true;
+          player.yvel = -player.yspeed;
+          playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
         }
-        if (Key.isDown(Key.a) || Key.isDown(Key.LEFT)){
-            this.facingLeft = true;
-              player.xvel =  - player.xspeed;
-        }
-        if(Key.isDown(Key.w) || Key.isDown(Key.UP) || Key.isDown(Key.UP)){
-          if(!this.jumping && fuelTimer > 0){
-            fuelTimer -= 1;
-            this.jumping = true;
-            s_jump = true;
-            player.yvel = -player.yspeed;
-            //playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
-            //fuelAmount--;
-          }
 
-        }
-        if(this.yvel > 50)this.jumping=false;
+      }
+      if(this.yvel > 0)this.jumping=false;
 
       break;
 
-      case ARMMODE:
+      case ARMMODE: //----------------------------------------------------------
 
-        player.maxXvel = 150;
-        player.minYvel = -150;
-        player.xspeed = 150;
-        player.yspeed = 150;
-        if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
-          player.facingLeft = false;
-              player.xvel =  player.xspeed;
-        }
-        if (Key.isDown(Key.a) || Key.isDown(Key.LEFT)){
-            this.facingLeft = true;
-              player.xvel =  - player.xspeed;
-        }
-        if(Key.isDown(Key.w) || Key.isDown(Key.UP) || Key.isDown(Key.SPACE) || Key.isDown(Key.z)){
-          if(!this.jumping && fuelTimer > 0){
-            fuelTimer -= 0.7;
-            this.jumping = true;
-            s_jump = true;
-            player.yvel = -player.yspeed;
-            //playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
-            //fuelAmount--;
-          }
-        }
-        if(Key.isDown(Key.x)){
-          fuelTimer-=0.01;
-          splodes.push( new splode(
-            player.x + (player.facingLeft ? -16 : 16) + (Math.random()*2-1)|0,
-            player.y + (Math.random()*15-8)|0,
-            6,5
-          )
-        )
-          renderTarget = COLLISION;
-          console.log( pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) )
-          if( pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) == FUELCRYSTAL) player.minedFuel = true;
-          fillCircle(player.x + (player.facingLeft ? -10 : 10),
-          player.y + (Math.random()*20-15)|0, 10, 0);
+      player.maxXvel = 150;
+      player.minYvel = -150;
+      player.xspeed = 150;
+      player.yspeed = 150;
 
-          if(player.gunCooldown < 0){
-            player.gunCooldown = 4;
-            redraw(); //update room drawing every 4 frames
-          }
-        }
-        if(Key.isDown(Key.c)){
-          fuelTimer-=0.2;
-          splodes.push( new splode(
-            player.x + (player.facingLeft ? -16 : 16) + (Math.random()*2-1)|0,
-            player.y + (Math.random()*15-8)|0,
-            6,5
-          )
-        )
-          renderTarget = COLLISION;
-          fillCircle(player.x + (player.facingLeft ? -10 + -player.radius : 10 + player.radius),
-          player.y + (Math.random()*20-15)|0, 10, WALLS);
-          if(player.gunCooldown < 0){
-            player.gunCooldown = 4;
-            redraw(); //update room drawing every 4 frames
-          }
-        }
-        if(player.minedFuel){
-          pset(player.x + (player.facingLeft ? -10 : 10), player.y - 5, FUELCELL);
-          fuelTimer += 25;
-          player.minedFuel=false;
-        }
-        player.gunCooldown--;
-
-      break;
-
-      case THRUSTERMODE:
-        player.maxXvel = 400;
-        player.minYvel = -600;
-        player.xspeed = 300;
-        player.yspeed = 300;
-        if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
-          player.facingLeft = false;
-              player.xvel =  player.xspeed;
-        }
-        if (Key.isDown(Key.a) || Key.isDown(Key.LEFT)){
-            this.facingLeft = true;
-              player.xvel =  - player.xspeed;
-        }
-        if(Key.isDown(Key.w) || Key.isDown(Key.UP)){
-            player.yvel = -player.yspeed;
-            //playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
-            //fuelAmount--;
-
-        }
-      break;
-
-    }
-
-
-    //world wrap for player
-    if(player.x > WIDTH){
-      player.x = 0;
-      roomSwitch(RIGHT);
-    }
-    if(player.x < 0){
-      player.x = WIDTH;
-      roomSwitch(LEFT);
-    }
-    if(player.y > HEIGHT){
-      player.y = 0;
-      roomSwitch(DOWN);
-    }
-    if(player.y < 0){
-      player.y = HEIGHT;
-      roomSwitch(UP);
-    }
-
-  },
-
-  draw (dt) {
-    switch(player.mode){
-      case HEADMODE:
-      renderSource = SPRITES;
-      rspr(0,0,32,32,player.x, player.y, 1, player.angle);
-      break;
-      case BODYMODE:
-        renderSource = SPRITES;
-        spr(32,0,32,32, player.b.x+2-16, player.b.y+5-24); //body
-        spr(0,0,32,32, player.b.x-16, player.b.y-24, player.facingLeft); //head
-
-      break;
-      case ARMMODE:
-        renderSource = SPRITES;
-        spr(32,0,32,32, player.b.x+2-16, player.b.y+5-20); //body
-        spr(64+32,0,32,32, player.b.x+5-16 + (this.facingLeft ? -12 : 0), player.b.y+3-20, this.facingLeft); //arm
-        spr(0,0,32,32, player.b.x-16, player.b.y-20, player.facingLeft); //head
-
-      break;
-      case THRUSTERMODE:
-        renderSource = SPRITES;
-        spr(128,0,32,40, player.b.x+5-16, player.b.y+4-30); //wheel
-        spr(32,0,32,32, player.b.x+2-16, player.b.y+5-30); //body
-        spr(64,0,32,32, player.b.x+5-16, player.b.y+4-30); //wheel arm
-        spr(64+32,0,32,32, player.b.x+5-16 + (this.facingLeft ? -12 : 0), player.b.y+3-30, this.facingLeft); //arm
-        spr(0,0,32,32, player.b.x-16, player.b.y-30, player.facingLeft); //head
-      break;
-    }
-
-  },
-
-  collides () {
-    var offset = 0;
-    if(this.b.x + this.hitRadius > WIDTH) this.b.y -= 1;
-    for(var i = -this.hitRadius; i < this.hitRadius; i++){
-      for(var j = -this.hitRadius; j < this.hitRadius; j++){
-
-        let check = ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH]
-        if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
-          player.jumping = false;
-          return true;
+      if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
+        player.facingLeft = false;
+        player.xvel =  player.xspeed;
+      }
+      if (Key.isDown(Key.a) || Key.isDown(Key.LEFT)){
+        this.facingLeft = true;
+        player.xvel =  - player.xspeed;
+      }
+      if(Key.isDown(Key.w) || Key.isDown(Key.UP) ||
+       Key.isDown(Key.SPACE) || Key.isDown(Key.z)){
+        if(!this.jumping && fuelTimer > 0){
+          fuelTimer -= 0.7;
+          this.jumping = true;
+          s_jump = true;
+          player.yvel = -player.yspeed;
+          playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
         }
       }
-    }
-    return false;
-  },
+      if(Key.isDown(Key.x)){
+        fuelTimer-=0.01;
+        splodes.push( new splode(
+          player.x + (player.facingLeft ? -16 : 16) + (Math.random()*2-1)|0,
+          player.y + (Math.random()*15-8)|0,
+          6,5
+        )
+      )
+      renderTarget = COLLISION;
 
-  overlaps () {
-    for(var i = -this.radius; i < this.radius; i++){
-      for(var j = -this.radius; j < this.radius; j++){
-        let overlap = ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH]
-        if(overlap){
-          return {
-            x: this.b.x + i,
-            y: this.b.y + j,
-            o: overlap
-          }
-        };
+      if(pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) == FUELCRYSTAL){
+        player.minedFuel = true;
+      }
+      fillCircle(player.x + (player.facingLeft ? -10 : 10),
+      player.y + (Math.random()*20-15)|0, 10, 0);
+
+      let i = 5;
+      while(--i){
+        splodes.push( new splode(
+          player.x + (player.facingLeft ? -30 + Math.random() * 10 : 30 + Math.random() * 10 ), //x
+          player.y + Math.random()*20-10, //y
+          10 + Math.random()*10-5, //size
+          Math.random()*3, //speed
+          27 + (Math.random()*2)|0, //color
+          false,
+          true )
+        );
+
+      }
+
+      if(player.gunCooldown < 0){
+        player.gunCooldown = 4;
+        redraw(); //update room drawing every 4 frames
       }
     }
-    return false;
+    if(player.minedFuel){
+      pset(player.x + (player.facingLeft ? -10 : 10), player.y - 5, FUELCELL);
+      fuelTimer += 25;
+      player.minedFuel=false;
+
+    }
+    player.gunCooldown--;
+
+    break;
+
+    case THRUSTERMODE://--------------------------------------------------------
+    player.maxXvel = 250;
+    player.minYvel = -250;
+    player.xspeed = 200;
+    player.yspeed = 200;
+    if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
+      player.facingLeft = false;
+      player.xvel =  player.xspeed;
+    }
+    if (Key.isDown(Key.a) || Key.isDown(Key.LEFT)){
+      this.facingLeft = true;
+      player.xvel =  - player.xspeed;
+    }
+    if(Key.isDown(Key.w) || Key.isDown(Key.UP)){
+      if(!player.jumping){
+        player.jumping = true;
+        player.yvel = -player.yspeed;
+        s_jump = true;
+        playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
+      }
+
+    }
+
+    if(Key.isDown(Key.x)){
+      fuelTimer-=0.01;
+      splodes.push( new splode(
+        player.x + (player.facingLeft ? -16 : 16) + (Math.random()*2-1)|0,
+        player.y + (Math.random()*15-8)|0,
+        6,5
+        )
+      )
+    renderTarget = COLLISION;
+    console.log( pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) )
+    if( pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) == FUELCRYSTAL) player.minedFuel = true;
+    fillCircle(player.x + (player.facingLeft ? -10 : 10),
+    player.y + (Math.random()*20-15)|0, 10, 0);
+
+    let i = 5;
+    while(--i){
+      splodes.push( new splode(
+        player.x + (player.facingLeft ? -30 + Math.random() * 10 : 30 + Math.random() * 10 ), //x
+        player.y + Math.random()*20-10, //y
+        10 + Math.random()*10-5, //size
+        Math.random()*3, //speed
+        27 + (Math.random()*2)|0, //color
+        false,
+        true )
+      );
+
+    }
+
+    if(player.gunCooldown < 0){
+      player.gunCooldown = 4;
+      redraw(); //update room drawing every 4 frames
+    }
+  }
+  if(Key.isDown(Key.c)){
+    fuelTimer-=0.2;
+    splodes.push( new splode(
+      player.x + (player.facingLeft ? -16 : 16) + (Math.random()*2-1)|0,
+      player.y + (Math.random()*15-8)|0,
+      6,5
+    )
+  )
+  renderTarget = COLLISION;
+  fillCircle(player.x + (player.facingLeft ? -10 + -player.radius : 10 + player.radius),
+  player.y + (Math.random()*20-15)|0, 10, WALLS);
+
+  let i = 5;
+  while(--i){
+    splodes.push( new splode(
+      player.x + (player.facingLeft ? -30 + Math.random() * 10 : 30 + Math.random() * 10 ), //x
+      player.y + Math.random()*20-10, //y
+      10 + Math.random()*10-5, //size
+      Math.random()*3, //speed
+      9 + (Math.random()*3)|0, //color
+      false,
+      true )
+    );
+
+  }
+  if(player.gunCooldown < 0){
+    player.gunCooldown = 4;
+    redraw(); //update room drawing every 4 frames
+  }
+}
+if(player.minedFuel){
+  pset(player.x + (player.facingLeft ? -10 : 10), player.y - 5, FUELCELL);
+  fuelTimer += 25;
+  player.minedFuel=false;
+
+  let i = 10;
+  while(--i){
+    splodes.push( new splode(
+      192 + Math.random()*50-25, //x
+      14 + Math.random()*4-2, //y
+      10 + Math.random()*4-2, //size
+      10 + Math.random()*4-2, //speed
+      9 + (Math.random()*2-1)|0, //color
+      false,
+      true )
+    );
+
+  }
+
+}
+player.gunCooldown--;
+
+break;
+
+}
+
+
+//world wrap for player
+if(player.x > WIDTH){
+  player.x = 0;
+  roomSwitch(RIGHT);
+}
+if(player.x < 0){
+  player.x = WIDTH;
+  roomSwitch(LEFT);
+}
+if(player.y > HEIGHT){
+  player.y = 0;
+  roomSwitch(DOWN);
+}
+if(player.y < 0){
+  player.y = HEIGHT;
+  roomSwitch(UP);
+}
+
 },
 
-  updateB () {
+draw (dt) {
+  switch(player.mode){
+    case HEADMODE:
+    renderSource = SPRITES;
+    rspr(0,0,32,32,player.x, player.y, 1, player.angle);
+    break;
+    case BODYMODE:
+    renderSource = SPRITES;
+    spr(32,0,32,32, player.b.x+2-16, player.b.y+5-24); //body
+    spr(0,0,32,32, player.b.x-16, player.b.y-24, player.facingLeft); //head
 
-     this.b = {
-      left: this.x-this.radius|0,
-      right: this.x+this.radius|0,
-      top: this.y-this.radius|0,
-      bottom: this.y+this.radius|0,
-      width: this.radius * 2,
-      height: this.radius * 2,
-      x: this.x|0,
-      y: this.y|0
+    break;
+    case ARMMODE:
+    renderSource = SPRITES;
+    spr(32,0,32,32, player.b.x+2-16, player.b.y+5-20); //body
+    spr(64+32,0,32,32, player.b.x+5-16 + (this.facingLeft ? -12 : 0), player.b.y+3-20, this.facingLeft); //arm
+    spr(0,0,32,32, player.b.x-16, player.b.y-20, player.facingLeft); //head
+
+    break;
+    case THRUSTERMODE:
+    renderSource = SPRITES;
+    spr(128,0,32,40, player.b.x+5-16, player.b.y+4-30); //wheel
+    spr(32,0,32,32, player.b.x+2-16, player.b.y+5-30); //body
+    spr(64,0,32,32, player.b.x+5-16, player.b.y+4-30); //wheel arm
+    spr(64+32,0,32,32, player.b.x+5-16 + (this.facingLeft ? -12 : 0), player.b.y+3-30, this.facingLeft); //arm
+    spr(0,0,32,32, player.b.x-16, player.b.y-30, player.facingLeft); //head
+    break;
+  }
+
+},
+
+collides () {
+  var offset = 0;
+  if(this.b.x + this.hitRadius > WIDTH) this.b.y -= 1;
+  for(var i = -this.hitRadius; i < this.hitRadius; i++){
+    for(var j = -this.hitRadius; j < this.hitRadius; j++){
+
+      let check = ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH]
+      if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
+        player.jumping = false;
+        return true;
+      }
     }
+  }
+  return false;
+},
 
-  },
+overlaps () {
+  for(var i = -this.radius; i < this.radius; i++){
+    for(var j = -this.radius; j < this.radius; j++){
+      let overlap = ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH]
+      if(overlap){
+        return {
+          x: this.b.x + i,
+          y: this.b.y + j,
+          o: overlap
+        }
+      };
+    }
+  }
+  return false;
+},
 
-  collideResolutionY (dt) {
+updateB () {
 
-    let offsetY = 0;
-    let error = 4; // avoid corners?
-    let b = this.b;
+  this.b = {
+    left: this.x-this.radius|0,
+    right: this.x+this.radius|0,
+    top: this.y-this.radius|0,
+    bottom: this.y+this.radius|0,
+    width: this.radius * 2,
+    height: this.radius * 2,
+    x: this.x|0,
+    y: this.y|0
+  }
 
-    //check bottom:
-    for(let i = b.left; i <= b.right; i++){ //from left to right, across bottom edge
-      let check = ram[COLLISION+i+WIDTH*b.bottom]
+},
+
+collideResolutionY (dt) {
+
+  let offsetY = 0;
+  let error = 4; // avoid corners?
+  let b = this.b;
+
+  //check bottom:
+  for(let i = b.left; i <= b.right; i++){ //from left to right, across bottom edge
+    let check = ram[COLLISION+i+WIDTH*b.bottom]
+    if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
+      for(let j = b.bottom; j >= b.top; j--) {  //starting from point we found solid, scan upward for empty pixel
+        let check = ram[COLLISION+i+WIDTH*j]
+        if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
+          offsetY = j - b.bottom - 1;  //
+        }
+      } //end interior check
+    }
+  } // end bottom edge checker
+
+  //check top:
+  for(let i = b.left; i <= b.right; i++){ //from left to right, across top edge
+    let check = ram[COLLISION+i+WIDTH*b.top]
+    if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
+      for(let j = b.top; j <= b.bottom; j++) {  //starting from point we found solid, scan downward for empty pixel
+        let check = ram[COLLISION+i+WIDTH*j]
+        if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
+          offsetY = j-b.top + 1;  //
+        }
+      } //end interior check
+    }
+  } // end top edge checker
+  return offsetY;
+
+}, //end collideResolutionY
+
+collideResolutionX (dt) {
+
+  let offsetX = 0;
+  let b = this.b;
+  let error = 2;
+
+  //check left:
+  for(let i = b.top; i <= b.bottom; i++){ //from top to bottom across left edge;
+    let check = ram[COLLISION+b.left+WIDTH*i]
+    if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
+      for(let j = b.x; j <= b.right; j++) {  //starting from point we found solid, scan upward for empty pixel
+        let check = ram[COLLISION+j+WIDTH*i]
+        if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
+          offsetX++;  //
+        }
+      } //end interior check
+    } else{
+      let check = ram[COLLISION+b.right+WIDTH*i]
       if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
-        for(let j = b.bottom; j >= b.top; j--) {  //starting from point we found solid, scan upward for empty pixel
-          let check = ram[COLLISION+i+WIDTH*j]
-          if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
-            offsetY = j - b.bottom - 1;  //
-          }
-        } //end interior check
-      }
-    } // end bottom edge checker
-
-    //check top:
-    for(let i = b.left; i <= b.right; i++){ //from left to right, across top edge
-      let check = ram[COLLISION+i+WIDTH*b.top]
-      if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
-        for(let j = b.top; j <= b.bottom; j++) {  //starting from point we found solid, scan downward for empty pixel
-          let check = ram[COLLISION+i+WIDTH*j]
-          if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
-            offsetY = j-b.top + 1;  //
-          }
-        } //end interior check
-      }
-    } // end top edge checker
-    return offsetY;
-
-  }, //end collideResolutionY
-
-  collideResolutionX (dt) {
-
-    let offsetX = 0;
-    let b = this.b;
-    let error = 2;
-
-    //check left:
-    for(let i = b.top; i <= b.bottom; i++){ //from top to bottom across left edge;
-      let check = ram[COLLISION+b.left+WIDTH*i]
-      if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
-        for(let j = b.x; j <= b.right; j++) {  //starting from point we found solid, scan upward for empty pixel
-          let check = ram[COLLISION+j+WIDTH*i]
-          if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
-            offsetX++;  //
-          }
-        } //end interior check
-      } else{
-        let check = ram[COLLISION+b.right+WIDTH*i]
-       if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
         for(let j = b.x; j >= b.left; j--) {  //starting from point we found solid, scan upward for empty pixel
           let check = ram[COLLISION+j+WIDTH*i]
           if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
@@ -3058,55 +3808,116 @@ player = {
         }
       }
     }
+  }
+
+  return offsetX;
+
+},
+
+overlapResolution(dt){
+  let o = player.overlaps()
+
+  switch(o.o){
+
+    case FUELCELL:
+    ram[COLLISION + o.x + o.y * WIDTH] == 0;
+    renderTarget = COLLISION;
+    fillCircle(o.x,o.y,3,0);
+    renderTarget = BUFFER;
+
+    splodes.push( new splode(o.x, o.y) );
+
+    let i = 10;
+    while(--i){
+      splodes.push( new splode(
+        192 + Math.random()*50-25, //x
+        14 + Math.random()*4-2, //y
+        10 + Math.random()*4-2, //size
+        10 + Math.random()*4-2, //speed
+        9 + (Math.random()*2-1)|0, //color
+        false,
+        true )
+      );
+
     }
 
-    return offsetX;
+    fuelTimer += 25;
+    //playSound(sounds.jump, 1, player.x.map(0, WIDTH, -1, 1), false); //pan sound based on position
 
-  },
+    break;
 
-  overlapResolution(dt){
-    let o = player.overlaps()
+    case BODY:
 
-    switch(o.o){
+    ram[COLLISION + o.x + o.y * WIDTH] == 0;
+    renderTarget = COLLISION;
+    fillCircle(o.x,o.y,3,0);
+    renderTarget = BUFFER;
+    player.mode = BODYMODE;
+    messages.push(new message('AUX BOOSTERS ACQUIRED. ENERGY CAPACITY INCREASED.'));
 
-      case FUELCELL:
-        ram[COLLISION + o.x + o.y * WIDTH] == 0;
-        renderTarget = COLLISION;
-        fillCircle(o.x,o.y,3,0);
-        renderTarget = BUFFER;
+    break;
 
-        splodes.push( new splode(o.x, o.y) );
+    case ARM:
 
-        fuelTimer += 25;
-        //playSound(sounds.jump, 1, player.x.map(0, WIDTH, -1, 1), false); //pan sound based on position
+    ram[COLLISION + o.x + o.y * WIDTH] == 0;
+    renderTarget = COLLISION;
+    fillCircle(o.x,o.y,3,0);
+    renderTarget = BUFFER;
+    player.mode = ARMMODE;
+    messages.push(new message('DISINTIGRATE TOOL ACQUIRED. PRESS X TO USE'));
+
+    break;
+
+    case THRUSTER:
+
+    ram[COLLISION + o.x + o.y * WIDTH] == 0;
+    renderTarget = COLLISION;
+    fillCircle(o.x,o.y,3,0);
+    renderTarget = BUFFER;
+    player.mode = THRUSTERMODE;
+    messages.push(new message('E-M CONVERTER ACQUIRED. PRESS C TO USE'));
 
 
-    }
+    break;
 
 
-  },
+  }
+
+
+},
 } //end player
 
-function splode(x = 0,y = 0,size = 10,speed = 10, color = 21, filled=false){
+function splode(x = 0,y = 0,size = 10,speed = 10, color = 21, filled=false, square=false){
   this.x = x;
   this.y = y;
   this.maxSize = size;
-  this.speed = 10;
+  this.speed = speed;
   this.counter = this.speed;
   this.color = color;
   this.size = 1;
   this.filled = filled;
+  this.square = square;
 
 }
 
 splode.prototype.draw = function(){
   this.size++;
   if(this.size > this.maxSize)return;
-    if(this.filled){
-      fillCircle(this.x,this.y, this.size, this.color);
-    }else{
-      circle(this.x,this.y, this.size, this.color);
+
+    if(this.square){
+      if(this.filled){
+        fillRect(this.x-this.size/2, this.y-this.size/2, this.size, this.size, this.color);
+      }else{
+        rect(this.x-this.size/2, this.y-this.size/2, this.size, this.size,  this.color);
+      }
+    } else {
+      if(this.filled){
+        fillCircle(this.x,this.y, this.size, this.color);
+      }else{
+        circle(this.x,this.y, this.size, this.color);
+      }
     }
+
     this.counter--;
     if(this.counter==0){
       this.size++;
@@ -3115,7 +3926,7 @@ splode.prototype.draw = function(){
 
   }
 
-  function blast(x = 0,y = 0,size = 10,speed = 10, color = 21, filled=false){
+  function splodeRect(x = 0,y = 0,size = 10,speed = 10, color = 21, filled=false){
     this.x = x;
     this.y = y;
     this.maxSize = size;
@@ -3128,13 +3939,13 @@ splode.prototype.draw = function(){
     s = this;
   }
 
-  blast.prototype.draw = function(){
+  splodeRect.prototype.draw = function(){
     this.size++;
     if(this.size > this.maxSize)return;
       if(this.filled){
-        fillCircle(this.x,this.y, this.size, this.color);
+        fillRect(this.x-this.size,this.y-this.size, this.size, this.size, this.color);
       }else{
-        circle(this.x,this.y, this.size, this.color);
+        rect(this.x-this.size,this.y-this.size, this.size, this.color);
       }
       this.counter--;
       if(this.counter==0){
@@ -3144,78 +3955,38 @@ splode.prototype.draw = function(){
 
     }
 
-// function Particle() {
-//
-//   this.inUse = false;
-//
-//   this.init = function(){
-//     this.x = -500;
-//     this.y = -500;
-//     this.dead = true;
-//     this.xvel = 0;
-//     this.yvel = 1;
-//     this.life = 1;
-//   }
-//
-//   Particle.prototype.spawn = function(opt) {
-//     this.x = opt.x;
-//     this.y = opt.y;
-//     this.xvel = opt.xvel;
-//     this.yvel = opt.yvel;
-//     this.inUse = true;
-//     this.life = opt.life || 1;
-//     this.remaining = opt.life || 1;
-//     this.radius = opt.radius || 1;
-//     this.color = opt.color || 21;
-//     this.dead = false;
-//   }
-//
-//   Particle.prototype.use = function(dt){
-//     if(this.dead) {
-//       return true;
-//     }
-//     else {
-//       this.remaining -= dt;
-//       this.x += dt * this.xvel;
-//       this.y += dt * this.yvel;
-//       this.draw();
-//       //console.log('bullet used/updated');
-//         if(this.remaining <= 0) {
-//           this.dead = true;
-//           return true;
-//         }
-//         if(this.y < 0){
-//           this.dead = true;
-//         }
-//         if(this.x >= 0 && this.x <= WIDTH && this.y >=0 && this.y <= 256){  //is it on screen?
-//           if(ram[0x40000 + ( (this.y|0) * WIDTH + (this.x|0) )] > 0) {  //is it overlapping something drawn into the collision buffer?
-//
-//             this.dead = true;
-//             drawExplode(this.x, this.y);
-//           }
-//         }
-//
-//     }
-//     return false;
-//   }
-//
-//
-//   Particle.prototype.clear = function(){
-//     this.x = -500;
-//     this.y = -500;
-//     this.dead = true;
-//     this.xvel = 0;
-//     this.yvel = 0;
-//     this.life = 1;
-//     this.inUse = false;
-//   }
-//
-//   Particle.prototype.draw = function(){
-//     circle(this.x, this.y, 0|Math.random()*4, 21);
-//   }
-//
-//
-// }
+function message(text = '', color = 9, time = 200){ //time is gameframes
+
+  this.text = text;
+  this.color = color;
+  this.time = time;
+  this.string = '';
+  this.counter = 0;
+
+}
+
+message.prototype.draw = function(index){
+
+  renderTarget = SCREEN;
+  this.time--;
+  this.counter+=2;
+  if(this.time < 0)return messages.splice(index, 1);
+  else{
+    this.string = this.text.substring(0,this.counter);
+    text([
+      this.string,
+      WIDTH/2,
+      20 + 12*index,
+      2,
+      2,
+      'center',
+      'top',
+      1,
+      this.color,
+    ]);
+  }
+
+}
 
 //--------gameoverstate.js-----------
 
@@ -3258,25 +4029,21 @@ states.menu = {
 
   step: function(dt) {
 
-      // if(!s_titleSong){
-      //   titleSong = playSound(sounds.titleMusic, 1, 0, true);
-      //   s_titleSong = true;
-      // }
-
+      if(!s_titleSong){
+        titleSong = playSound(sounds.titleMusic, 1, 0, true);
+        s_titleSong = true;
+      }
+      
       //game update
       if(Key.justReleased(Key.p)){
+        begin = true;
         roomSwitch();
         state = 'game';
-        //titleSong.sound.stop();
-        //transition = true;
+        titleSong.sound.stop();
       }
       if(Key.justReleased(Key.r)){
         state = 'spritesheet';
       }
-      // if(transition){
-      //   transitionOut();
-      //   transition = false;
-      // }
 
   },
 
@@ -3356,7 +4123,6 @@ states.menu = {
       spr(192-32,0,32,40, 192+25*bots, 40);
     }
 
-    rspr(1,1,25,36, 64,64, 1, 45);
 
 
     text([
@@ -3388,13 +4154,12 @@ states.menu = {
         outline(BUFFER, SCREEN, 15);
         renderSource = BUFFER; spr();
 
-        //   if(pal[31] == 0){
-        //   roomSwitch();
-        //   state = 'game'
-        //   transition = false;
-        // }
 
-        //outline(BUFFER, SCRATCH, 8);1
+        // if(player.y > HEIGHT){
+        //   //begin = false;
+        //   roomSwitch();
+        //   state = 'game';
+        // }
   },
 
 };
@@ -3405,68 +4170,75 @@ states.menu = {
 
 states.game = {
 
+  messageDelay: 240,
+  messageIndex:  0,
+
+  helpLoop: [
+    'CRITICAL SYSTEM FAILURE IMMINENT.',
+    'FIND FUEL SOURCE.',
+    'WASD / ZASD / ARROWS TO PERAMBULATE',
+  ],
+
   step(dt) {
-    // if(!s_gameSong){
-    //   s_gameSong = true;
-    //   playSound(sounds.gameMusic, 1, 0, true);
-    // }
+    if(!s_gameSong){
+      s_gameSong = true;
+      playSound(sounds.gameMusic, 1, 0, true);
+    }
 
     if(Key.isDown(Key.f))state = 'spritesheet';
-    //rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].update();  //1d array math y * width + x;
     player.update(dt);
     fuelTimer -= dt;
-    // if(fuelTimer < 0){
-    //   fuelTimer = 0;
-    //   state = 'gameover';
-    // }
+
+    this.messageDelay--;
+    if(this.messageDelay < 0){
+      messages.push(new message(
+        this.helpLoop[this.messageIndex],
+        fuelTimer < 150 ? 27 : 9,
+        240
+      ))
+      this.messageDelay = 240;
+      this.messageIndex++;
+      if(this.messageIndex > this.helpLoop.length){
+        this.messageIndex = 0;
+      }
+    }
+
   },
 
   render(dt) {
     renderTarget = SCREEN; clear(0);
     renderSource = BACKGROUND; spr();
     renderTarget = BUFFER; clear(0);
-    drawFuel();
+    drawThings();
     renderSource = MIDGROUND; spr();
     player.draw();
     renderSource = FOREGROUND; spr();
 
     renderTarget= SCREEN;
 
-    if(fuelTimer){
-      if(fuelTimer > 20){
+    if(fuelTimer > 0){
+      if(fuelTimer > 15){
         renderSource = BUFFER; spr();
-        renderSource = DEBUG; spr();
+        //renderSource = DEBUG; spr();
       } else{
-        renderTarget = SCREEN; clear(0);
-        let i = 1000;
-        while(i--)pset(Math.random()*WIDTH, Math.random()*HEIGHT, 2);
-        outline(BUFFER, SCREEN, 9);  //-green outline effect
-      }
-    }else {
-      renderTarget = SCREEN; clear(0);
-      let i = 2000;
-      while(i--){
-        let x = Math.random()*WIDTH|0;
-        let y = Math.random()*HEIGHT|0;
-        let color = ram[BUFFER + x + y * WIDTH] ? 27 : 0;
-        circle(x, y, 1, color);
-      }
-    }
+        if(Math.random() > fuelTimer/15){
 
+          renderTarget = SCREEN; clear(0);
+          let i = 1000;
+          while(i--)pset(Math.random()*WIDTH, Math.random()*HEIGHT, 27);
+          i = 6000;
+          while(i--){
+            let x = Math.random()*WIDTH,
+                y = Math.random()*HEIGHT
+            pset(x, y,   ram[BUFFER + x + y * WIDTH] > 0 ? 28 : 0)
+          }
+        }
+      }
 
-      //-----------------------
-    // let k = 9000;
-    // while(--k){
-    //   let t = 2 * Math.PI * Math.random();
-    //   let u = Math.random() * 250 + Math.random() * 250;
-    //   let r = u > 60 ? u : 120-u;
-    //
-    //
-    //   let x = r * Math.cos(t) + player.x | 0;
-    //   let y = r * Math.sin(t) + player.y | 0;
-    //   circle(x, y, 1, paldrk[ ram[SCREEN + x + (y+1) * WIDTH] ]);
-    // }
+    } else state = 'gameover';
+
     renderTarget = SCREEN;
+
     text([
       fuelTimer.toFixed(2).toString(),
       WIDTH/2,
@@ -3476,15 +4248,14 @@ states.game = {
       'center',
       'top',
       1,
-      9,
+      fuelTimer < 150 ? 27 : 10,
     ]);
-    splodes.forEach(function(s){s.draw()});
 
-    // if(pal[31] != 31){
-    //   let i = 32;
-    //   while(i--){
-    //     if(pal[i] != i)pal[i]++;
-    //   }
+    splodes.forEach(function(s){s.draw()});
+    messages.forEach(function(message, index, arr){
+      message.draw(index)
+
+    });
   },
 }
 
@@ -3528,6 +4299,11 @@ states.loading = {
       renderTarget = SCREEN; clear(0);
 
       if(soundsLoaded != totalSounds){
+        let i = 1000;
+        while(--i){
+          pset(Math.random()*WIDTH, Math.random()*HEIGHT, Math.random()*31|0 );
+        }
+
         text([
                 "LOADING...",
                 WIDTH/2,

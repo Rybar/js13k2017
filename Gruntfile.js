@@ -19,7 +19,7 @@ module.exports = function(grunt) {
 		concat : {
 			dist : {
 				src  : [
-					'src/js/lib/stats.js',
+					//'src/js/lib/stats.js',
 					'src/js/first.js',
 
 
@@ -79,7 +79,7 @@ module.exports = function(grunt) {
 					 mangle: {
 							// 	properties: {
 							// 		builtins: false,
-							// 		//regex: /fillRect|left|right|top|bottom|xspeed|yspeed|fillTriangle|player|renderTarget|renderSource/
+							// 		regex: /fillRect|left|right|top|bottom|xspeed|yspeed|fillTriangle|player|renderTarget|renderSource/
 							// 		//domprops: false,
 							//
 							// }

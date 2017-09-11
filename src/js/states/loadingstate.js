@@ -32,6 +32,11 @@ states.loading = {
       renderTarget = SCREEN; clear(0);
 
       if(soundsLoaded != totalSounds){
+        let i = 1000;
+        while(--i){
+          pset(Math.random()*WIDTH, Math.random()*HEIGHT, Math.random()*31|0 );
+        }
+
         text([
                 "LOADING...",
                 WIDTH/2,
