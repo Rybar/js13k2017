@@ -13,10 +13,9 @@ init = () => {
 
   sounds = {};
   soundsLoaded = 0;
-  totalSounds = 3;
-  score = 0; //
-  //fuelAmount = 12000000000;
-  fuelTimer = 100;
+  totalSounds = 5;
+  score = 0;
+  fuelTimer = 200;
   parts = 0;
   last = 0;
   dt = 0;
@@ -25,7 +24,9 @@ init = () => {
   state = 'loading';
   splodes = [];
   messages = [];
-  begin = false;
+  help = [];
+  tCounter = 0;
+  helpSection = 0;
 
 
   //FLAGS--------------------------------------------------------------
@@ -71,13 +72,13 @@ loop = e => {
 
     text([
       'PAUSED',
-      192,
+      WIDTH/2,
       128,
-      1,
-      1,
+      3,
       1,
       'center',
-      1,
+      'top',
+      4,
       21,
       0
     ])

@@ -12,6 +12,17 @@ states.loading = {
           sounds.gameMusic = buffer;
           soundsLoaded++;
       });
+      var songGen = new sonantx.MusicGenerator(a_zapgun);
+      songGen.createAudioBuffer(function(buffer) {
+          sounds.zapgun = buffer;
+          soundsLoaded++;
+      });
+      var songGen = new sonantx.MusicGenerator(a_fuelget);
+      songGen.createAudioBuffer(function(buffer) {
+          sounds.fuelget = buffer;
+          soundsLoaded++;
+      });
+
       var soundGen = new sonantx.SoundGenerator(a_jump);
       soundGen.createAudioBuffer(147, function(buffer) {
         var source = audioCtx.createBufferSource();
@@ -23,39 +34,46 @@ states.loading = {
     step: function(dt) {
 
       if(Key.justReleased(Key.z)){
-        state = 'menu';
+        if(soundsLoaded == totalSounds){
+          state = 'menu';
+        }
       }
-
+      tCounter--;
+      if(tCounter < 0 && soundsLoaded != totalSounds){
+        tCounter = 9;
+        splodes.push(new splode(WIDTH/2 + Math.cos(t)*100, HEIGHT/2+Math.sin(t)*70, 300, 1, 12))
+      }
     },
 
     render: function(dt) {
       renderTarget = SCREEN; clear(0);
 
+
       if(soundsLoaded != totalSounds){
-        let i = 1000;
-        while(--i){
-          pset(Math.random()*WIDTH, Math.random()*HEIGHT, Math.random()*31|0 );
-        }
+
+        renderTarget = SCREEN; clear(0);
+        splodes.forEach(function(s){s.draw()});
 
         text([
                 "LOADING...",
                 WIDTH/2,
-                128,
-                2,
+                128 + Math.sin(t) * 20,
+                3,
                 2,
                 'center',
                 'top',
-                2,
+                3,
                 9,
             ]);
 
       } else {
+        splodes.forEach(function(s){s.draw()});
         text([
-        "PRESS Z TO CONTINUE",
+        "HEADPHONES RECOMMENDED.\nPRESS Z TO CONTINUE",
         WIDTH/2,
-        128,
+        128 + Math.sin(t) * 20,
         2,
-        2,
+        10,
         'center',
         'top',
         2,

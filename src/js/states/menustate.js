@@ -1,17 +1,40 @@
 //--------------menustate.js---------------
 
-states.menu = {
+states.menu = {//
 
   step: function(dt) {
+      fuelTimer = 200;
 
       if(!s_titleSong){
         titleSong = playSound(sounds.titleMusic, 1, 0, true);
         s_titleSong = true;
       }
-      
+
       //game update
       if(Key.justReleased(Key.p)){
-        begin = true;
+        let i = 10;
+        while(i--){
+          splodes.push(
+            new splode(
+              player.x + Math.random()*40-20,
+              player.y + Math.random()*40-20,
+              200, 1, 5));
+          splodes.push(
+            new splode(
+              player.x + Math.random()*40-20,
+              player.y + Math.random()*40-20,
+              200, 1, 8));
+          splodes.push(
+            new splode(
+              player.x + Math.random()*40-20,
+              player.y + Math.random()*40-20,
+              32, 1, 21, true));
+          splodes.push(
+            new splode(
+              player.x + Math.random()*40-20,
+              player.y + Math.random()*40-20,
+              25, 1, 0, true));
+        }
         roomSwitch();
         state = 'game';
         titleSong.sound.stop();
@@ -29,17 +52,21 @@ states.menu = {
     renderTarget = SCRATCH; clear(0);
     renderTarget = SCREEN; clear(0);
 
+
+
     renderTarget = COLLISION;
+    fillRect(0,128,WIDTH,10, 2);
+
     text([
             'GREEBLE',
             WIDTH/2,
-            150,
-            20,
+            50,
+            14,
             20,
             'center',
             'top',
-            6,
-            25,
+            7,
+            2,
         ]);
 
     renderTarget = BUFFER;
@@ -91,11 +118,15 @@ states.menu = {
     renderSource = SCRATCH2; spr();
     renderSource = SCRATCH; spr();
 
-    player.draw();
+    //player.draw();
     renderSource = SPRITES;
-    let bots = 8;
+    let bots = 15;
     while(--bots){
-      spr(192-32,0,32,40, 192+25*bots, 40);
+      spr(192-32,0,32,40, (32*bots+t*16|0)%WIDTH, 90);
+      if((32*bots+t*16|0)%WIDTH == WIDTH-1){
+        splodes.push(new splode(16,100) );
+        splodes.push(new splode(16,116) )
+      }
     }
 
 
@@ -128,6 +159,8 @@ states.menu = {
 
         outline(BUFFER, SCREEN, 15);
         renderSource = BUFFER; spr();
+
+        splodes.forEach(function(splode, index, arr){splode.draw(index)});
 
 
         // if(player.y > HEIGHT){

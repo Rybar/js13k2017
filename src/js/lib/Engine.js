@@ -425,6 +425,8 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
 
        if(u >= 0 && v >= 0 && u < sw && v < sh){
           if( ram[renderSource + (u+sx) + (v+sy) * WIDTH] > 0) {
+            drawX.clamp(0,WIDTH);
+            drawY.clamp(0,HEIGHT);
             ram[renderTarget + drawX + drawY * WIDTH] = ram[renderSource + (u+sx) + (v+sy) * WIDTH]
           }
         }

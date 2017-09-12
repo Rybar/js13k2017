@@ -427,6 +427,8 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
 
        if(u >= 0 && v >= 0 && u < sw && v < sh){
           if( ram[renderSource + (u+sx) + (v+sy) * WIDTH] > 0) {
+            drawX.clamp(0,WIDTH);
+            drawY.clamp(0,HEIGHT);
             ram[renderTarget + drawX + drawY * WIDTH] = ram[renderSource + (u+sx) + (v+sy) * WIDTH]
           }
         }
@@ -506,6 +508,51 @@ Number.prototype.map = function(old_bottom, old_top, new_bottom, new_top) {
 }
 
 //--------END Engine.js-------------------
+
+world = [ //                                                  ||---start
+// 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39
+  03,01,01,01,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//0
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//1
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//2
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//3
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//4
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,04,02,02,02,01,02,02,04,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//5 --fall start
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,00,00,00,00,00,00,05,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//6
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,00,00,00,00,00,00,05,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//7
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,00,00,00,00,02,02,06,02,02,02,00,00,00,00,00,00,00,00,00,00,00,00,00,//8
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,06,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//9
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//10
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//11
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//12
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//13
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//14
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//15
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//16
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//17
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//18
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//19
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//20
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//21
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//22
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//23
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//24
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//25
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//26
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//27
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//28
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//29
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//30
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//31
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//32
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//33
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//34
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//36
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//37
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//38
+  00,01,02,03,04,05,06,07,08,09,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//39
+
+
+];
 
 var a_title = {
     "rowLen": 5513,
@@ -1201,7 +1248,6 @@ var a_title = {
     ],
     "songLen": 69
 };
-
 var a_gamesong = {
     "rowLen": 6615,
     "endPattern": 32,
@@ -2119,7 +2165,164 @@ var a_jump = {
     "lfo_amt": 59,
     "lfo_waveform": 0
   };
-
+var a_zapgun = {
+    "rowLen": 2544,
+    "endPattern": 2,
+    "songData": [
+        {
+            "osc1_oct": 7,
+            "osc1_det": 0,
+            "osc1_detune": 0,
+            "osc1_xenv": 1,
+            "osc1_vol": 192,
+            "osc1_waveform": 3,
+            "osc2_oct": 7,
+            "osc2_det": 0,
+            "osc2_detune": 0,
+            "osc2_xenv": 1,
+            "osc2_vol": 166,
+            "osc2_waveform": 3,
+            "noise_fader": 47,
+            "env_attack": 0,
+            "env_sustain": 1234,
+            "env_release": 19736,
+            "env_master": 72,
+            "fx_filter": 2,
+            "fx_freq": 5029,
+            "fx_resonance": 132,
+            "fx_delay_time": 4,
+            "fx_delay_amt": 16,
+            "fx_pan_freq": 0,
+            "fx_pan_amt": 0,
+            "lfo_osc1_freq": 0,
+            "lfo_fx_freq": 0,
+            "lfo_freq": 0,
+            "lfo_amt": 0,
+            "lfo_waveform": 0,
+            "p": [
+                1
+            ],
+            "c": [
+                {
+                    "n": [
+                        171,
+                        170,
+                        171,
+                        170,
+                        171,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                }
+            ]
+        }
+    ],
+    "songLen": 4
+}
+var a_fuelget = {
+    "rowLen": 4134,
+    "endPattern": 2,
+    "songData": [
+        {
+            "osc1_oct": 7,
+            "osc1_det": 0,
+            "osc1_detune": 0,
+            "osc1_xenv": 0,
+            "osc1_vol": 192,
+            "osc1_waveform": 2,
+            "osc2_oct": 7,
+            "osc2_det": 0,
+            "osc2_detune": 0,
+            "osc2_xenv": 0,
+            "osc2_vol": 192,
+            "osc2_waveform": 2,
+            "noise_fader": 0,
+            "env_attack": 0,
+            "env_sustain": 351,
+            "env_release": 5268,
+            "env_master": 103,
+            "fx_filter": 0,
+            "fx_freq": 11025,
+            "fx_resonance": 255,
+            "fx_delay_time": 3,
+            "fx_delay_amt": 56,
+            "fx_pan_freq": 0,
+            "fx_pan_amt": 0,
+            "lfo_osc1_freq": 0,
+            "lfo_fx_freq": 0,
+            "lfo_freq": 0,
+            "lfo_amt": 0,
+            "lfo_waveform": 0,
+            "p": [
+                1
+            ],
+            "c": [
+                {
+                    "n": [
+                        161,
+                        166,
+                        170,
+                        175,
+                        173,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                }
+            ]
+        }
+    ],
+    "songLen": 7
+}
 fontString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_!@#.'\"?/<()";
 
 fontBitmap = "11111100011111110001100011111010001111101000111110111111000010000100000111111100100101000110001111101111110000111001000011111111111000"+
@@ -2646,10 +2849,9 @@ init = () => {
 
   sounds = {};
   soundsLoaded = 0;
-  totalSounds = 3;
-  score = 0; //
-  //fuelAmount = 12000000000;
-  fuelTimer = 100;
+  totalSounds = 5;
+  score = 0;
+  fuelTimer = 200;
   parts = 0;
   last = 0;
   dt = 0;
@@ -2658,7 +2860,9 @@ init = () => {
   state = 'loading';
   splodes = [];
   messages = [];
-  begin = false;
+  help = [];
+  tCounter = 0;
+  helpSection = 0;
 
 
   //FLAGS--------------------------------------------------------------
@@ -2704,13 +2908,13 @@ loop = e => {
 
     text([
       'PAUSED',
-      192,
+      WIDTH/2,
       128,
-      1,
-      1,
+      3,
       1,
       'center',
-      1,
+      'top',
+      4,
       21,
       0
     ])
@@ -2739,50 +2943,7 @@ loop = e => {
 
 //----- END main.js---------------
 
-world = [
-// 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//0
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//1
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//2
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//3
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//4
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,01,01,01,01,01,02,02,02,02,00,00,00,00,00,00,00,00,00,00,00,00,00,//5
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//6
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//7
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//8
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//9
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//10
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,01,01,01,01,01,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//11
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//12
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//13
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//14
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//15
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//16
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//17
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//18
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//19
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//20
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//21
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//22
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//23
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//24
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//25
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//26
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//27
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//28
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//29
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//30
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//31
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//32
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//33
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//34
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//36
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//37
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//38
-  00,01,02,03,04,05,06,07,08,09,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//39
 
-
-];
 
 const LEFT = 1;
 const RIGHT = 2;
@@ -2806,18 +2967,33 @@ const THRUSTER = 29;
 const WORLDWIDTH = 39;
 const WORLDHEIGHT = 39; // 0 index.
 
-currentRoom = [20,0]; //
+const H12 = WIDTH/12;
+const V8 = HEIGHT/8;
+
+//grid vars for easier level building---------------
+const H1 = WIDTH/6;
+const H2 = WIDTH/6 * 2;
+const H3 = WIDTH/6 * 3;
+const H4 = WIDTH/6 * 4;
+const H5 = WIDTH/6 * 5;
+const H6 = WIDTH;
+
+const V1 = HEIGHT/4;
+const V2 = HEIGHT/4 * 2;
+const V3 = HEIGHT/4 * 3;
+const V4 = HEIGHT;
+
+currentRoom = [20,4]; //
 
 rooms = [
   //0
   {
 
     draw: function(dt){
-      bgstars();
 
-      denseGreeble();
+    },
 
-      foregroundGreeble();
+    specials: function(dt){
 
     }
   },
@@ -2825,81 +3001,77 @@ rooms = [
   //1
   {
     draw: function(dt){
-      fillRect(0,205,384,100,WALLS);
-      bgstars();
+      fillTriangle(H3,V2, H5,V3, H1,V3,  WALLS);
+      fillTriangle(H5,V3, H3,V2,H1,V3,  WALLS);
+      fillTriangle(H3,V2, H1,V3, H5,V3,   WALLS);
+      fillRect(0, V3, WIDTH, V1, WALLS);
 
-      denseGreeble();
+    },
+    specials: function(dt){
 
-      foregroundGreeble();
-
-
-
+      drawHeads(0,V3, WIDTH, V1-10, 20);
     }
   },
 
   //2
   {
     draw: function(dt){
-        fillRect(0,205,384,100,WALLS);
-        pset(25+Math.random()*325, 190, FUELCELL);
-        pset(25+Math.random()*325, 190, FUELCELL);
-        pset(25+Math.random()*325, 190, FUELCELL);
+      fillRect(0,V3, WIDTH,V1, WALLS);
+      pset(25+Math.random()*325, V3-5, FUELCELL);
+      pset(25+Math.random()*325, V3-5, FUELCELL);
+      pset(25+Math.random()*325, V3-5, FUELCELL);
+    },
 
-        bgstars();
-        denseGreeble();
-        foregroundGreeble();
+    specials: function(dt){
+
     }
   },
 
   //3
   {
     draw: function(dt){
-      fillRect(0,0,127,256,WALLS);
-      fillRect(250,0,127,256,WALLS);
-      bgstars();
+      fillRect(0,170,384,200,WALLS);
+      fillRect(0,140,100,100, WALLS);
+      pset(192, 160, BODY);
+    },
 
-      denseGreeble();
+    specials: function(dt){
 
-      foregroundGreeble();
+
+
     }
   },
   //4
   {
     draw: function(dt){
-      fillRect(0,0,127,256,WALLS);
-      fillRect(250,0,127,256,WALLS);
+      fillRect(0,V3, WIDTH, V1, WALLS);
+      fillRect(H2,V3,H2,V1, 0);
+      //pset(192, 160, BODY);
+    },
+    specials: function(dt){
 
-      bgstars();
-      denseGreeble();
-      foregroundGreeble();
     }
   },
   //5
   {
     draw: function(dt){
-
-        fillRect(0,205,384,10,WALLS);
-        fillRect(192,100,100,200,FUELCRYSTAL);
-        pset(50, 180, FUELCELL);
+      fillRect(0,0,WIDTH,HEIGHT,WALLS);
+      fillRect(H2,0,H4,HEIGHT, 0);
+      //pset(100, 190, THRUSTER);
+    },
+    specials: function(dt){
 
     }
   },
   //6
   {
     draw: function(dt){
-          fillRect(0,205,384,100,WALLS);
+          fillRect(0,170,384,100,WALLS);
+          pset(192, 160, BODY);
 
 
-          pset(100, 190, BODY);
-          pset(200, 190, ARM);
-          pset(300, 190, THRUSTER);
-
-
-          bgstars();
-          drawTerra();
-          drawFuelCrystals();
-          denseGreeble();
-          foregroundGreeble();
+    },
+    specials: function(dt){
 
     }
   },
@@ -2913,14 +3085,10 @@ rooms = [
           fillRect(100,140,100,20,WALLS);
           fillRect(200,820,10,100, WALLS);
           fillRect(210,70,100,100, WALLS);
+          pset(50, 180, FUELCELL);
 
-          bgstars();
-          denseGreeble();
-          bigGreeble();
-          //foregroundGreeble();
-
-
-
+    },
+    specials: function(dt){
     }
   },
   //8
@@ -2929,15 +3097,24 @@ rooms = [
       fillRect(0,205,384,10,WALLS);
       fillCircle(250,150,64,WALLS);
       fillCircle(250,150,50,FUELCRYSTAL);
-
       pset(50, 180, FUELCELL);
+    },
 
+    specials: function(dt){
 
+    }
+  },
+  //9
+  {
+    draw: function(dt){
+      fillRect(0,205,384,10,WALLS);
+      fillCircle(250,150,64,WALLS);
+      fillCircle(250,150,50,FUELCRYSTAL);
+      pset(50, 180, FUELCELL);
+    },
 
+    specials: function(dt){
 
-      //foregroundGreeble();
-
-      //archi(245,110,25);
     }
   },
 
@@ -2985,6 +3162,7 @@ function roomSwitch(direction){
   redraw();
 
 
+
 }
 
 function redraw(){
@@ -3002,6 +3180,9 @@ function redraw(){
   denseGreeble();
   bigGreeble()
   foregroundGreeble();
+
+  renderTarget = COLLISION;
+  rooms[ world[ currentRoom[1] * (WORLDWIDTH+1) + currentRoom[0]  ] ].specials();
   //
 }
 
@@ -3222,6 +3403,19 @@ function drawFuelCrystals(){
 
 }
 
+function drawHeads(x,y,width,height,amt){
+  renderTarget = MIDGROUND;
+  renderSource = SPRITES;
+
+  let i = amt;
+  while(i--){
+    pal = paldrk;
+    roomNG.setSeed(lcg.seed + i * 1234.5678);
+    rspr(0,0,32,32, roomNG.nextIntRange(x, x+width), roomNG.nextIntRange(y, y+height), 1, roomNG.nextIntRange(0,359) )
+    pal = palDefault;
+  }
+}
+
 // var songGen = new sonantx.MusicGenerator(song1);
 //
 // songGen.createAudioBuffer(function(buffer) {
@@ -3331,7 +3525,7 @@ player = {
 
   init (){
     this.x = 384/2;
-    this.y =  30;
+    this.y =  106;
     this.radius = 20;
     this.hitRadius = 8;
     this.xvel = 0;
@@ -3398,12 +3592,27 @@ player = {
     this.overlapResolution();
     this.updateB();
 
+    if(player.yvel > 0){
+      if(ram[COLLISION + player.b.x + player.b.bottom * WIDTH] > 0 ||
+         ram[COLLISION + player.b.x+4 + player.b.bottom * WIDTH] > 0 ||
+         ram[COLLISION + player.b.x-4 + player.b.bottom * WIDTH] > 0
+        ){
+        this.jumping=false;
+      }
+    }
+    if(player.yvel < -10){
+      splodes.push(new splode(player.x+3+Math.random()*2,player.y+6+Math.random()*2, 7, 1, 19))
+      splodes.push(new splode(player.x-3-Math.random()*2,player.y+6+Math.random()*2, 7, 1, 19))
+    }
+
+
     //player movement-----------------------------------------------------------
     switch(player.mode){
 
       case HEADMODE:
       player.yspeed = 80;
       player.xspeed = 80;
+      if(fuelTimer >= 360)fuelTimer = 360;
 
       if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
         player.facingLeft = false;
@@ -3419,15 +3628,12 @@ player = {
         }
         else{player.xvel = 0;}
       }
-      if(Key.isDown(Key.w) || Key.isDown(Key.UP) || Key.isDown(Key.z)){
+      if(Key.isDown(Key.w) || Key.isDown(Key.UP) || Key.isDown(Key.z) || Key.isDown(Key.SPACE)){
         if(!this.jumping && fuelTimer > 0 && player.jumpCooldown < 0){
           this.jumping = true;
           s_jump = true;
           player.jumpCooldown = 5;
           player.yvel = -player.yspeed;
-          splodes.push(new splode(player.x+3,player.y+4, 7, 1, 9))
-          splodes.push(new splode(player.x-3,player.y+4, 7, 1, 9))
-
           playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
         }
       }
@@ -3435,14 +3641,14 @@ player = {
       player.angle -= player.xvel / 30;
       if(player.jumping)player.angle -= player.facingLeft? -player.yvel /30 : player.yvel / 30;
       player.jumpCooldown--;
-
+      if(player.yvel > 0 && ram[COLLISION + player.b.x + (player.b.bottom) * WIDTH] > 0)this.jumping=false;
       break;
 
       case BODYMODE:
       player.maxXvel = 150;
-      player.minYvel = -150;
+      player.minYvel = -300;
       player.xspeed = 150;
-      player.yspeed = 150;
+      player.yspeed = 190;
       if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
         player.facingLeft = false;
         player.xvel =  player.xspeed;
@@ -3451,7 +3657,7 @@ player = {
         this.facingLeft = true;
         player.xvel =  - player.xspeed;
       }
-      if(Key.isDown(Key.w) || Key.isDown(Key.UP) || Key.isDown(Key.z)){
+      if(Key.isDown(Key.w) || Key.isDown(Key.UP) || Key.isDown(Key.z) || Key.isDown(Key.SPACE)){
         if(!this.jumping && fuelTimer > 0){
           fuelTimer -= 1;
           this.jumping = true;
@@ -3461,7 +3667,8 @@ player = {
         }
 
       }
-      if(this.yvel > 0)this.jumping=false;
+
+
 
       break;
 
@@ -3470,7 +3677,7 @@ player = {
       player.maxXvel = 150;
       player.minYvel = -150;
       player.xspeed = 150;
-      player.yspeed = 150;
+      player.yspeed = 220;
 
       if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
         player.facingLeft = false;
@@ -3522,6 +3729,8 @@ player = {
 
       if(player.gunCooldown < 0){
         player.gunCooldown = 4;
+        playSound(sounds.zapgun, 2.5, player.x.map(0, WIDTH, -1, 1), false);
+
         redraw(); //update room drawing every 4 frames
       }
     }
@@ -3532,7 +3741,6 @@ player = {
 
     }
     player.gunCooldown--;
-
     break;
 
     case THRUSTERMODE://--------------------------------------------------------
@@ -3548,7 +3756,7 @@ player = {
       this.facingLeft = true;
       player.xvel =  - player.xspeed;
     }
-    if(Key.isDown(Key.w) || Key.isDown(Key.UP)){
+    if(Key.isDown(Key.w) || Key.isDown(Key.UP) || Key.isDown(Key.Z) || Key.isDown(Key.SPACE)){
       if(!player.jumping){
         player.jumping = true;
         player.yvel = -player.yspeed;
@@ -3567,7 +3775,6 @@ player = {
         )
       )
     renderTarget = COLLISION;
-    console.log( pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) )
     if( pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) == FUELCRYSTAL) player.minedFuel = true;
     fillCircle(player.x + (player.facingLeft ? -10 : 10),
     player.y + (Math.random()*20-15)|0, 10, 0);
@@ -3588,6 +3795,8 @@ player = {
 
     if(player.gunCooldown < 0){
       player.gunCooldown = 4;
+      playSound(sounds.zapgun, 2.5, player.x.map(0, WIDTH, -1, 1), false);
+
       redraw(); //update room drawing every 4 frames
     }
   }
@@ -3618,6 +3827,8 @@ player = {
   }
   if(player.gunCooldown < 0){
     player.gunCooldown = 4;
+    playSound(sounds.zapgun, 2.5, player.x.map(0, WIDTH, -1, 1), false);
+
     redraw(); //update room drawing every 4 frames
   }
 }
@@ -3642,7 +3853,6 @@ if(player.minedFuel){
 
 }
 player.gunCooldown--;
-
 break;
 
 }
@@ -3676,8 +3886,8 @@ draw (dt) {
     break;
     case BODYMODE:
     renderSource = SPRITES;
-    spr(32,0,32,32, player.b.x+2-16, player.b.y+5-24); //body
-    spr(0,0,32,32, player.b.x-16, player.b.y-24, player.facingLeft); //head
+    spr(32,0,32,32, player.b.x+2-16, player.b.y+5-20); //body
+    spr(0,0,32,32, player.b.x-16, player.b.y-20, player.facingLeft); //head
 
     break;
     case ARMMODE:
@@ -3689,25 +3899,26 @@ draw (dt) {
     break;
     case THRUSTERMODE:
     renderSource = SPRITES;
-    spr(128,0,32,40, player.b.x+5-16, player.b.y+4-30); //wheel
-    spr(32,0,32,32, player.b.x+2-16, player.b.y+5-30); //body
-    spr(64,0,32,32, player.b.x+5-16, player.b.y+4-30); //wheel arm
-    spr(64+32,0,32,32, player.b.x+5-16 + (this.facingLeft ? -12 : 0), player.b.y+3-30, this.facingLeft); //arm
-    spr(0,0,32,32, player.b.x-16, player.b.y-30, player.facingLeft); //head
+    spr(128,0,32,40, player.b.x+5-16, player.b.y+4-20); //wheel
+    spr(32,0,32,32, player.b.x+2-16, player.b.y+5-20); //body
+    spr(64,0,32,32, player.b.x+5-16, player.b.y+4-20); //wheel arm
+    spr(64+32,0,32,32, player.b.x+5-16 + (this.facingLeft ? -12 : 0), player.b.y+3-20, this.facingLeft); //arm
+    spr(0,0,32,32, player.b.x-16, player.b.y-20, player.facingLeft); //head
     break;
   }
 
 },
 
 collides () {
-  var offset = 0;
-  if(this.b.x + this.hitRadius > WIDTH) this.b.y -= 1;
+  if(this.b.x + this.hitRadius >= WIDTH-1 && player.xvel > 0){
+    this.x = WIDTH + 1;
+  }
   for(var i = -this.hitRadius; i < this.hitRadius; i++){
     for(var j = -this.hitRadius; j < this.hitRadius; j++){
 
       let check = ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH]
       if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
-        player.jumping = false;
+        //player.jumping = false;
         return true;
       }
     }
@@ -3716,8 +3927,8 @@ collides () {
 },
 
 overlaps () {
-  for(var i = -this.radius; i < this.radius; i++){
-    for(var j = -this.radius; j < this.radius; j++){
+  for(var i = 0; i < this.radius * 2; i++){
+    for(var j = 0; j < this.radius * 2; j++){
       let overlap = ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH]
       if(overlap){
         return {
@@ -3734,12 +3945,12 @@ overlaps () {
 updateB () {
 
   this.b = {
-    left: this.x-this.radius|0,
-    right: this.x+this.radius|0,
-    top: this.y-this.radius|0,
-    bottom: this.y+this.radius|0,
-    width: this.radius * 2,
-    height: this.radius * 2,
+    left: this.x-this.hitRadius|0,
+    right: this.x+this.hitRadius|0,
+    top: this.y-this.hitRadius|0,
+    bottom: this.y+this.hitRadius|0,
+    width: this.hitRadius * 2,
+    height: this.hitRadius * 2,
     x: this.x|0,
     y: this.y|0
   }
@@ -3826,6 +4037,8 @@ overlapResolution(dt){
     renderTarget = BUFFER;
 
     splodes.push( new splode(o.x, o.y) );
+    playSound(sounds.fuelget, 2, player.x.map(0, WIDTH, -1, 1), false);
+
 
     let i = 10;
     while(--i){
@@ -3854,6 +4067,8 @@ overlapResolution(dt){
     renderTarget = BUFFER;
     player.mode = BODYMODE;
     messages.push(new message('AUX BOOSTERS ACQUIRED. ENERGY CAPACITY INCREASED.'));
+    playSound(sounds.fuelget, 1, player.x.map(0, WIDTH, -1, 1), false);
+
 
     break;
 
@@ -3864,6 +4079,7 @@ overlapResolution(dt){
     fillCircle(o.x,o.y,3,0);
     renderTarget = BUFFER;
     player.mode = ARMMODE;
+    playSound(sounds.fuelget, 1, player.x.map(0, WIDTH, -1, 1), false);
     messages.push(new message('DISINTIGRATE TOOL ACQUIRED. PRESS X TO USE'));
 
     break;
@@ -3875,6 +4091,7 @@ overlapResolution(dt){
     fillCircle(o.x,o.y,3,0);
     renderTarget = BUFFER;
     player.mode = THRUSTERMODE;
+    playSound(sounds.fuelget, 1, player.x.map(0, WIDTH, -1, 1), false);
     messages.push(new message('E-M CONVERTER ACQUIRED. PRESS C TO USE'));
 
 
@@ -3900,9 +4117,9 @@ function splode(x = 0,y = 0,size = 10,speed = 10, color = 21, filled=false, squa
 
 }
 
-splode.prototype.draw = function(){
+splode.prototype.draw = function(index){
   this.size++;
-  if(this.size > this.maxSize)return;
+  if(this.size > this.maxSize)return splodes.splice(index, 1);
 
     if(this.square){
       if(this.filled){
@@ -3925,35 +4142,6 @@ splode.prototype.draw = function(){
     }
 
   }
-
-  function splodeRect(x = 0,y = 0,size = 10,speed = 10, color = 21, filled=false){
-    this.x = x;
-    this.y = y;
-    this.maxSize = size;
-    this.speed = 10;
-    this.counter = this.speed;
-    this.color = color;
-    this.size = 1;
-    this.filled = filled;
-
-    s = this;
-  }
-
-  splodeRect.prototype.draw = function(){
-    this.size++;
-    if(this.size > this.maxSize)return;
-      if(this.filled){
-        fillRect(this.x-this.size,this.y-this.size, this.size, this.size, this.color);
-      }else{
-        rect(this.x-this.size,this.y-this.size, this.size, this.color);
-      }
-      this.counter--;
-      if(this.counter==0){
-        this.size++;
-        this.counter = this.speed;
-      }
-
-    }
 
 function message(text = '', color = 9, time = 200){ //time is gameframes
 
@@ -4025,18 +4213,41 @@ states.gameover = {
 
 //--------------menustate.js---------------
 
-states.menu = {
+states.menu = {//
 
   step: function(dt) {
+      fuelTimer = 200;
 
       if(!s_titleSong){
         titleSong = playSound(sounds.titleMusic, 1, 0, true);
         s_titleSong = true;
       }
-      
+
       //game update
       if(Key.justReleased(Key.p)){
-        begin = true;
+        let i = 10;
+        while(i--){
+          splodes.push(
+            new splode(
+              player.x + Math.random()*40-20,
+              player.y + Math.random()*40-20,
+              200, 1, 5));
+          splodes.push(
+            new splode(
+              player.x + Math.random()*40-20,
+              player.y + Math.random()*40-20,
+              200, 1, 8));
+          splodes.push(
+            new splode(
+              player.x + Math.random()*40-20,
+              player.y + Math.random()*40-20,
+              32, 1, 21, true));
+          splodes.push(
+            new splode(
+              player.x + Math.random()*40-20,
+              player.y + Math.random()*40-20,
+              25, 1, 0, true));
+        }
         roomSwitch();
         state = 'game';
         titleSong.sound.stop();
@@ -4054,17 +4265,21 @@ states.menu = {
     renderTarget = SCRATCH; clear(0);
     renderTarget = SCREEN; clear(0);
 
+
+
     renderTarget = COLLISION;
+    fillRect(0,128,WIDTH,10, 2);
+
     text([
             'GREEBLE',
             WIDTH/2,
-            150,
-            20,
+            50,
+            14,
             20,
             'center',
             'top',
-            6,
-            25,
+            7,
+            2,
         ]);
 
     renderTarget = BUFFER;
@@ -4116,11 +4331,15 @@ states.menu = {
     renderSource = SCRATCH2; spr();
     renderSource = SCRATCH; spr();
 
-    player.draw();
+    //player.draw();
     renderSource = SPRITES;
-    let bots = 8;
+    let bots = 15;
     while(--bots){
-      spr(192-32,0,32,40, 192+25*bots, 40);
+      spr(192-32,0,32,40, (32*bots+t*16|0)%WIDTH, 90);
+      if((32*bots+t*16|0)%WIDTH == WIDTH-1){
+        splodes.push(new splode(16,100) );
+        splodes.push(new splode(16,116) )
+      }
     }
 
 
@@ -4154,6 +4373,8 @@ states.menu = {
         outline(BUFFER, SCREEN, 15);
         renderSource = BUFFER; spr();
 
+        splodes.forEach(function(splode, index, arr){splode.draw(index)});
+
 
         // if(player.y > HEIGHT){
         //   //begin = false;
@@ -4173,32 +4394,46 @@ states.game = {
   messageDelay: 240,
   messageIndex:  0,
 
-  helpLoop: [
-    'CRITICAL SYSTEM FAILURE IMMINENT.',
-    'FIND FUEL SOURCE.',
-    'WASD / ZASD / ARROWS TO PERAMBULATE',
+  helpLoops: [
+    [
+      'CRITICAL SYSTEM FAILURE IMMINENT.',
+      'FIND FUEL SOURCE.',
+      'WASD / ZASD / ARROWS TO PERAMBULATE',
+      'AUX JETS OFFLINE. HOLD LEFT/RIGHT\nTAP JUMP TO MOVE'
+    ],
+
+    [
+      'MAX ENERGY CAPACITY REACHED.',
+      'FIND MISSING COMPONENTS TO INCREASE CAPACITY',
+    ]
   ],
 
   step(dt) {
     if(!s_gameSong){
       s_gameSong = true;
-      playSound(sounds.gameMusic, 1, 0, true);
+      gamesong = playSound(sounds.gameMusic, 1, 0, true);
     }
 
     if(Key.isDown(Key.f))state = 'spritesheet';
     player.update(dt);
     fuelTimer -= dt;
 
+    if(fuelTimer > 350){
+      helpSection = 1;
+    } else{
+       helpSection = 0;
+     }
+
     this.messageDelay--;
     if(this.messageDelay < 0){
       messages.push(new message(
-        this.helpLoop[this.messageIndex],
+        this.helpLoops[helpSection][this.messageIndex],
         fuelTimer < 150 ? 27 : 9,
         240
       ))
       this.messageDelay = 240;
       this.messageIndex++;
-      if(this.messageIndex > this.helpLoop.length){
+      if(this.messageIndex > this.helpLoops[helpSection].length){
         this.messageIndex = 0;
       }
     }
@@ -4251,11 +4486,13 @@ states.game = {
       fuelTimer < 150 ? 27 : 10,
     ]);
 
-    splodes.forEach(function(s){s.draw()});
+    splodes.forEach(function(splode, index, arr){splode.draw(index)});
+
     messages.forEach(function(message, index, arr){
       message.draw(index)
-
     });
+
+
   },
 }
 
@@ -4279,6 +4516,17 @@ states.loading = {
           sounds.gameMusic = buffer;
           soundsLoaded++;
       });
+      var songGen = new sonantx.MusicGenerator(a_zapgun);
+      songGen.createAudioBuffer(function(buffer) {
+          sounds.zapgun = buffer;
+          soundsLoaded++;
+      });
+      var songGen = new sonantx.MusicGenerator(a_fuelget);
+      songGen.createAudioBuffer(function(buffer) {
+          sounds.fuelget = buffer;
+          soundsLoaded++;
+      });
+
       var soundGen = new sonantx.SoundGenerator(a_jump);
       soundGen.createAudioBuffer(147, function(buffer) {
         var source = audioCtx.createBufferSource();
@@ -4290,39 +4538,46 @@ states.loading = {
     step: function(dt) {
 
       if(Key.justReleased(Key.z)){
-        state = 'menu';
+        if(soundsLoaded == totalSounds){
+          state = 'menu';
+        }
       }
-
+      tCounter--;
+      if(tCounter < 0 && soundsLoaded != totalSounds){
+        tCounter = 9;
+        splodes.push(new splode(WIDTH/2 + Math.cos(t)*100, HEIGHT/2+Math.sin(t)*70, 300, 1, 12))
+      }
     },
 
     render: function(dt) {
       renderTarget = SCREEN; clear(0);
 
+
       if(soundsLoaded != totalSounds){
-        let i = 1000;
-        while(--i){
-          pset(Math.random()*WIDTH, Math.random()*HEIGHT, Math.random()*31|0 );
-        }
+
+        renderTarget = SCREEN; clear(0);
+        splodes.forEach(function(s){s.draw()});
 
         text([
                 "LOADING...",
                 WIDTH/2,
-                128,
-                2,
+                128 + Math.sin(t) * 20,
+                3,
                 2,
                 'center',
                 'top',
-                2,
+                3,
                 9,
             ]);
 
       } else {
+        splodes.forEach(function(s){s.draw()});
         text([
-        "PRESS Z TO CONTINUE",
+        "HEADPHONES RECOMMENDED.\nPRESS Z TO CONTINUE",
         WIDTH/2,
-        128,
+        128 + Math.sin(t) * 20,
         2,
-        2,
+        10,
         'center',
         'top',
         2,

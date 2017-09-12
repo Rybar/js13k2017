@@ -11,9 +11,9 @@ function splode(x = 0,y = 0,size = 10,speed = 10, color = 21, filled=false, squa
 
 }
 
-splode.prototype.draw = function(){
+splode.prototype.draw = function(index){
   this.size++;
-  if(this.size > this.maxSize)return;
+  if(this.size > this.maxSize)return splodes.splice(index, 1);
 
     if(this.square){
       if(this.filled){
@@ -36,35 +36,6 @@ splode.prototype.draw = function(){
     }
 
   }
-
-  function splodeRect(x = 0,y = 0,size = 10,speed = 10, color = 21, filled=false){
-    this.x = x;
-    this.y = y;
-    this.maxSize = size;
-    this.speed = 10;
-    this.counter = this.speed;
-    this.color = color;
-    this.size = 1;
-    this.filled = filled;
-
-    s = this;
-  }
-
-  splodeRect.prototype.draw = function(){
-    this.size++;
-    if(this.size > this.maxSize)return;
-      if(this.filled){
-        fillRect(this.x-this.size,this.y-this.size, this.size, this.size, this.color);
-      }else{
-        rect(this.x-this.size,this.y-this.size, this.size, this.color);
-      }
-      this.counter--;
-      if(this.counter==0){
-        this.size++;
-        this.counter = this.speed;
-      }
-
-    }
 
 function message(text = '', color = 9, time = 200){ //time is gameframes
 

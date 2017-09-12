@@ -5,32 +5,46 @@ states.game = {
   messageDelay: 240,
   messageIndex:  0,
 
-  helpLoop: [
-    'CRITICAL SYSTEM FAILURE IMMINENT.',
-    'FIND FUEL SOURCE.',
-    'WASD / ZASD / ARROWS TO PERAMBULATE',
+  helpLoops: [
+    [
+      'CRITICAL SYSTEM FAILURE IMMINENT.',
+      'FIND FUEL SOURCE.',
+      'WASD / ZASD / ARROWS TO PERAMBULATE',
+      'AUX JETS OFFLINE. HOLD LEFT/RIGHT\nTAP JUMP TO MOVE'
+    ],
+
+    [
+      'MAX ENERGY CAPACITY REACHED.',
+      'FIND MISSING COMPONENTS TO INCREASE CAPACITY',
+    ]
   ],
 
   step(dt) {
     if(!s_gameSong){
       s_gameSong = true;
-      playSound(sounds.gameMusic, 1, 0, true);
+      gamesong = playSound(sounds.gameMusic, 1, 0, true);
     }
 
     if(Key.isDown(Key.f))state = 'spritesheet';
     player.update(dt);
     fuelTimer -= dt;
 
+    if(fuelTimer > 350){
+      helpSection = 1;
+    } else{
+       helpSection = 0;
+     }
+
     this.messageDelay--;
     if(this.messageDelay < 0){
       messages.push(new message(
-        this.helpLoop[this.messageIndex],
+        this.helpLoops[helpSection][this.messageIndex],
         fuelTimer < 150 ? 27 : 9,
         240
       ))
       this.messageDelay = 240;
       this.messageIndex++;
-      if(this.messageIndex > this.helpLoop.length){
+      if(this.messageIndex > this.helpLoops[helpSection].length){
         this.messageIndex = 0;
       }
     }
@@ -83,11 +97,13 @@ states.game = {
       fuelTimer < 150 ? 27 : 10,
     ]);
 
-    splodes.forEach(function(s){s.draw()});
+    splodes.forEach(function(splode, index, arr){splode.draw(index)});
+
     messages.forEach(function(message, index, arr){
       message.draw(index)
-
     });
+
+
   },
 }
 

@@ -3,7 +3,7 @@ player = {
 
   init (){
     this.x = 384/2;
-    this.y =  30;
+    this.y =  106;
     this.radius = 20;
     this.hitRadius = 8;
     this.xvel = 0;
@@ -70,12 +70,27 @@ player = {
     this.overlapResolution();
     this.updateB();
 
+    if(player.yvel > 0){
+      if(ram[COLLISION + player.b.x + player.b.bottom * WIDTH] > 0 ||
+         ram[COLLISION + player.b.x+4 + player.b.bottom * WIDTH] > 0 ||
+         ram[COLLISION + player.b.x-4 + player.b.bottom * WIDTH] > 0
+        ){
+        this.jumping=false;
+      }
+    }
+    if(player.yvel < -10){
+      splodes.push(new splode(player.x+3+Math.random()*2,player.y+6+Math.random()*2, 7, 1, 19))
+      splodes.push(new splode(player.x-3-Math.random()*2,player.y+6+Math.random()*2, 7, 1, 19))
+    }
+
+
     //player movement-----------------------------------------------------------
     switch(player.mode){
 
       case HEADMODE:
       player.yspeed = 80;
       player.xspeed = 80;
+      if(fuelTimer >= 360)fuelTimer = 360;
 
       if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
         player.facingLeft = false;
@@ -91,15 +106,12 @@ player = {
         }
         else{player.xvel = 0;}
       }
-      if(Key.isDown(Key.w) || Key.isDown(Key.UP) || Key.isDown(Key.z)){
+      if(Key.isDown(Key.w) || Key.isDown(Key.UP) || Key.isDown(Key.z) || Key.isDown(Key.SPACE)){
         if(!this.jumping && fuelTimer > 0 && player.jumpCooldown < 0){
           this.jumping = true;
           s_jump = true;
           player.jumpCooldown = 5;
           player.yvel = -player.yspeed;
-          splodes.push(new splode(player.x+3,player.y+4, 7, 1, 9))
-          splodes.push(new splode(player.x-3,player.y+4, 7, 1, 9))
-
           playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
         }
       }
@@ -107,14 +119,14 @@ player = {
       player.angle -= player.xvel / 30;
       if(player.jumping)player.angle -= player.facingLeft? -player.yvel /30 : player.yvel / 30;
       player.jumpCooldown--;
-
+      if(player.yvel > 0 && ram[COLLISION + player.b.x + (player.b.bottom) * WIDTH] > 0)this.jumping=false;
       break;
 
       case BODYMODE:
       player.maxXvel = 150;
-      player.minYvel = -150;
+      player.minYvel = -300;
       player.xspeed = 150;
-      player.yspeed = 150;
+      player.yspeed = 190;
       if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
         player.facingLeft = false;
         player.xvel =  player.xspeed;
@@ -123,7 +135,7 @@ player = {
         this.facingLeft = true;
         player.xvel =  - player.xspeed;
       }
-      if(Key.isDown(Key.w) || Key.isDown(Key.UP) || Key.isDown(Key.z)){
+      if(Key.isDown(Key.w) || Key.isDown(Key.UP) || Key.isDown(Key.z) || Key.isDown(Key.SPACE)){
         if(!this.jumping && fuelTimer > 0){
           fuelTimer -= 1;
           this.jumping = true;
@@ -133,7 +145,8 @@ player = {
         }
 
       }
-      if(this.yvel > 0)this.jumping=false;
+
+
 
       break;
 
@@ -142,7 +155,7 @@ player = {
       player.maxXvel = 150;
       player.minYvel = -150;
       player.xspeed = 150;
-      player.yspeed = 150;
+      player.yspeed = 220;
 
       if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
         player.facingLeft = false;
@@ -194,6 +207,8 @@ player = {
 
       if(player.gunCooldown < 0){
         player.gunCooldown = 4;
+        playSound(sounds.zapgun, 2.5, player.x.map(0, WIDTH, -1, 1), false);
+
         redraw(); //update room drawing every 4 frames
       }
     }
@@ -204,7 +219,6 @@ player = {
 
     }
     player.gunCooldown--;
-
     break;
 
     case THRUSTERMODE://--------------------------------------------------------
@@ -220,7 +234,7 @@ player = {
       this.facingLeft = true;
       player.xvel =  - player.xspeed;
     }
-    if(Key.isDown(Key.w) || Key.isDown(Key.UP)){
+    if(Key.isDown(Key.w) || Key.isDown(Key.UP) || Key.isDown(Key.Z) || Key.isDown(Key.SPACE)){
       if(!player.jumping){
         player.jumping = true;
         player.yvel = -player.yspeed;
@@ -239,7 +253,6 @@ player = {
         )
       )
     renderTarget = COLLISION;
-    console.log( pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) )
     if( pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) == FUELCRYSTAL) player.minedFuel = true;
     fillCircle(player.x + (player.facingLeft ? -10 : 10),
     player.y + (Math.random()*20-15)|0, 10, 0);
@@ -260,6 +273,8 @@ player = {
 
     if(player.gunCooldown < 0){
       player.gunCooldown = 4;
+      playSound(sounds.zapgun, 2.5, player.x.map(0, WIDTH, -1, 1), false);
+
       redraw(); //update room drawing every 4 frames
     }
   }
@@ -290,6 +305,8 @@ player = {
   }
   if(player.gunCooldown < 0){
     player.gunCooldown = 4;
+    playSound(sounds.zapgun, 2.5, player.x.map(0, WIDTH, -1, 1), false);
+
     redraw(); //update room drawing every 4 frames
   }
 }
@@ -314,7 +331,6 @@ if(player.minedFuel){
 
 }
 player.gunCooldown--;
-
 break;
 
 }
@@ -348,8 +364,8 @@ draw (dt) {
     break;
     case BODYMODE:
     renderSource = SPRITES;
-    spr(32,0,32,32, player.b.x+2-16, player.b.y+5-24); //body
-    spr(0,0,32,32, player.b.x-16, player.b.y-24, player.facingLeft); //head
+    spr(32,0,32,32, player.b.x+2-16, player.b.y+5-20); //body
+    spr(0,0,32,32, player.b.x-16, player.b.y-20, player.facingLeft); //head
 
     break;
     case ARMMODE:
@@ -361,25 +377,26 @@ draw (dt) {
     break;
     case THRUSTERMODE:
     renderSource = SPRITES;
-    spr(128,0,32,40, player.b.x+5-16, player.b.y+4-30); //wheel
-    spr(32,0,32,32, player.b.x+2-16, player.b.y+5-30); //body
-    spr(64,0,32,32, player.b.x+5-16, player.b.y+4-30); //wheel arm
-    spr(64+32,0,32,32, player.b.x+5-16 + (this.facingLeft ? -12 : 0), player.b.y+3-30, this.facingLeft); //arm
-    spr(0,0,32,32, player.b.x-16, player.b.y-30, player.facingLeft); //head
+    spr(128,0,32,40, player.b.x+5-16, player.b.y+4-20); //wheel
+    spr(32,0,32,32, player.b.x+2-16, player.b.y+5-20); //body
+    spr(64,0,32,32, player.b.x+5-16, player.b.y+4-20); //wheel arm
+    spr(64+32,0,32,32, player.b.x+5-16 + (this.facingLeft ? -12 : 0), player.b.y+3-20, this.facingLeft); //arm
+    spr(0,0,32,32, player.b.x-16, player.b.y-20, player.facingLeft); //head
     break;
   }
 
 },
 
 collides () {
-  var offset = 0;
-  if(this.b.x + this.hitRadius > WIDTH) this.b.y -= 1;
+  if(this.b.x + this.hitRadius >= WIDTH-1 && player.xvel > 0){
+    this.x = WIDTH + 1;
+  }
   for(var i = -this.hitRadius; i < this.hitRadius; i++){
     for(var j = -this.hitRadius; j < this.hitRadius; j++){
 
       let check = ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH]
       if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
-        player.jumping = false;
+        //player.jumping = false;
         return true;
       }
     }
@@ -388,8 +405,8 @@ collides () {
 },
 
 overlaps () {
-  for(var i = -this.radius; i < this.radius; i++){
-    for(var j = -this.radius; j < this.radius; j++){
+  for(var i = 0; i < this.radius * 2; i++){
+    for(var j = 0; j < this.radius * 2; j++){
       let overlap = ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH]
       if(overlap){
         return {
@@ -406,12 +423,12 @@ overlaps () {
 updateB () {
 
   this.b = {
-    left: this.x-this.radius|0,
-    right: this.x+this.radius|0,
-    top: this.y-this.radius|0,
-    bottom: this.y+this.radius|0,
-    width: this.radius * 2,
-    height: this.radius * 2,
+    left: this.x-this.hitRadius|0,
+    right: this.x+this.hitRadius|0,
+    top: this.y-this.hitRadius|0,
+    bottom: this.y+this.hitRadius|0,
+    width: this.hitRadius * 2,
+    height: this.hitRadius * 2,
     x: this.x|0,
     y: this.y|0
   }
@@ -498,6 +515,8 @@ overlapResolution(dt){
     renderTarget = BUFFER;
 
     splodes.push( new splode(o.x, o.y) );
+    playSound(sounds.fuelget, 2, player.x.map(0, WIDTH, -1, 1), false);
+
 
     let i = 10;
     while(--i){
@@ -526,6 +545,8 @@ overlapResolution(dt){
     renderTarget = BUFFER;
     player.mode = BODYMODE;
     messages.push(new message('AUX BOOSTERS ACQUIRED. ENERGY CAPACITY INCREASED.'));
+    playSound(sounds.fuelget, 1, player.x.map(0, WIDTH, -1, 1), false);
+
 
     break;
 
@@ -536,6 +557,7 @@ overlapResolution(dt){
     fillCircle(o.x,o.y,3,0);
     renderTarget = BUFFER;
     player.mode = ARMMODE;
+    playSound(sounds.fuelget, 1, player.x.map(0, WIDTH, -1, 1), false);
     messages.push(new message('DISINTIGRATE TOOL ACQUIRED. PRESS X TO USE'));
 
     break;
@@ -547,6 +569,7 @@ overlapResolution(dt){
     fillCircle(o.x,o.y,3,0);
     renderTarget = BUFFER;
     player.mode = THRUSTERMODE;
+    playSound(sounds.fuelget, 1, player.x.map(0, WIDTH, -1, 1), false);
     messages.push(new message('E-M CONVERTER ACQUIRED. PRESS C TO USE'));
 
 
