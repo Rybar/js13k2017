@@ -456,7 +456,7 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
   }
 
 
-  function playSound(buffer, playbackRate = 1, pan = 0, loop = false) {
+  function playSound(buffer, playbackRate = 1, pan = 0, loop = false, vol = 1) {
 
     var source = audioCtx.createBufferSource();
     var gainNode = audioCtx.createGain();
@@ -470,7 +470,7 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
     //gainNode.connect(audioCtx.destination);
     source.playbackRate.value = playbackRate;
     source.loop = loop;
-    gainNode.gain.value = 1;
+    gainNode.gain.value = vol;
     panNode.pan.value = pan;
     source.start();
     return {volume: gainNode, sound: source};

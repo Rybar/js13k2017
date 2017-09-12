@@ -5,10 +5,10 @@ states.menu = {//
   step: function(dt) {
       fuelTimer = 200;
 
-      if(!s_titleSong){
-        titleSong = playSound(sounds.titleMusic, 1, 0, true);
-        s_titleSong = true;
-      }
+      // if(!s_titleSong){
+      //   titleSong = playSound(sounds.titleMusic, 1, 0, true);
+      //   s_titleSong = true;
+      // }
 
       //game update
       if(Key.justReleased(Key.p)){
@@ -35,9 +35,10 @@ states.menu = {//
               player.y + Math.random()*40-20,
               25, 1, 0, true));
         }
+        playSound(sounds.boom, 1, player.x.map(0, WIDTH, -1, 1), false);
         roomSwitch();
         state = 'game';
-        titleSong.sound.stop();
+        //titleSong.sound.stop();
       }
       if(Key.justReleased(Key.r)){
         state = 'spritesheet';

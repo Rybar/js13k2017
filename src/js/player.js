@@ -60,10 +60,10 @@ player = {
     }
     this.updateB();
     if(this.collides()){
-      this.x += this.collideResolutionX();
+      //this.x += this.collideResolutionX();
       this.updateB();
       if(this.collides()){
-        this.y += this.collideResolutionY();
+        //this.y += this.collideResolutionY();
         this.updateB();
       }
     }
@@ -71,6 +71,7 @@ player = {
     this.updateB();
 
     if(player.yvel > 0){
+      s_step = false;
       if(ram[COLLISION + player.b.x + player.b.bottom * WIDTH] > 0 ||
          ram[COLLISION + player.b.x+4 + player.b.bottom * WIDTH] > 0 ||
          ram[COLLISION + player.b.x-4 + player.b.bottom * WIDTH] > 0
@@ -81,6 +82,12 @@ player = {
     if(player.yvel < -10){
       splodes.push(new splode(player.x+3+Math.random()*2,player.y+6+Math.random()*2, 7, 1, 19))
       splodes.push(new splode(player.x-3-Math.random()*2,player.y+6+Math.random()*2, 7, 1, 19))
+      if(!s_step){
+        stepSound = playSound(sounds.step, 1, player.x.map(0, WIDTH, -1, 1), false, 0.25);
+        //stepSound.volume = 0.25;
+        s_step = true;
+      }
+
     }
 
 
@@ -181,10 +188,9 @@ player = {
           player.x + (player.facingLeft ? -16 : 16) + (Math.random()*2-1)|0,
           player.y + (Math.random()*15-8)|0,
           6,5
+          )
         )
-      )
       renderTarget = COLLISION;
-
       if(pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) == FUELCRYSTAL){
         player.minedFuel = true;
       }
@@ -202,6 +208,35 @@ player = {
           false,
           true )
         );
+      }
+
+      if(Key.isDown(Key.DOWN) || Key.isDown(Key.s)){
+
+        splodes.push( new splode(
+          player.x + (Math.random()*15-8)|0,
+          player.y + 16 + (Math.random()*2-1)|0,
+          6,5
+          )
+        )
+        renderTarget = COLLISION;
+        if(pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) == FUELCRYSTAL){
+          player.minedFuel = true;
+        }
+        fillCircle(player.x + (Math.random()*20-15)|0,
+        player.y + 10, 10, 0);
+
+        let i = 5;
+        while(--i){
+          splodes.push( new splode(
+            player.x + Math.random() * 10, //x
+            player.y + 30 + Math.random()*20-10, //y
+            10 + Math.random()*10-5, //size
+            Math.random()*3, //speed
+            27 + (Math.random()*2)|0, //color
+            false,
+            true )
+          );
+        }
 
       }
 

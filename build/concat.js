@@ -458,7 +458,7 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
   }
 
 
-  function playSound(buffer, playbackRate = 1, pan = 0, loop = false) {
+  function playSound(buffer, playbackRate = 1, pan = 0, loop = false, vol = 1) {
 
     var source = audioCtx.createBufferSource();
     var gainNode = audioCtx.createGain();
@@ -472,7 +472,7 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
     //gainNode.connect(audioCtx.destination);
     source.playbackRate.value = playbackRate;
     source.loop = loop;
-    gainNode.gain.value = 1;
+    gainNode.gain.value = vol;
     panNode.pan.value = pan;
     source.start();
     return {volume: gainNode, sound: source};
@@ -517,7 +517,7 @@ world = [ //                                                  ||---start
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//3
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//4
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,04,02,02,02,01,02,02,04,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//5 --fall start
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,00,00,00,00,00,00,05,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//6
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,07,07,07,07,07,07,05,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//6
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,00,00,00,00,00,00,05,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//7
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,00,00,00,00,02,02,06,02,02,02,00,00,00,00,00,00,00,00,00,00,00,00,00,//8
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,06,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//9
@@ -2323,6 +2323,68 @@ var a_fuelget = {
     ],
     "songLen": 7
 }
+var a_boom = {
+    "osc1_oct": 7,
+    "osc1_det": 0,
+    "osc1_detune": 0,
+    "osc1_xenv": 1,
+    "osc1_vol": 255,
+    "osc1_waveform": 0,
+    "osc2_oct": 7,
+    "osc2_det": 0,
+    "osc2_detune": 0,
+    "osc2_xenv": 1,
+    "osc2_vol": 255,
+    "osc2_waveform": 0,
+    "noise_fader": 163,
+    "env_attack": 50,
+    "env_sustain": 150,
+    "env_release": 96977,
+    "env_master": 228,
+    "fx_filter": 2,
+    "fx_freq": 1934,
+    "fx_resonance": 254,
+    "fx_delay_time": 0,
+    "fx_delay_amt": 0,
+    "fx_pan_freq": 0,
+    "fx_pan_amt": 0,
+    "lfo_osc1_freq": 0,
+    "lfo_fx_freq": 0,
+    "lfo_freq": 0,
+    "lfo_amt": 0,
+    "lfo_waveform": 0
+}
+var a_step = {
+    "osc1_oct": 8,
+    "osc1_det": 0,
+    "osc1_detune": 0,
+    "osc1_xenv": 1,
+    "osc1_vol": 82,
+    "osc1_waveform": 2,
+    "osc2_oct": 8,
+    "osc2_det": 0,
+    "osc2_detune": 0,
+    "osc2_xenv": 0,
+    "osc2_vol": 0,
+    "osc2_waveform": 0,
+    "noise_fader": 255,
+    "env_attack": 100,
+    "env_sustain": 0,
+    "env_release": 663,
+    "env_master": 186,
+    "fx_filter": 2,
+    "fx_freq": 5200,
+    "fx_resonance": 63,
+    "fx_delay_time": 1,
+    "fx_delay_amt": 25,
+    "fx_pan_freq": 0,
+    "fx_pan_amt": 0,
+    "lfo_osc1_freq": 0,
+    "lfo_fx_freq": 0,
+    "lfo_freq": 0,
+    "lfo_amt": 0,
+    "lfo_waveform": 0
+}
 fontString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_!@#.'\"?/<()";
 
 fontBitmap = "11111100011111110001100011111010001111101000111110111111000010000100000111111100100101000110001111101111110000111001000011111111111000"+
@@ -2873,6 +2935,7 @@ init = () => {
   s_titleSong = false;
   s_gameSong = false;
   s_jump = false;
+  s_step = false;
 
   audioCtx = new AudioContext;
   drawSpriteSheet();
@@ -3067,7 +3130,7 @@ rooms = [
   {
     draw: function(dt){
           fillRect(0,170,384,100,WALLS);
-          pset(192, 160, BODY);
+          pset(170, 165, BODY);
 
 
     },
@@ -3080,12 +3143,16 @@ rooms = [
   {
     draw: function(dt){
 
-          fillTriangle(0,256,384,256,182,205,WALLS);
-          fillRect(100,70,20,80,WALLS);
-          fillRect(100,140,100,20,WALLS);
-          fillRect(200,820,10,100, WALLS);
-          fillRect(210,70,100,100, WALLS);
-          pset(50, 180, FUELCELL);
+          fillRect(0,0,WIDTH,HEIGHT,WALLS);
+          let i = 3;
+          while(i--){
+            let x = lcg.nextIntRange(H1,H5);
+            let y = lcg.nextIntRange(V2,V4);
+            fillRect(x,y, H1,H1, 0);
+            pset(x+H1/2, y+H1/2, FUELCELL);
+          }
+
+
 
     },
     specials: function(dt){
@@ -3582,10 +3649,10 @@ player = {
     }
     this.updateB();
     if(this.collides()){
-      this.x += this.collideResolutionX();
+      //this.x += this.collideResolutionX();
       this.updateB();
       if(this.collides()){
-        this.y += this.collideResolutionY();
+        //this.y += this.collideResolutionY();
         this.updateB();
       }
     }
@@ -3593,6 +3660,7 @@ player = {
     this.updateB();
 
     if(player.yvel > 0){
+      s_step = false;
       if(ram[COLLISION + player.b.x + player.b.bottom * WIDTH] > 0 ||
          ram[COLLISION + player.b.x+4 + player.b.bottom * WIDTH] > 0 ||
          ram[COLLISION + player.b.x-4 + player.b.bottom * WIDTH] > 0
@@ -3603,6 +3671,12 @@ player = {
     if(player.yvel < -10){
       splodes.push(new splode(player.x+3+Math.random()*2,player.y+6+Math.random()*2, 7, 1, 19))
       splodes.push(new splode(player.x-3-Math.random()*2,player.y+6+Math.random()*2, 7, 1, 19))
+      if(!s_step){
+        stepSound = playSound(sounds.step, 1, player.x.map(0, WIDTH, -1, 1), false, 0.25);
+        //stepSound.volume = 0.25;
+        s_step = true;
+      }
+
     }
 
 
@@ -3703,10 +3777,9 @@ player = {
           player.x + (player.facingLeft ? -16 : 16) + (Math.random()*2-1)|0,
           player.y + (Math.random()*15-8)|0,
           6,5
+          )
         )
-      )
       renderTarget = COLLISION;
-
       if(pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) == FUELCRYSTAL){
         player.minedFuel = true;
       }
@@ -3724,6 +3797,35 @@ player = {
           false,
           true )
         );
+      }
+
+      if(Key.isDown(Key.DOWN) || Key.isDown(Key.s)){
+
+        splodes.push( new splode(
+          player.x + (Math.random()*15-8)|0,
+          player.y + 16 + (Math.random()*2-1)|0,
+          6,5
+          )
+        )
+        renderTarget = COLLISION;
+        if(pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) == FUELCRYSTAL){
+          player.minedFuel = true;
+        }
+        fillCircle(player.x + (Math.random()*20-15)|0,
+        player.y + 10, 10, 0);
+
+        let i = 5;
+        while(--i){
+          splodes.push( new splode(
+            player.x + Math.random() * 10, //x
+            player.y + 30 + Math.random()*20-10, //y
+            10 + Math.random()*10-5, //size
+            Math.random()*3, //speed
+            27 + (Math.random()*2)|0, //color
+            false,
+            true )
+          );
+        }
 
       }
 
@@ -4218,10 +4320,10 @@ states.menu = {//
   step: function(dt) {
       fuelTimer = 200;
 
-      if(!s_titleSong){
-        titleSong = playSound(sounds.titleMusic, 1, 0, true);
-        s_titleSong = true;
-      }
+      // if(!s_titleSong){
+      //   titleSong = playSound(sounds.titleMusic, 1, 0, true);
+      //   s_titleSong = true;
+      // }
 
       //game update
       if(Key.justReleased(Key.p)){
@@ -4248,9 +4350,10 @@ states.menu = {//
               player.y + Math.random()*40-20,
               25, 1, 0, true));
         }
+        playSound(sounds.boom, 1, player.x.map(0, WIDTH, -1, 1), false);
         roomSwitch();
         state = 'game';
-        titleSong.sound.stop();
+        //titleSong.sound.stop();
       }
       if(Key.justReleased(Key.r)){
         state = 'spritesheet';
@@ -4405,16 +4508,27 @@ states.game = {
     [
       'MAX ENERGY CAPACITY REACHED.',
       'FIND MISSING COMPONENTS TO INCREASE CAPACITY',
+    ],
+
+    [
+      'PRESS X TO USE DISINTIGRATOR'
+    ],
+    [
+      ''
     ]
+
   ],
 
   step(dt) {
-    if(!s_gameSong){
-      s_gameSong = true;
-      gamesong = playSound(sounds.gameMusic, 1, 0, true);
-    }
+    // if(!s_gameSong){
+    //   s_gameSong = true;
+    //   gamesong = playSound(sounds.gameMusic, 1, 0, true);
+    // }
 
-    if(Key.isDown(Key.f))state = 'spritesheet';
+    if(Key.isDown(Key.r)){
+      player.init();
+      state = 'menu';
+    }
     player.update(dt);
     fuelTimer -= dt;
 
@@ -4506,16 +4620,16 @@ states.loading = {
 
     init: function(dt){
       //song loading
-      var songGen = new sonantx.MusicGenerator(a_title);
-      songGen.createAudioBuffer(function(buffer) {
-          sounds.titleMusic = buffer;
-          soundsLoaded++;
-      });
-      var songGen = new sonantx.MusicGenerator(a_gamesong);
-      songGen.createAudioBuffer(function(buffer) {
-          sounds.gameMusic = buffer;
-          soundsLoaded++;
-      });
+      // var songGen = new sonantx.MusicGenerator(a_title);
+      // songGen.createAudioBuffer(function(buffer) {
+      //     sounds.titleMusic = buffer;
+      //     soundsLoaded++;
+      // });
+      // var songGen = new sonantx.MusicGenerator(a_gamesong);
+      // songGen.createAudioBuffer(function(buffer) {
+      //     sounds.gameMusic = buffer;
+      //     soundsLoaded++;
+      // });
       var songGen = new sonantx.MusicGenerator(a_zapgun);
       songGen.createAudioBuffer(function(buffer) {
           sounds.zapgun = buffer;
@@ -4531,6 +4645,18 @@ states.loading = {
       soundGen.createAudioBuffer(147, function(buffer) {
         var source = audioCtx.createBufferSource();
         sounds.jump = buffer;
+        soundsLoaded++;
+      });
+      var soundGen = new sonantx.SoundGenerator(a_boom);
+      soundGen.createAudioBuffer(147, function(buffer) {
+        var source = audioCtx.createBufferSource();
+        sounds.boom = buffer;
+        soundsLoaded++;
+      });
+      var soundGen = new sonantx.SoundGenerator(a_step);
+      soundGen.createAudioBuffer(147, function(buffer) {
+        var source = audioCtx.createBufferSource();
+        sounds.step = buffer;
         soundsLoaded++;
       });
   },

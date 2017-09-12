@@ -2,16 +2,16 @@ states.loading = {
 
     init: function(dt){
       //song loading
-      var songGen = new sonantx.MusicGenerator(a_title);
-      songGen.createAudioBuffer(function(buffer) {
-          sounds.titleMusic = buffer;
-          soundsLoaded++;
-      });
-      var songGen = new sonantx.MusicGenerator(a_gamesong);
-      songGen.createAudioBuffer(function(buffer) {
-          sounds.gameMusic = buffer;
-          soundsLoaded++;
-      });
+      // var songGen = new sonantx.MusicGenerator(a_title);
+      // songGen.createAudioBuffer(function(buffer) {
+      //     sounds.titleMusic = buffer;
+      //     soundsLoaded++;
+      // });
+      // var songGen = new sonantx.MusicGenerator(a_gamesong);
+      // songGen.createAudioBuffer(function(buffer) {
+      //     sounds.gameMusic = buffer;
+      //     soundsLoaded++;
+      // });
       var songGen = new sonantx.MusicGenerator(a_zapgun);
       songGen.createAudioBuffer(function(buffer) {
           sounds.zapgun = buffer;
@@ -27,6 +27,18 @@ states.loading = {
       soundGen.createAudioBuffer(147, function(buffer) {
         var source = audioCtx.createBufferSource();
         sounds.jump = buffer;
+        soundsLoaded++;
+      });
+      var soundGen = new sonantx.SoundGenerator(a_boom);
+      soundGen.createAudioBuffer(147, function(buffer) {
+        var source = audioCtx.createBufferSource();
+        sounds.boom = buffer;
+        soundsLoaded++;
+      });
+      var soundGen = new sonantx.SoundGenerator(a_step);
+      soundGen.createAudioBuffer(147, function(buffer) {
+        var source = audioCtx.createBufferSource();
+        sounds.step = buffer;
         soundsLoaded++;
       });
   },

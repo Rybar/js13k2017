@@ -122,7 +122,7 @@ rooms = [
   {
     draw: function(dt){
           fillRect(0,170,384,100,WALLS);
-          pset(192, 160, BODY);
+          pset(170, 165, BODY);
 
 
     },
@@ -135,12 +135,16 @@ rooms = [
   {
     draw: function(dt){
 
-          fillTriangle(0,256,384,256,182,205,WALLS);
-          fillRect(100,70,20,80,WALLS);
-          fillRect(100,140,100,20,WALLS);
-          fillRect(200,820,10,100, WALLS);
-          fillRect(210,70,100,100, WALLS);
-          pset(50, 180, FUELCELL);
+          fillRect(0,0,WIDTH,HEIGHT,WALLS);
+          let i = 3;
+          while(i--){
+            let x = lcg.nextIntRange(H1,H5);
+            let y = lcg.nextIntRange(V2,V4);
+            fillRect(x,y, H1,H1, 0);
+            pset(x+H1/2, y+H1/2, FUELCELL);
+          }
+
+
 
     },
     specials: function(dt){

@@ -16,16 +16,27 @@ states.game = {
     [
       'MAX ENERGY CAPACITY REACHED.',
       'FIND MISSING COMPONENTS TO INCREASE CAPACITY',
+    ],
+
+    [
+      'PRESS X TO USE DISINTIGRATOR'
+    ],
+    [
+      ''
     ]
+
   ],
 
   step(dt) {
-    if(!s_gameSong){
-      s_gameSong = true;
-      gamesong = playSound(sounds.gameMusic, 1, 0, true);
-    }
+    // if(!s_gameSong){
+    //   s_gameSong = true;
+    //   gamesong = playSound(sounds.gameMusic, 1, 0, true);
+    // }
 
-    if(Key.isDown(Key.f))state = 'spritesheet';
+    if(Key.isDown(Key.r)){
+      player.init();
+      state = 'menu';
+    }
     player.update(dt);
     fuelTimer -= dt;
 

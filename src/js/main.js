@@ -37,6 +37,7 @@ init = () => {
   s_titleSong = false;
   s_gameSong = false;
   s_jump = false;
+  s_step = false;
 
   audioCtx = new AudioContext;
   drawSpriteSheet();
