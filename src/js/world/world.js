@@ -38,147 +38,6 @@ const V2 = HEIGHT/4 * 2;
 const V3 = HEIGHT/4 * 3;
 const V4 = HEIGHT;
 
-currentRoom = [20,4]; //
-
-rooms = [
-  //0
-  {
-
-    draw: function(dt){
-
-    },
-
-    specials: function(dt){
-
-    }
-  },
-
-  //1
-  {
-    draw: function(dt){
-      fillTriangle(H3,V2, H5,V3, H1,V3,  WALLS);
-      fillTriangle(H5,V3, H3,V2,H1,V3,  WALLS);
-      fillTriangle(H3,V2, H1,V3, H5,V3,   WALLS);
-      fillRect(0, V3, WIDTH, V1, WALLS);
-
-    },
-    specials: function(dt){
-
-      drawHeads(0,V3, WIDTH, V1-10, 20);
-    }
-  },
-
-  //2
-  {
-    draw: function(dt){
-      fillRect(0,V3, WIDTH,V1, WALLS);
-      pset(25+Math.random()*325, V3-5, FUELCELL);
-      pset(25+Math.random()*325, V3-5, FUELCELL);
-      pset(25+Math.random()*325, V3-5, FUELCELL);
-    },
-
-    specials: function(dt){
-
-    }
-  },
-
-  //3
-  {
-    draw: function(dt){
-      fillRect(0,170,384,200,WALLS);
-      fillRect(0,140,100,100, WALLS);
-      pset(192, 160, BODY);
-    },
-
-    specials: function(dt){
-
-
-
-    }
-  },
-  //4
-  {
-    draw: function(dt){
-      fillRect(0,V3, WIDTH, V1, WALLS);
-      fillRect(H2,V3,H2,V1, 0);
-      //pset(192, 160, BODY);
-    },
-    specials: function(dt){
-
-    }
-  },
-  //5
-  {
-    draw: function(dt){
-      fillRect(0,0,WIDTH,HEIGHT,WALLS);
-      fillRect(H2,0,H4,HEIGHT, 0);
-      //pset(100, 190, THRUSTER);
-    },
-    specials: function(dt){
-
-    }
-  },
-  //6
-  {
-    draw: function(dt){
-          fillRect(0,170,384,100,WALLS);
-          pset(170, 165, BODY);
-
-
-    },
-    specials: function(dt){
-
-    }
-  },
-
-  //7
-  {
-    draw: function(dt){
-
-          fillRect(0,0,WIDTH,HEIGHT,WALLS);
-          let i = 3;
-          while(i--){
-            let x = lcg.nextIntRange(H1,H5);
-            let y = lcg.nextIntRange(V2,V4);
-            fillRect(x,y, H1,H1, 0);
-            pset(x+H1/2, y+H1/2, FUELCELL);
-          }
-
-
-
-    },
-    specials: function(dt){
-    }
-  },
-  //8
-  {
-    draw: function(dt){
-      fillRect(0,205,384,10,WALLS);
-      fillCircle(250,150,64,WALLS);
-      fillCircle(250,150,50,FUELCRYSTAL);
-      pset(50, 180, FUELCELL);
-    },
-
-    specials: function(dt){
-
-    }
-  },
-  //9
-  {
-    draw: function(dt){
-      fillRect(0,205,384,10,WALLS);
-      fillCircle(250,150,64,WALLS);
-      fillCircle(250,150,50,FUELCRYSTAL);
-      pset(50, 180, FUELCELL);
-    },
-
-    specials: function(dt){
-
-    }
-  },
-
-
-] // end rooms;
 
 function roomSwitch(direction){
   lcg.setSeed(1019);
@@ -311,7 +170,7 @@ function drawThings() {
   };
 
 
-function denseGreeble(){
+function denseGreeble(basecolor = 1, left=1, top=15, right=3, bottom=1){
 
   renderSource = COLLISION;
   renderTarget = SCRATCH;
@@ -361,7 +220,7 @@ function denseGreeble(){
   } //render greeble over walls
   renderTarget = SCRATCH2;
   clear(0);
-  outline(SCRATCH, SCRATCH2, 1);
+  outline(SCRATCH, SCRATCH2, 1,15,3,1);
 
   renderTarget = MIDGROUND;
   renderSource = SCRATCH; spr();
@@ -369,7 +228,7 @@ function denseGreeble(){
 
 }
 
-function foregroundGreeble(){
+function foregroundGreeble(basecolor = 1, left=2, top=15, right=2, bottom=0){
   renderTarget = SCRATCH; clear(0);  //draw foreground elements
   var i = 400;
   // lcg.setSeed(1019);
@@ -382,15 +241,15 @@ function foregroundGreeble(){
       fillRect(
         x + roomNG.nextIntRange(-5,0),
         y + roomNG.nextIntRange(-20,0),
-        roomNG.nextIntRange(1,2),
-        roomNG.nextIntRange(1,20),
-        22
+        basecolor,
+        roomNG.nextIntRange(1,16),
+        1
       );
-      circle(x,y-10,1, 22);
+      circle(x,y-10,1, basecolor);
     }
   }
   renderTarget = SCRATCH2; clear(0);
-  outline(SCRATCH, SCRATCH2, 25, 20, 26, 2);
+  outline(SCRATCH, SCRATCH2, left, top, right, bottom);
   renderTarget = FOREGROUND;
   renderSource = SCRATCH; spr();
   renderSource = SCRATCH2; spr();
@@ -433,8 +292,24 @@ function bigGreeble(){
           );
         }
       }
+      j = 15;
+      while(--j){
+        let x = lcg.nextIntRange(0,WIDTH),
+            y = lcg.nextIntRange(0,HEIGHT)
+
+        if(ram[COLLISION + x + y * WIDTH] == WALLS){
+          roomNG.setSeed(lcg.seed + x + y * 1234.5678);
+          fillRect(
+            x,
+            y,
+            roomNG.nextIntRange(10,80),
+            roomNG.nextIntRange(10,80),
+            0
+            );
+          }
+        }
   renderTarget = SCRATCH2; clear(0);
-  outline(SCRATCH, SCRATCH2, 1, 23, 24);
+  outline(SCRATCH, SCRATCH2, 24, 18, 25);
   renderTarget = MIDGROUND;
   renderSource = SCRATCH; spr();
   renderSource = SCRATCH2; spr();
@@ -473,4 +348,65 @@ function drawHeads(x,y,width,height,amt){
     rspr(0,0,32,32, roomNG.nextIntRange(x, x+width), roomNG.nextIntRange(y, y+height), 1, roomNG.nextIntRange(0,359) )
     pal = palDefault;
   }
+}
+
+function drawClouds(){
+
+  let i = 36;
+  while(i--){
+    roomNG.setSeed(lcg.seed + i * 1234.5678);
+
+    let y = ( ( (roomNG.nextIntRange(-200,HEIGHT) - (t*20)|0) )%HEIGHT*2)+HEIGHT;
+    let width = roomNG.nextIntRange(20,120);
+    let height = roomNG.nextIntRange(10,30);
+    let x = roomNG.nextIntRange(-200,WIDTH);
+    //let x = ( ( (roomNG.nextIntRange(-200,WIDTH) + (t*20)|0) )%WIDTH*2)-WIDTH;
+    linecRect(x,y,width,height,5, 1);
+  }
+
+}
+
+function drawHorizon(){
+
+  let i = 150;
+  while(i--){
+    renderTarget = BACKGROUND;
+    roomNG.setSeed(lcg.seed + i * 1234.5678);
+    let y = roomNG.nextIntRange(60,HEIGHT)
+    let width = roomNG.nextIntRange(3,15)
+    let x = roomNG.nextIntRange(0,WIDTH);
+    fillCircle(x,y,width,1);
+
+  }
+  i = 150;
+  while(i--){
+    renderTarget = BACKGROUND;
+    roomNG.setSeed(lcg.seed + i * 1232.5678);
+    let y = roomNG.nextIntRange(100,HEIGHT)
+    let width = roomNG.nextIntRange(3,15);
+    let x = roomNG.nextIntRange(0,WIDTH);
+    fillCircle(x,y,width,14);
+
+  }
+
+  i = 100;
+  while(i--){
+    renderTarget = BACKGROUND;
+    roomNG.setSeed(lcg.seed + i * 1230.5678);
+    let y = roomNG.nextIntRange(150,HEIGHT)
+    let width = roomNG.nextIntRange(15,20);
+    let x = roomNG.nextIntRange(0,WIDTH);
+    fillCircle(x,y,width,14);
+  }
+}
+
+function drawBlocks(arr){
+  arr.forEach(function(block, i, arr){
+    if(block == 1){
+      fillRect((i%12)*32, ((i/12)|0)*32, 32, 32, WALLS);
+    }
+    if(block == 2){
+      pset((i%12)*32+16, ((i/12)|0)*32+16, FUELCELL);
+    }
+  });
 }

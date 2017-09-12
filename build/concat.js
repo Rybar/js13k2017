@@ -71,10 +71,10 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
 
   function line(x1, y1, x2, y2, color) {
 
-    x1 = x1|0;
-    x2 = x2|0;
-    y1 = y1|0;
-    y2 = y2|0;
+    // x1 = x1|0;
+    // x2 = x2|0;
+    // y1 = y1|0;
+    // y2 = y2|0;
 
     var dy = (y2 - y1);
     var dx = (x2 - x1);
@@ -193,6 +193,23 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
     for(let i = 0; i <= c; i++){
       fillRect(x+i,y-i,w-i*2,h+i*2,color);
     }
+  }
+  function linecRect(x,y,width,height,chamfer, color){
+    let x1 = x + chamfer;
+    let x2 = x + width - chamfer;
+    let x3 = x + width;
+    let y1 = y + chamfer;
+    let y2 = y + height - chamfer;
+    let y3 = y + height;
+
+    line(x1,y, x2,y, color);
+    line(x2,y, x3,y1, color);
+    line(x3,y1, x3,y2, color);
+    line(x3,y2, x2,y3, color);
+    line(x2,y3, x1,y3, color);
+    line(x1,y3, x,y2, color);
+    line(x,y2, x,y1, color);
+    line(x,y1, x1,y, color);
   }
 
   function outline(renderSource, renderTarget, color, color2=color, color3=color, color4=color){
@@ -473,7 +490,7 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
     source.playbackRate.value = playbackRate;
     source.loop = loop;
     gainNode.gain.value = vol;
-    panNode.pan.value = pan;
+    panNode.pan.value = pan.clamp(-1,1);
     source.start();
     return {volume: gainNode, sound: source};
 }
@@ -516,7 +533,7 @@ world = [ //                                                  ||---start
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//2
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//3
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//4
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,04,02,02,02,01,02,02,04,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//5 --fall start
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,04,02,02,02,08,08,02,04,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//5 --fall start
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,07,07,07,07,07,07,05,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//6
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,00,00,00,00,00,00,05,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//7
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,00,00,00,00,02,02,06,02,02,02,00,00,00,00,00,00,00,00,00,00,00,00,00,//8
@@ -2913,7 +2930,7 @@ init = () => {
   soundsLoaded = 0;
   totalSounds = 5;
   score = 0;
-  fuelTimer = 200;
+  fuelTimer = 0;
   parts = 0;
   last = 0;
   dt = 0;
@@ -2927,9 +2944,11 @@ init = () => {
   helpSection = 0;
 
 
+
   //FLAGS--------------------------------------------------------------
   paused = false;
   transition = false;
+  gotFirst200 = false;
 
   //sound flags--------------------------------------------------------
   s_titleSong = false;
@@ -3046,147 +3065,6 @@ const V2 = HEIGHT/4 * 2;
 const V3 = HEIGHT/4 * 3;
 const V4 = HEIGHT;
 
-currentRoom = [20,4]; //
-
-rooms = [
-  //0
-  {
-
-    draw: function(dt){
-
-    },
-
-    specials: function(dt){
-
-    }
-  },
-
-  //1
-  {
-    draw: function(dt){
-      fillTriangle(H3,V2, H5,V3, H1,V3,  WALLS);
-      fillTriangle(H5,V3, H3,V2,H1,V3,  WALLS);
-      fillTriangle(H3,V2, H1,V3, H5,V3,   WALLS);
-      fillRect(0, V3, WIDTH, V1, WALLS);
-
-    },
-    specials: function(dt){
-
-      drawHeads(0,V3, WIDTH, V1-10, 20);
-    }
-  },
-
-  //2
-  {
-    draw: function(dt){
-      fillRect(0,V3, WIDTH,V1, WALLS);
-      pset(25+Math.random()*325, V3-5, FUELCELL);
-      pset(25+Math.random()*325, V3-5, FUELCELL);
-      pset(25+Math.random()*325, V3-5, FUELCELL);
-    },
-
-    specials: function(dt){
-
-    }
-  },
-
-  //3
-  {
-    draw: function(dt){
-      fillRect(0,170,384,200,WALLS);
-      fillRect(0,140,100,100, WALLS);
-      pset(192, 160, BODY);
-    },
-
-    specials: function(dt){
-
-
-
-    }
-  },
-  //4
-  {
-    draw: function(dt){
-      fillRect(0,V3, WIDTH, V1, WALLS);
-      fillRect(H2,V3,H2,V1, 0);
-      //pset(192, 160, BODY);
-    },
-    specials: function(dt){
-
-    }
-  },
-  //5
-  {
-    draw: function(dt){
-      fillRect(0,0,WIDTH,HEIGHT,WALLS);
-      fillRect(H2,0,H4,HEIGHT, 0);
-      //pset(100, 190, THRUSTER);
-    },
-    specials: function(dt){
-
-    }
-  },
-  //6
-  {
-    draw: function(dt){
-          fillRect(0,170,384,100,WALLS);
-          pset(170, 165, BODY);
-
-
-    },
-    specials: function(dt){
-
-    }
-  },
-
-  //7
-  {
-    draw: function(dt){
-
-          fillRect(0,0,WIDTH,HEIGHT,WALLS);
-          let i = 3;
-          while(i--){
-            let x = lcg.nextIntRange(H1,H5);
-            let y = lcg.nextIntRange(V2,V4);
-            fillRect(x,y, H1,H1, 0);
-            pset(x+H1/2, y+H1/2, FUELCELL);
-          }
-
-
-
-    },
-    specials: function(dt){
-    }
-  },
-  //8
-  {
-    draw: function(dt){
-      fillRect(0,205,384,10,WALLS);
-      fillCircle(250,150,64,WALLS);
-      fillCircle(250,150,50,FUELCRYSTAL);
-      pset(50, 180, FUELCELL);
-    },
-
-    specials: function(dt){
-
-    }
-  },
-  //9
-  {
-    draw: function(dt){
-      fillRect(0,205,384,10,WALLS);
-      fillCircle(250,150,64,WALLS);
-      fillCircle(250,150,50,FUELCRYSTAL);
-      pset(50, 180, FUELCELL);
-    },
-
-    specials: function(dt){
-
-    }
-  },
-
-
-] // end rooms;
 
 function roomSwitch(direction){
   lcg.setSeed(1019);
@@ -3319,7 +3197,7 @@ function drawThings() {
   };
 
 
-function denseGreeble(){
+function denseGreeble(basecolor = 1, left=1, top=15, right=3, bottom=1){
 
   renderSource = COLLISION;
   renderTarget = SCRATCH;
@@ -3369,7 +3247,7 @@ function denseGreeble(){
   } //render greeble over walls
   renderTarget = SCRATCH2;
   clear(0);
-  outline(SCRATCH, SCRATCH2, 1);
+  outline(SCRATCH, SCRATCH2, 1,15,3,1);
 
   renderTarget = MIDGROUND;
   renderSource = SCRATCH; spr();
@@ -3377,7 +3255,7 @@ function denseGreeble(){
 
 }
 
-function foregroundGreeble(){
+function foregroundGreeble(basecolor = 1, left=2, top=15, right=2, bottom=0){
   renderTarget = SCRATCH; clear(0);  //draw foreground elements
   var i = 400;
   // lcg.setSeed(1019);
@@ -3390,15 +3268,15 @@ function foregroundGreeble(){
       fillRect(
         x + roomNG.nextIntRange(-5,0),
         y + roomNG.nextIntRange(-20,0),
-        roomNG.nextIntRange(1,2),
-        roomNG.nextIntRange(1,20),
-        22
+        basecolor,
+        roomNG.nextIntRange(1,16),
+        1
       );
-      circle(x,y-10,1, 22);
+      circle(x,y-10,1, basecolor);
     }
   }
   renderTarget = SCRATCH2; clear(0);
-  outline(SCRATCH, SCRATCH2, 25, 20, 26, 2);
+  outline(SCRATCH, SCRATCH2, left, top, right, bottom);
   renderTarget = FOREGROUND;
   renderSource = SCRATCH; spr();
   renderSource = SCRATCH2; spr();
@@ -3441,8 +3319,24 @@ function bigGreeble(){
           );
         }
       }
+      j = 15;
+      while(--j){
+        let x = lcg.nextIntRange(0,WIDTH),
+            y = lcg.nextIntRange(0,HEIGHT)
+
+        if(ram[COLLISION + x + y * WIDTH] == WALLS){
+          roomNG.setSeed(lcg.seed + x + y * 1234.5678);
+          fillRect(
+            x,
+            y,
+            roomNG.nextIntRange(10,80),
+            roomNG.nextIntRange(10,80),
+            0
+            );
+          }
+        }
   renderTarget = SCRATCH2; clear(0);
-  outline(SCRATCH, SCRATCH2, 1, 23, 24);
+  outline(SCRATCH, SCRATCH2, 24, 18, 25);
   renderTarget = MIDGROUND;
   renderSource = SCRATCH; spr();
   renderSource = SCRATCH2; spr();
@@ -3482,6 +3376,215 @@ function drawHeads(x,y,width,height,amt){
     pal = palDefault;
   }
 }
+
+function drawClouds(){
+
+  let i = 36;
+  while(i--){
+    roomNG.setSeed(lcg.seed + i * 1234.5678);
+
+    let y = ( ( (roomNG.nextIntRange(-200,HEIGHT) - (t*20)|0) )%HEIGHT*2)+HEIGHT;
+    let width = roomNG.nextIntRange(20,120);
+    let height = roomNG.nextIntRange(10,30);
+    let x = roomNG.nextIntRange(-200,WIDTH);
+    //let x = ( ( (roomNG.nextIntRange(-200,WIDTH) + (t*20)|0) )%WIDTH*2)-WIDTH;
+    linecRect(x,y,width,height,5, 1);
+  }
+
+}
+
+function drawHorizon(){
+
+  let i = 150;
+  while(i--){
+    renderTarget = BACKGROUND;
+    roomNG.setSeed(lcg.seed + i * 1234.5678);
+    let y = roomNG.nextIntRange(60,HEIGHT)
+    let width = roomNG.nextIntRange(3,15)
+    let x = roomNG.nextIntRange(0,WIDTH);
+    fillCircle(x,y,width,1);
+
+  }
+  i = 150;
+  while(i--){
+    renderTarget = BACKGROUND;
+    roomNG.setSeed(lcg.seed + i * 1232.5678);
+    let y = roomNG.nextIntRange(100,HEIGHT)
+    let width = roomNG.nextIntRange(3,15);
+    let x = roomNG.nextIntRange(0,WIDTH);
+    fillCircle(x,y,width,14);
+
+  }
+
+  i = 100;
+  while(i--){
+    renderTarget = BACKGROUND;
+    roomNG.setSeed(lcg.seed + i * 1230.5678);
+    let y = roomNG.nextIntRange(150,HEIGHT)
+    let width = roomNG.nextIntRange(15,20);
+    let x = roomNG.nextIntRange(0,WIDTH);
+    fillCircle(x,y,width,14);
+  }
+}
+
+function drawBlocks(arr){
+  arr.forEach(function(block, i, arr){
+    if(block == 1){
+      fillRect((i%12)*32, ((i/12)|0)*32, 32, 32, WALLS);
+    }
+    if(block == 2){
+      pset((i%12)*32+16, ((i/12)|0)*32+16, FUELCELL);
+    }
+  });
+}
+
+rooms = [
+  //0
+  {
+
+    draw: function(dt){
+
+    },
+
+    specials: function(dt){
+
+    }
+  },
+
+  //1
+  {
+    draw: function(dt){
+      fillTriangle(H3,V2, H5,V3, H1,V3,  WALLS);
+      fillTriangle(H5,V3, H3,V2,H1,V3,  WALLS);
+      fillTriangle(H3,V2, H1,V3, H5,V3,   WALLS);
+      fillRect(0, V3, WIDTH, V1, WALLS);
+
+    },
+    specials: function(dt){
+      drawHorizon();
+      drawHeads(0,V3, WIDTH, V1-10, 20);
+    }
+  },
+
+  //2
+  {
+    draw: function(dt){
+      fillRect(0,V3, WIDTH,V1, WALLS);
+      pset(25+Math.random()*325, V3-5, FUELCELL);
+      pset(25+Math.random()*325, V3-5, FUELCELL);
+      pset(25+Math.random()*325, V3-5, FUELCELL);
+    },
+
+    specials: function(dt){
+
+      drawHorizon();
+
+    }
+  },
+
+  //3
+  {
+    draw: function(dt){
+      fillRect(0,170,384,200,WALLS);
+      fillRect(0,140,100,100, WALLS);
+      pset(192, 160, BODY);
+    },
+
+    specials: function(dt){
+
+
+
+    }
+  },
+  //4
+  {
+    draw: function(dt){
+      fillRect(0,V3, WIDTH, V1, WALLS);
+      fillRect(H2,V3,H2,V1, 0);
+      //pset(192, 160, BODY);
+    },
+    specials: function(dt){
+
+    }
+  },
+  //5
+  {
+    draw: function(dt){
+      fillRect(0,0,WIDTH,HEIGHT,WALLS);
+      fillRect(H2,0,H2,HEIGHT, 0);
+      //pset(100, 190, THRUSTER);
+    },
+    specials: function(dt){
+
+    }
+  },
+  //6
+  {
+    draw: function(dt){
+          fillRect(0,170,384,100,WALLS);
+          pset(170, 165, BODY);
+
+
+    },
+    specials: function(dt){
+
+    }
+  },
+
+  //7
+  {
+    draw: function(dt){
+
+          fillRect(0,0,WIDTH,HEIGHT,WALLS);
+          let i = 3;
+          while(i--){
+            let x = lcg.nextIntRange(H1,H5);
+            let y = lcg.nextIntRange(V2,V4);
+            fillRect(x,y, H1,H1, 0);
+            pset(x+H1/2, y+H1/2, FUELCELL);
+          }
+
+
+
+    },
+    specials: function(dt){
+    }
+  },
+  //8
+  {
+    draw: function(dt){
+      drawBlocks([
+        0,0,0,0,0,0,0,0,0,2,0,0,
+        0,0,0,0,0,0,0,0,0,1,1,0,
+        0,0,0,0,0,0,0,1,0,1,1,0,
+        0,0,0,2,0,1,1,0,0,0,0,0,
+        0,0,0,1,0,0,0,0,0,0,0,0,
+        0,0,0,0,1,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        1,1,1,1,1,1,1,1,1,1,1,1
+      ])
+    },
+
+    specials: function(dt){
+
+    }
+  },
+  //9
+  {
+    draw: function(dt){
+      fillRect(0,205,384,10,WALLS);
+      fillCircle(250,150,64,WALLS);
+      fillCircle(250,150,50,FUELCRYSTAL);
+      pset(50, 180, FUELCELL);
+    },
+
+    specials: function(dt){
+
+    }
+  },
+
+
+] // end rooms;
 
 // var songGen = new sonantx.MusicGenerator(song1);
 //
@@ -3613,6 +3716,9 @@ player = {
     this.mode = HEADMODE;
     this.gunCooldown = 0;
     this.minedFuel = false;
+    fuelTimer = 40;
+    currentRoom = [20,4]; //
+
   },
 
   update (dt) {
@@ -3667,6 +3773,14 @@ player = {
         ){
         this.jumping=false;
       }
+      if(player.mode == THRUSTERMODE){
+        let i = player.b.width;
+        while(i--){
+          if(ram[COLLISION + player.b.x + i + player.b.bottom * WIDTH])
+          this.jumping=false;
+        }
+
+      }
     }
     if(player.yvel < -10){
       splodes.push(new splode(player.x+3+Math.random()*2,player.y+6+Math.random()*2, 7, 1, 19))
@@ -3719,10 +3833,12 @@ player = {
       break;
 
       case BODYMODE:
+      helpSection = 2;
+
       player.maxXvel = 150;
       player.minYvel = -300;
       player.xspeed = 150;
-      player.yspeed = 190;
+      player.yspeed = 260;
       if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
         player.facingLeft = false;
         player.xvel =  player.xspeed;
@@ -3869,6 +3985,36 @@ player = {
     }
 
     if(Key.isDown(Key.x)){
+      if(Key.isDown(Key.DOWN) || Key.isDown(Key.s)){
+
+        splodes.push( new splode(
+          player.x + (Math.random()*15-8)|0,
+          player.y + 16 + (Math.random()*2-1)|0,
+          6,5
+          )
+        )
+        renderTarget = COLLISION;
+        if(pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) == FUELCRYSTAL){
+          player.minedFuel = true;
+        }
+        fillCircle(player.x + (Math.random()*20-15)|0,
+        player.y + 10, 10, 0);
+
+        let i = 5;
+        while(--i){
+          splodes.push( new splode(
+            player.x + Math.random() * 10, //x
+            player.y + 30 + Math.random()*20-10, //y
+            10 + Math.random()*10-5, //size
+            Math.random()*3, //speed
+            27 + (Math.random()*2)|0, //color
+            false,
+            true )
+            );
+        }
+
+      }
+      else {
       fuelTimer-=0.01;
       splodes.push( new splode(
         player.x + (player.facingLeft ? -16 : 16) + (Math.random()*2-1)|0,
@@ -3891,8 +4037,8 @@ player = {
         27 + (Math.random()*2)|0, //color
         false,
         true )
-      );
-
+        );
+    }
     }
 
     if(player.gunCooldown < 0){
@@ -3903,6 +4049,36 @@ player = {
     }
   }
   if(Key.isDown(Key.c)){
+    if(Key.isDown(Key.DOWN) || Key.isDown(Key.s)){
+
+      splodes.push( new splode(
+        player.x + (Math.random()*15-8)|0,
+        player.y + 16 + (Math.random()*2-1)|0,
+        6,5
+        )
+      )
+      renderTarget = COLLISION;
+      if(pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) == FUELCRYSTAL){
+        player.minedFuel = true;
+      }
+      fillCircle(player.x + (Math.random()*20-15)|0,
+      player.y + 20, 10, WALLS);
+
+      let i = 5;
+      while(--i){
+        splodes.push( new splode(
+          player.x + Math.random() * 10, //x
+          player.y + 30 + Math.random()*20-10, //y
+          10 + Math.random()*10-5, //size
+          Math.random()*3, //speed
+          9 + (Math.random()*2)|0, //color
+          false,
+          true )
+        );
+      }
+
+    }
+    else {
     fuelTimer-=0.2;
     splodes.push( new splode(
       player.x + (player.facingLeft ? -16 : 16) + (Math.random()*2-1)|0,
@@ -3924,15 +4100,18 @@ player = {
       9 + (Math.random()*3)|0, //color
       false,
       true )
-    );
-
+      );
   }
+}
+
+
   if(player.gunCooldown < 0){
     player.gunCooldown = 4;
     playSound(sounds.zapgun, 2.5, player.x.map(0, WIDTH, -1, 1), false);
 
     redraw(); //update room drawing every 4 frames
   }
+
 }
 if(player.minedFuel){
   pset(player.x + (player.facingLeft ? -10 : 10), player.y - 5, FUELCELL);
@@ -4318,7 +4497,7 @@ states.gameover = {
 states.menu = {//
 
   step: function(dt) {
-      fuelTimer = 200;
+      //fuelTimer = 200;
 
       // if(!s_titleSong){
       //   titleSong = playSound(sounds.titleMusic, 1, 0, true);
@@ -4355,9 +4534,7 @@ states.menu = {//
         state = 'game';
         //titleSong.sound.stop();
       }
-      if(Key.justReleased(Key.r)){
-        state = 'spritesheet';
-      }
+      
 
   },
 
@@ -4501,7 +4678,6 @@ states.game = {
     [
       'CRITICAL SYSTEM FAILURE IMMINENT.',
       'FIND FUEL SOURCE.',
-      'WASD / ZASD / ARROWS TO PERAMBULATE',
       'AUX JETS OFFLINE. HOLD LEFT/RIGHT\nTAP JUMP TO MOVE'
     ],
 
@@ -4511,7 +4687,8 @@ states.game = {
     ],
 
     [
-      'PRESS X TO USE DISINTIGRATOR'
+      'FIND MORE FUEL',
+      'SEEK OUT REMAINING BODY COMPONENTS'
     ],
     [
       ''
@@ -4532,17 +4709,16 @@ states.game = {
     player.update(dt);
     fuelTimer -= dt;
 
-    if(fuelTimer > 350){
+    if(fuelTimer > 200 && !gotFirst200){
+      gotFirst200 = true;
       helpSection = 1;
-    } else{
-       helpSection = 0;
-     }
+    }
 
     this.messageDelay--;
     if(this.messageDelay < 0){
       messages.push(new message(
         this.helpLoops[helpSection][this.messageIndex],
-        fuelTimer < 150 ? 27 : 9,
+        fuelTimer < 50 ? 27 : 9,
         240
       ))
       this.messageDelay = 240;
@@ -4557,6 +4733,7 @@ states.game = {
   render(dt) {
     renderTarget = SCREEN; clear(0);
     renderSource = BACKGROUND; spr();
+    drawClouds();
     renderTarget = BUFFER; clear(0);
     drawThings();
     renderSource = MIDGROUND; spr();

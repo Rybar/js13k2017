@@ -69,10 +69,10 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
 
   function line(x1, y1, x2, y2, color) {
 
-    x1 = x1|0;
-    x2 = x2|0;
-    y1 = y1|0;
-    y2 = y2|0;
+    // x1 = x1|0;
+    // x2 = x2|0;
+    // y1 = y1|0;
+    // y2 = y2|0;
 
     var dy = (y2 - y1);
     var dx = (x2 - x1);
@@ -191,6 +191,23 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
     for(let i = 0; i <= c; i++){
       fillRect(x+i,y-i,w-i*2,h+i*2,color);
     }
+  }
+  function linecRect(x,y,width,height,chamfer, color){
+    let x1 = x + chamfer;
+    let x2 = x + width - chamfer;
+    let x3 = x + width;
+    let y1 = y + chamfer;
+    let y2 = y + height - chamfer;
+    let y3 = y + height;
+
+    line(x1,y, x2,y, color);
+    line(x2,y, x3,y1, color);
+    line(x3,y1, x3,y2, color);
+    line(x3,y2, x2,y3, color);
+    line(x2,y3, x1,y3, color);
+    line(x1,y3, x,y2, color);
+    line(x,y2, x,y1, color);
+    line(x,y1, x1,y, color);
   }
 
   function outline(renderSource, renderTarget, color, color2=color, color3=color, color4=color){
@@ -471,7 +488,7 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
     source.playbackRate.value = playbackRate;
     source.loop = loop;
     gainNode.gain.value = vol;
-    panNode.pan.value = pan;
+    panNode.pan.value = pan.clamp(-1,1);
     source.start();
     return {volume: gainNode, sound: source};
 }

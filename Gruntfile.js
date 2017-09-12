@@ -30,6 +30,7 @@ module.exports = function(grunt) {
 
 					'src/js/main.js',
 					'src/js/world/world.js',
+					'src/js/world/rooms.js',
 					'src/js/lib/sound.js',
 					'src/js/player.js',
 					'src/js/particle.js',

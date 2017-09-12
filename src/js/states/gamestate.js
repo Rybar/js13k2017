@@ -9,7 +9,6 @@ states.game = {
     [
       'CRITICAL SYSTEM FAILURE IMMINENT.',
       'FIND FUEL SOURCE.',
-      'WASD / ZASD / ARROWS TO PERAMBULATE',
       'AUX JETS OFFLINE. HOLD LEFT/RIGHT\nTAP JUMP TO MOVE'
     ],
 
@@ -19,7 +18,8 @@ states.game = {
     ],
 
     [
-      'PRESS X TO USE DISINTIGRATOR'
+      'FIND MORE FUEL',
+      'SEEK OUT REMAINING BODY COMPONENTS'
     ],
     [
       ''
@@ -28,10 +28,10 @@ states.game = {
   ],
 
   step(dt) {
-    // if(!s_gameSong){
-    //   s_gameSong = true;
-    //   gamesong = playSound(sounds.gameMusic, 1, 0, true);
-    // }
+    if(!s_gameSong){
+      s_gameSong = true;
+      gamesong = playSound(sounds.gameMusic, 1, 0, true);
+    }
 
     if(Key.isDown(Key.r)){
       player.init();
@@ -40,17 +40,16 @@ states.game = {
     player.update(dt);
     fuelTimer -= dt;
 
-    if(fuelTimer > 350){
+    if(fuelTimer > 200 && !gotFirst200){
+      gotFirst200 = true;
       helpSection = 1;
-    } else{
-       helpSection = 0;
-     }
+    }
 
     this.messageDelay--;
     if(this.messageDelay < 0){
       messages.push(new message(
         this.helpLoops[helpSection][this.messageIndex],
-        fuelTimer < 150 ? 27 : 9,
+        fuelTimer < 50 ? 27 : 9,
         240
       ))
       this.messageDelay = 240;
@@ -65,6 +64,7 @@ states.game = {
   render(dt) {
     renderTarget = SCREEN; clear(0);
     renderSource = BACKGROUND; spr();
+    drawClouds();
     renderTarget = BUFFER; clear(0);
     drawThings();
     renderSource = MIDGROUND; spr();
@@ -92,7 +92,11 @@ states.game = {
         }
       }
 
-    } else state = 'gameover';
+    } else{
+      gamesong.sound.stop();
+      state = 'gameover';
+
+    }
 
     renderTarget = SCREEN;
 

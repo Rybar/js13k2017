@@ -24,6 +24,9 @@ player = {
     this.mode = HEADMODE;
     this.gunCooldown = 0;
     this.minedFuel = false;
+    fuelTimer = 40;
+    currentRoom = [20,4]; //
+
   },
 
   update (dt) {
@@ -78,6 +81,14 @@ player = {
         ){
         this.jumping=false;
       }
+      if(player.mode == THRUSTERMODE){
+        let i = player.b.width;
+        while(i--){
+          if(ram[COLLISION + player.b.x + i + player.b.bottom * WIDTH])
+          this.jumping=false;
+        }
+
+      }
     }
     if(player.yvel < -10){
       splodes.push(new splode(player.x+3+Math.random()*2,player.y+6+Math.random()*2, 7, 1, 19))
@@ -130,10 +141,12 @@ player = {
       break;
 
       case BODYMODE:
+      helpSection = 2;
+
       player.maxXvel = 150;
       player.minYvel = -300;
       player.xspeed = 150;
-      player.yspeed = 190;
+      player.yspeed = 260;
       if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
         player.facingLeft = false;
         player.xvel =  player.xspeed;
@@ -280,6 +293,36 @@ player = {
     }
 
     if(Key.isDown(Key.x)){
+      if(Key.isDown(Key.DOWN) || Key.isDown(Key.s)){
+
+        splodes.push( new splode(
+          player.x + (Math.random()*15-8)|0,
+          player.y + 16 + (Math.random()*2-1)|0,
+          6,5
+          )
+        )
+        renderTarget = COLLISION;
+        if(pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) == FUELCRYSTAL){
+          player.minedFuel = true;
+        }
+        fillCircle(player.x + (Math.random()*20-15)|0,
+        player.y + 10, 10, 0);
+
+        let i = 5;
+        while(--i){
+          splodes.push( new splode(
+            player.x + Math.random() * 10, //x
+            player.y + 30 + Math.random()*20-10, //y
+            10 + Math.random()*10-5, //size
+            Math.random()*3, //speed
+            27 + (Math.random()*2)|0, //color
+            false,
+            true )
+            );
+        }
+
+      }
+      else {
       fuelTimer-=0.01;
       splodes.push( new splode(
         player.x + (player.facingLeft ? -16 : 16) + (Math.random()*2-1)|0,
@@ -302,8 +345,8 @@ player = {
         27 + (Math.random()*2)|0, //color
         false,
         true )
-      );
-
+        );
+    }
     }
 
     if(player.gunCooldown < 0){
@@ -314,6 +357,36 @@ player = {
     }
   }
   if(Key.isDown(Key.c)){
+    if(Key.isDown(Key.DOWN) || Key.isDown(Key.s)){
+
+      splodes.push( new splode(
+        player.x + (Math.random()*15-8)|0,
+        player.y + 16 + (Math.random()*2-1)|0,
+        6,5
+        )
+      )
+      renderTarget = COLLISION;
+      if(pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) == FUELCRYSTAL){
+        player.minedFuel = true;
+      }
+      fillCircle(player.x + (Math.random()*20-15)|0,
+      player.y + 20, 10, WALLS);
+
+      let i = 5;
+      while(--i){
+        splodes.push( new splode(
+          player.x + Math.random() * 10, //x
+          player.y + 30 + Math.random()*20-10, //y
+          10 + Math.random()*10-5, //size
+          Math.random()*3, //speed
+          9 + (Math.random()*2)|0, //color
+          false,
+          true )
+        );
+      }
+
+    }
+    else {
     fuelTimer-=0.2;
     splodes.push( new splode(
       player.x + (player.facingLeft ? -16 : 16) + (Math.random()*2-1)|0,
@@ -335,15 +408,18 @@ player = {
       9 + (Math.random()*3)|0, //color
       false,
       true )
-    );
-
+      );
   }
+}
+
+
   if(player.gunCooldown < 0){
     player.gunCooldown = 4;
     playSound(sounds.zapgun, 2.5, player.x.map(0, WIDTH, -1, 1), false);
 
     redraw(); //update room drawing every 4 frames
   }
+
 }
 if(player.minedFuel){
   pset(player.x + (player.facingLeft ? -10 : 10), player.y - 5, FUELCELL);
@@ -391,7 +467,8 @@ if(player.y < 0){
 
 },
 
-draw (dt) {
+draw (dt)
+fillRect(player.b.x - this.radius, player.b.y - this.radius, this.radius, this.radius, 27);
   switch(player.mode){
     case HEADMODE:
     renderSource = SPRITES;
@@ -441,7 +518,7 @@ collides () {
 
 overlaps () {
   for(var i = 0; i < this.radius * 2; i++){
-    for(var j = 0; j < this.radius * 2; j++){
+    for(var j = -this.radius * 2; j < this.radius * 2; j++){
       let overlap = ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH]
       if(overlap){
         return {

@@ -13,9 +13,9 @@ init = () => {
 
   sounds = {};
   soundsLoaded = 0;
-  totalSounds = 5;
+  totalSounds = 7;
   score = 0;
-  fuelTimer = 200;
+  fuelTimer = 0;
   parts = 0;
   last = 0;
   dt = 0;
@@ -29,9 +29,11 @@ init = () => {
   helpSection = 0;
 
 
+
   //FLAGS--------------------------------------------------------------
   paused = false;
   transition = false;
+  gotFirst200 = false;
 
   //sound flags--------------------------------------------------------
   s_titleSong = false;
