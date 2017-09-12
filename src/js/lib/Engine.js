@@ -1,7 +1,7 @@
 //--------------Engine.js-------------------
 
-const WIDTH =     384;
-const HEIGHT =    256;
+const WIDTH =     383;
+const HEIGHT =    255;
 const PAGES =     11;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
 const PAGESIZE = WIDTH*HEIGHT;
 
@@ -212,8 +212,8 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
 
   function outline(renderSource, renderTarget, color, color2=color, color3=color, color4=color){
 
-    for(let i = 0; i <= WIDTH; i++ ){
-      for(let j = 0; j <= HEIGHT; j++){
+    for(let i = 0; i < WIDTH; i++ ){
+      for(let j = 0; j < HEIGHT; j++){
         let left = i-1 + j * WIDTH;
         let right = i+1 + j * WIDTH;
         let bottom = i + (j+1) * WIDTH;

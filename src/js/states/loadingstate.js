@@ -1,17 +1,16 @@
 states.loading = {
 
     init: function(dt){
-      song loading
-      var songGen = new sonantx.MusicGenerator(a_title);
-      songGen.createAudioBuffer(function(buffer) {
-          sounds.titleMusic = buffer;
-          soundsLoaded++;
-      });
-      var songGen = new sonantx.MusicGenerator(a_gamesong);
-      songGen.createAudioBuffer(function(buffer) {
-          sounds.gameMusic = buffer;
-          soundsLoaded++;
-      });
+      // var songGen = new sonantx.MusicGenerator(a_title);
+      // songGen.createAudioBuffer(function(buffer) {
+      //     sounds.titleMusic = buffer;
+      //     soundsLoaded++;
+      // });
+      // var songGen = new sonantx.MusicGenerator(a_gamesong);
+      // songGen.createAudioBuffer(function(buffer) {
+      //     sounds.gameMusic = buffer;
+      //     soundsLoaded++;
+      // });
       var songGen = new sonantx.MusicGenerator(a_zapgun);
       songGen.createAudioBuffer(function(buffer) {
           sounds.zapgun = buffer;

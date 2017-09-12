@@ -400,6 +400,22 @@ function drawHorizon(){
   }
 }
 
+function drawUnderground(){
+
+  let i = 150;
+  while(i--){
+    renderTarget = BACKGROUND;
+    roomNG.setSeed(lcg.seed + i * 1234.5678);
+    let y = roomNG.nextIntRange(0,HEIGHT)
+    let width = roomNG.nextIntRange(15,60)
+    let height = roomNG.nextIntRange(15,60)
+    let x = roomNG.nextIntRange(0,WIDTH);
+    linecRect(x,y,width,height,3,1);
+
+  }
+
+}
+
 function drawBlocks(arr){
   arr.forEach(function(block, i, arr){
     if(block == 1){

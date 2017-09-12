@@ -4,7 +4,7 @@ player = {
   init (){
     this.x = 384/2;
     this.y =  106;
-    this.radius = 20;
+    this.radius = 8;
     this.hitRadius = 8;
     this.xvel = 0;
     this.yvel = 0;
@@ -63,10 +63,10 @@ player = {
     }
     this.updateB();
     if(this.collides()){
-      //this.x += this.collideResolutionX();
+        this.collideResolution();
       this.updateB();
       if(this.collides()){
-        //this.y += this.collideResolutionY();
+        this.collideResolution();
         this.updateB();
       }
     }
@@ -467,8 +467,10 @@ if(player.y < 0){
 
 },
 
-draw (dt)
-fillRect(player.b.x - this.radius, player.b.y - this.radius, this.radius, this.radius, 27);
+draw (dt){
+
+rect(player.b.x - this.radius, player.b.y - this.radius, this.radius * 2, this.radius * 2, 27);
+
   switch(player.mode){
     case HEADMODE:
     renderSource = SPRITES;
@@ -517,8 +519,8 @@ collides () {
 },
 
 overlaps () {
-  for(var i = 0; i < this.radius * 2; i++){
-    for(var j = -this.radius * 2; j < this.radius * 2; j++){
+  for(var i = -this.radius; i < this.radius; i++){
+    for(var j = -this.radius * 2; j < this.radius; j++){
       let overlap = ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH]
       if(overlap){
         return {
@@ -547,72 +549,10 @@ updateB () {
 
 },
 
-collideResolutionY (dt) {
-
-  let offsetY = 0;
-  let error = 4; // avoid corners?
-  let b = this.b;
-
-  //check bottom:
-  for(let i = b.left; i <= b.right; i++){ //from left to right, across bottom edge
-    let check = ram[COLLISION+i+WIDTH*b.bottom]
-    if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
-      for(let j = b.bottom; j >= b.top; j--) {  //starting from point we found solid, scan upward for empty pixel
-        let check = ram[COLLISION+i+WIDTH*j]
-        if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
-          offsetY = j - b.bottom - 1;  //
-        }
-      } //end interior check
-    }
-  } // end bottom edge checker
-
-  //check top:
-  for(let i = b.left; i <= b.right; i++){ //from left to right, across top edge
-    let check = ram[COLLISION+i+WIDTH*b.top]
-    if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
-      for(let j = b.top; j <= b.bottom; j++) {  //starting from point we found solid, scan downward for empty pixel
-        let check = ram[COLLISION+i+WIDTH*j]
-        if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
-          offsetY = j-b.top + 1;  //
-        }
-      } //end interior check
-    }
-  } // end top edge checker
-  return offsetY;
-
-}, //end collideResolutionY
-
-collideResolutionX (dt) {
-
-  let offsetX = 0;
-  let b = this.b;
-  let error = 2;
-
-  //check left:
-  for(let i = b.top; i <= b.bottom; i++){ //from top to bottom across left edge;
-    let check = ram[COLLISION+b.left+WIDTH*i]
-    if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
-      for(let j = b.x; j <= b.right; j++) {  //starting from point we found solid, scan upward for empty pixel
-        let check = ram[COLLISION+j+WIDTH*i]
-        if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
-          offsetX++;  //
-        }
-      } //end interior check
-    } else{
-      let check = ram[COLLISION+b.right+WIDTH*i]
-      if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
-        for(let j = b.x; j >= b.left; j--) {  //starting from point we found solid, scan upward for empty pixel
-          let check = ram[COLLISION+j+WIDTH*i]
-          if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
-            offsetX--  //
-          }
-        }
-      }
-    }
-  }
-
-  return offsetX;
-
+collideResolution(dt) {  //haha, yeah not really. we're just carving a hole.
+  renderTarget = COLLISION;
+  fillRect(player.x - 32, player.y - 32, 64,64, 0);
+  redraw();
 },
 
 overlapResolution(dt){
@@ -621,8 +561,9 @@ overlapResolution(dt){
   switch(o.o){
 
     case FUELCELL:
-    ram[COLLISION + o.x + o.y * WIDTH] == 0;
+
     renderTarget = COLLISION;
+    ram[COLLISION + o.x + o.y * WIDTH] == 0;
     fillCircle(o.x,o.y,3,0);
     renderTarget = BUFFER;
 

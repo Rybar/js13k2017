@@ -2,8 +2,8 @@
 
 //--------------Engine.js-------------------
 
-const WIDTH =     384;
-const HEIGHT =    256;
+const WIDTH =     383;
+const HEIGHT =    255;
 const PAGES =     11;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
 const PAGESIZE = WIDTH*HEIGHT;
 
@@ -214,8 +214,8 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
 
   function outline(renderSource, renderTarget, color, color2=color, color3=color, color4=color){
 
-    for(let i = 0; i <= WIDTH; i++ ){
-      for(let j = 0; j <= HEIGHT; j++){
+    for(let i = 0; i < WIDTH; i++ ){
+      for(let j = 0; j < HEIGHT; j++){
         let left = i-1 + j * WIDTH;
         let right = i+1 + j * WIDTH;
         let bottom = i + (j+1) * WIDTH;
@@ -533,16 +533,16 @@ world = [ //                                                  ||---start
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//2
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//3
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//4
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,04,02,02,02,08,08,02,04,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//5 --fall start
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,04,02,02,02,04,02,02,04,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//5 --fall start
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,07,07,07,07,07,07,05,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//6
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,00,00,00,00,00,00,05,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//7
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,00,00,00,00,02,02,06,02,02,02,00,00,00,00,00,00,00,00,00,00,00,00,00,//8
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,06,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//9
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//10
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//11
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//12
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//13
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//14
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,00,00,00,00,05,00,07,08,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//7
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,00,00,00,00,05,02,02,02,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//8
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,06,00,00,00,00,07,07,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//9
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//10
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//11
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,01,02,02,02,04,00,00,00,00,00,00,00,00,00,00,00,00,00,//12
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,00,00,00,00,00,00,00,00,00,00,00,00,00,//13
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,06,00,00,00,00,00,00,00,00,00,00,00,00,00,//14
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//15
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//16
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//17
@@ -3427,6 +3427,22 @@ function drawHorizon(){
   }
 }
 
+function drawUnderground(){
+
+  let i = 150;
+  while(i--){
+    renderTarget = BACKGROUND;
+    roomNG.setSeed(lcg.seed + i * 1234.5678);
+    let y = roomNG.nextIntRange(0,HEIGHT)
+    let width = roomNG.nextIntRange(15,60)
+    let height = roomNG.nextIntRange(15,60)
+    let x = roomNG.nextIntRange(0,WIDTH);
+    linecRect(x,y,width,height,3,1);
+
+  }
+
+}
+
 function drawBlocks(arr){
   arr.forEach(function(block, i, arr){
     if(block == 1){
@@ -3469,10 +3485,19 @@ rooms = [
   //2
   {
     draw: function(dt){
-      fillRect(0,V3, WIDTH,V1, WALLS);
-      pset(25+Math.random()*325, V3-5, FUELCELL);
-      pset(25+Math.random()*325, V3-5, FUELCELL);
-      pset(25+Math.random()*325, V3-5, FUELCELL);
+      drawBlocks([
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      1,1,1,1,1,1,1,1,1,1,1,1 ]);
+
+      pset(25+Math.random()*325, HEIGHT-36, FUELCELL);
+      pset(25+Math.random()*325, HEIGHT-36, FUELCELL);
+      pset(25+Math.random()*325, HEIGHT-36, FUELCELL);
     },
 
     specials: function(dt){
@@ -3491,43 +3516,68 @@ rooms = [
     },
 
     specials: function(dt){
-
-
+      drawHorizon();
 
     }
   },
   //4
   {
     draw: function(dt){
-      fillRect(0,V3, WIDTH, V1, WALLS);
-      fillRect(H2,V3,H2,V1, 0);
-      //pset(192, 160, BODY);
+      drawBlocks([
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,2,0,0,0,0,0,1,1,1,
+        1,1,1,1,0,0,0,0,1,1,1,1
+      ])
     },
     specials: function(dt){
+      drawHorizon();
 
     }
   },
   //5
   {
     draw: function(dt){
-      fillRect(0,0,WIDTH,HEIGHT,WALLS);
-      fillRect(H2,0,H2,HEIGHT, 0);
-      //pset(100, 190, THRUSTER);
+      drawBlocks([
+        1,1,1,1,0,0,0,0,1,1,1,1,
+        1,1,1,1,0,0,0,0,1,1,1,1,
+        1,1,1,1,0,0,0,0,1,1,1,1,
+        1,1,1,1,0,0,0,0,1,1,1,1,
+        1,1,1,1,0,0,0,0,1,1,1,1,
+        1,1,1,1,0,0,0,0,1,1,1,1,
+        1,1,1,1,0,0,0,0,1,1,1,1,
+        1,1,1,1,0,0,0,0,1,1,1,1,
+      ])
     },
     specials: function(dt){
+      drawUnderground();
 
     }
   },
   //6
   {
     draw: function(dt){
-          fillRect(0,170,384,100,WALLS);
-          pset(170, 165, BODY);
+      drawBlocks([
+        1,1,1,1,0,0,0,0,1,1,1,1,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,1,1,1,1,1,1,1,1,0,0
+      ]);
+      pset(Math.random()*200+70, HEIGHT-40, BODY);
 
 
     },
     specials: function(dt){
-
+      drawUnderground();
+      drawHorizon();
     }
   },
 
@@ -3535,47 +3585,56 @@ rooms = [
   {
     draw: function(dt){
 
-          fillRect(0,0,WIDTH,HEIGHT,WALLS);
-          let i = 3;
-          while(i--){
-            let x = lcg.nextIntRange(H1,H5);
-            let y = lcg.nextIntRange(V2,V4);
-            fillRect(x,y, H1,H1, 0);
-            pset(x+H1/2, y+H1/2, FUELCELL);
-          }
+      drawBlocks([
+        0,1,1,1,0,0,0,0,1,1,1,1,
+        0,1,1,1,0,0,0,0,1,1,1,1,
+        0,1,1,1,2,0,0,0,0,0,2,0,
+        0,1,1,1,1,1,1,1,1,1,1,1,
+        0,1,1,1,1,1,1,1,1,1,1,1,
+        0,0,0,2,0,0,0,0,1,1,1,1,
+        1,1,1,1,0,0,0,0,1,1,1,1,
+        1,1,1,1,0,0,0,0,1,1,1,1,
+      ])
 
 
 
     },
     specials: function(dt){
+      drawUnderground();
     }
   },
   //8
   {
     draw: function(dt){
       drawBlocks([
-        0,0,0,0,0,0,0,0,0,2,0,0,
-        0,0,0,0,0,0,0,0,0,1,1,0,
-        0,0,0,0,0,0,0,1,0,1,1,0,
-        0,0,0,2,0,1,1,0,0,0,0,0,
-        0,0,0,1,0,0,0,0,0,0,0,0,
-        0,0,0,0,1,0,0,0,0,0,0,0,
+        1,0,0,0,0,0,0,0,0,0,0,0,
+        1,0,0,0,0,0,0,0,0,0,0,0,
         0,0,0,0,0,0,0,0,0,0,0,0,
+        1,1,1,1,0,0,0,0,0,0,0,0,
+        1,1,0,1,1,1,1,1,0,0,0,0,
+        1,1,1,1,1,1,1,1,1,1,1,1,
+        1,1,1,1,1,0,1,1,1,0,0,1,
         1,1,1,1,1,1,1,1,1,1,1,1
       ])
     },
 
     specials: function(dt){
-
+      drawUnderground();
     }
   },
   //9
   {
     draw: function(dt){
-      fillRect(0,205,384,10,WALLS);
-      fillCircle(250,150,64,WALLS);
-      fillCircle(250,150,50,FUELCRYSTAL);
-      pset(50, 180, FUELCELL);
+      drawBlocks([
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        1,1,1,1,1,1,1,1,1,1,1,1
+      ])
     },
 
     specials: function(dt){
@@ -3696,7 +3755,7 @@ player = {
   init (){
     this.x = 384/2;
     this.y =  106;
-    this.radius = 20;
+    this.radius = 8;
     this.hitRadius = 8;
     this.xvel = 0;
     this.yvel = 0;
@@ -3755,10 +3814,10 @@ player = {
     }
     this.updateB();
     if(this.collides()){
-      //this.x += this.collideResolutionX();
+        this.collideResolution();
       this.updateB();
       if(this.collides()){
-        //this.y += this.collideResolutionY();
+        this.collideResolution();
         this.updateB();
       }
     }
@@ -4159,7 +4218,10 @@ if(player.y < 0){
 
 },
 
-draw (dt) {
+draw (dt){
+
+rect(player.b.x - this.radius, player.b.y - this.radius, this.radius * 2, this.radius * 2, 27);
+
   switch(player.mode){
     case HEADMODE:
     renderSource = SPRITES;
@@ -4208,8 +4270,8 @@ collides () {
 },
 
 overlaps () {
-  for(var i = 0; i < this.radius * 2; i++){
-    for(var j = 0; j < this.radius * 2; j++){
+  for(var i = -this.radius; i < this.radius; i++){
+    for(var j = -this.radius * 2; j < this.radius; j++){
       let overlap = ram[COLLISION + (this.b.x + i) + (this.b.y + j) * WIDTH]
       if(overlap){
         return {
@@ -4238,72 +4300,10 @@ updateB () {
 
 },
 
-collideResolutionY (dt) {
-
-  let offsetY = 0;
-  let error = 4; // avoid corners?
-  let b = this.b;
-
-  //check bottom:
-  for(let i = b.left; i <= b.right; i++){ //from left to right, across bottom edge
-    let check = ram[COLLISION+i+WIDTH*b.bottom]
-    if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
-      for(let j = b.bottom; j >= b.top; j--) {  //starting from point we found solid, scan upward for empty pixel
-        let check = ram[COLLISION+i+WIDTH*j]
-        if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
-          offsetY = j - b.bottom - 1;  //
-        }
-      } //end interior check
-    }
-  } // end bottom edge checker
-
-  //check top:
-  for(let i = b.left; i <= b.right; i++){ //from left to right, across top edge
-    let check = ram[COLLISION+i+WIDTH*b.top]
-    if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
-      for(let j = b.top; j <= b.bottom; j++) {  //starting from point we found solid, scan downward for empty pixel
-        let check = ram[COLLISION+i+WIDTH*j]
-        if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
-          offsetY = j-b.top + 1;  //
-        }
-      } //end interior check
-    }
-  } // end top edge checker
-  return offsetY;
-
-}, //end collideResolutionY
-
-collideResolutionX (dt) {
-
-  let offsetX = 0;
-  let b = this.b;
-  let error = 2;
-
-  //check left:
-  for(let i = b.top; i <= b.bottom; i++){ //from top to bottom across left edge;
-    let check = ram[COLLISION+b.left+WIDTH*i]
-    if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
-      for(let j = b.x; j <= b.right; j++) {  //starting from point we found solid, scan upward for empty pixel
-        let check = ram[COLLISION+j+WIDTH*i]
-        if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
-          offsetX++;  //
-        }
-      } //end interior check
-    } else{
-      let check = ram[COLLISION+b.right+WIDTH*i]
-      if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
-        for(let j = b.x; j >= b.left; j--) {  //starting from point we found solid, scan upward for empty pixel
-          let check = ram[COLLISION+j+WIDTH*i]
-          if(check == WALLS || check == TERRA || check == FUELCRYSTAL){
-            offsetX--  //
-          }
-        }
-      }
-    }
-  }
-
-  return offsetX;
-
+collideResolution(dt) {  //haha, yeah not really. we're just carving a hole.
+  renderTarget = COLLISION;
+  fillRect(player.x - 32, player.y - 32, 64,64, 0);
+  redraw();
 },
 
 overlapResolution(dt){
@@ -4312,8 +4312,9 @@ overlapResolution(dt){
   switch(o.o){
 
     case FUELCELL:
-    ram[COLLISION + o.x + o.y * WIDTH] == 0;
+
     renderTarget = COLLISION;
+    ram[COLLISION + o.x + o.y * WIDTH] == 0;
     fillCircle(o.x,o.y,3,0);
     renderTarget = BUFFER;
 
@@ -4497,7 +4498,6 @@ states.gameover = {
 states.menu = {//
 
   step: function(dt) {
-      //fuelTimer = 200;
 
       // if(!s_titleSong){
       //   titleSong = playSound(sounds.titleMusic, 1, 0, true);
@@ -4534,7 +4534,7 @@ states.menu = {//
         state = 'game';
         //titleSong.sound.stop();
       }
-      
+
 
   },
 
@@ -4761,7 +4761,11 @@ states.game = {
         }
       }
 
-    } else state = 'gameover';
+    } else{
+      //gamesong.sound.stop();
+      state = 'gameover';
+
+    }
 
     renderTarget = SCREEN;
 
@@ -4796,7 +4800,6 @@ states.game = {
 states.loading = {
 
     init: function(dt){
-      //song loading
       // var songGen = new sonantx.MusicGenerator(a_title);
       // songGen.createAudioBuffer(function(buffer) {
       //     sounds.titleMusic = buffer;
