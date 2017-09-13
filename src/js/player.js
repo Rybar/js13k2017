@@ -24,8 +24,8 @@ player = {
     this.mode = HEADMODE;
     this.gunCooldown = 0;
     this.minedFuel = false;
-    fuelTimer = 40;
-    currentRoom = [20,0]; //
+    fuelTimer = 30;
+    currentRoom = [20,1]; //
 
   },
 
@@ -510,39 +510,42 @@ overlapResolution(dt){
     break;
 
     case BODY:
-
-    ram[COLLISION + o.x + o.y * WIDTH] == 0;
-    renderTarget = COLLISION;
-    fillCircle(o.x,o.y,3,0);
-    renderTarget = BUFFER;
-    player.mode = BODYMODE;
-    messages.push(new message('AUX BOOSTERS ACQUIRED. ENERGY CAPACITY INCREASED.'));
-    playSound(sounds.fuelget, 1, player.x.map(0, WIDTH, -1, 1), false);
-
+    if(player.mode == HEADMODE){
+      ram[COLLISION + o.x + o.y * WIDTH] == 0;
+      renderTarget = COLLISION;
+      fillCircle(o.x,o.y,3,0);
+      renderTarget = BUFFER;
+      player.mode = BODYMODE;
+      messages.push(new message('AUX BOOSTERS ACQUIRED. ENERGY CAPACITY INCREASED.'));
+      playSound(sounds.fuelget, 1, player.x.map(0, WIDTH, -1, 1), false);
+    }
 
     break;
 
     case ARM:
-
-    ram[COLLISION + o.x + o.y * WIDTH] == 0;
-    renderTarget = COLLISION;
-    fillCircle(o.x,o.y,3,0);
-    renderTarget = BUFFER;
-    player.mode = ARMMODE;
-    playSound(sounds.fuelget, 1, player.x.map(0, WIDTH, -1, 1), false);
-    messages.push(new message('DISINTIGRATE TOOL ACQUIRED. PRESS X TO USE'));
+    if(player.mode == BODYMODE){
+      ram[COLLISION + o.x + o.y * WIDTH] == 0;
+      renderTarget = COLLISION;
+      fillCircle(o.x,o.y,3,0);
+      renderTarget = BUFFER;
+      player.mode = ARMMODE;
+      playSound(sounds.fuelget, 1, player.x.map(0, WIDTH, -1, 1), false);
+      messages.push(new message('DISINTIGRATE TOOL ACQUIRED. PRESS X TO USE'))
+    }
 
     break;
 
     case THRUSTER:
+    if(player.mode == ARMMODE){
+      ram[COLLISION + o.x + o.y * WIDTH] == 0;
+      renderTarget = COLLISION;
+      fillCircle(o.x,o.y,3,0);
+      renderTarget = BUFFER;
+      player.mode = THRUSTERMODE;
+      playSound(sounds.fuelget, 1, player.x.map(0, WIDTH, -1, 1), false);
+      messages.push(new message('WHERE WE ARE GOING, WE DONT NEED WHEELS'));
+    }
 
-    ram[COLLISION + o.x + o.y * WIDTH] == 0;
-    renderTarget = COLLISION;
-    fillCircle(o.x,o.y,3,0);
-    renderTarget = BUFFER;
-    player.mode = THRUSTERMODE;
-    playSound(sounds.fuelget, 1, player.x.map(0, WIDTH, -1, 1), false);
-    messages.push(new message('E-M CONVERTER ACQUIRED. PRESS C TO USE'));
 
 
     break;

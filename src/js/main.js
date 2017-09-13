@@ -27,7 +27,7 @@ init = () => {
   help = [];
   tCounter = 0;
   helpSection = 0;
-
+  credits = false;
 
 
   //FLAGS--------------------------------------------------------------

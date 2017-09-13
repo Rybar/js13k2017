@@ -20,7 +20,7 @@ const ARM = 28;
 const THRUSTER = 29;
 
 const WORLDWIDTH = 39;
-const WORLDHEIGHT = 13; // 0 index.
+const WORLDHEIGHT = 16; // 0 index.
 
 const H12 = WIDTH/12;
 const V8 = HEIGHT/8;

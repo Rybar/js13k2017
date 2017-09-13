@@ -528,7 +528,9 @@ Number.prototype.map = function(old_bottom, old_top, new_bottom, new_top) {
 
 world = [ //                                                  ||---start
 // 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//0
+  00,00,00,00,00,00,00,00,00,00,00,00,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,00,00,00,00,00,00,00,00,00,00,00,00,//0
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//1
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//1
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//1
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,04,02,04,02,01,02,04,02,04,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//2
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,00,05,00,00,00,07,04,04,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//3
@@ -542,7 +544,7 @@ world = [ //                                                  ||---start
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,02,06,02,13,02,02,18,02,04,00,00,00,00,00,00,00,00,00,00,//11
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,02,02,02,00,00,00,00,02,07,08,00,00,00,00,00,00,00,00,00,//12
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,06,10,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//13
-  09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09//14
+  19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,//14
 
 
 ];
@@ -2954,7 +2956,7 @@ init = () => {
   help = [];
   tCounter = 0;
   helpSection = 0;
-
+  credits = false;
 
 
   //FLAGS--------------------------------------------------------------
@@ -3059,7 +3061,7 @@ const ARM = 28;
 const THRUSTER = 29;
 
 const WORLDWIDTH = 39;
-const WORLDHEIGHT = 13; // 0 index.
+const WORLDHEIGHT = 16; // 0 index.
 
 const H12 = WIDTH/12;
 const V8 = HEIGHT/8;
@@ -3526,7 +3528,6 @@ rooms = [
 
       pset(25+Math.random()*325, HEIGHT-36, FUELCELL);
       pset(25+Math.random()*325, HEIGHT-36, FUELCELL);
-      pset(25+Math.random()*325, HEIGHT-36, FUELCELL);
     },
 
     specials: function(dt){
@@ -3796,7 +3797,7 @@ rooms = [
         1,0,0,0,0,0,1,0,0,0,0,1,
         1,0,0,0,0,0,0,2,0,0,0,1,
         1,0,0,0,0,2,0,0,1,0,0,1,
-        1,0,0,1,0,1,0,0,0,0,0,1,
+        1,0,0,0,1,1,0,0,0,0,0,1,
         1,0,0,0,0,0,0,0,1,1,1,1,
         1,1,0,0,0,0,0,0,0,0,0,1,
 
@@ -3880,6 +3881,25 @@ rooms = [
     specials: function(dt){
       drawUnderground();
     }
+  },
+
+    //19
+    {
+      draw: function(dt){
+        let x = roomNG.nextIntRange(100,300);
+        let y = roomNG.nextIntRange(50,200);
+        let rad = roomNG.nextIntRange(30,50);
+        fillCircle(x, y, rad, WALLS);
+        fillCircle(x, y, rad-5, 0);
+        fillRect(0,200,WIDTH,20,WALLS);
+        fillRect(170,200,100,20,0);
+        fillRect(0,0,WIDTH,20,WALLS);
+      },
+      specials: function(dt){
+        drawUnderground();
+        credits = true;
+        helpSection = 4;
+      }
   },
 
 
@@ -4016,8 +4036,8 @@ player = {
     this.mode = HEADMODE;
     this.gunCooldown = 0;
     this.minedFuel = false;
-    fuelTimer = 40;
-    currentRoom = [20,0]; //
+    fuelTimer = 30;
+    currentRoom = [20,1]; //
 
   },
 
@@ -4502,39 +4522,42 @@ overlapResolution(dt){
     break;
 
     case BODY:
-
-    ram[COLLISION + o.x + o.y * WIDTH] == 0;
-    renderTarget = COLLISION;
-    fillCircle(o.x,o.y,3,0);
-    renderTarget = BUFFER;
-    player.mode = BODYMODE;
-    messages.push(new message('AUX BOOSTERS ACQUIRED. ENERGY CAPACITY INCREASED.'));
-    playSound(sounds.fuelget, 1, player.x.map(0, WIDTH, -1, 1), false);
-
+    if(player.mode == HEADMODE){
+      ram[COLLISION + o.x + o.y * WIDTH] == 0;
+      renderTarget = COLLISION;
+      fillCircle(o.x,o.y,3,0);
+      renderTarget = BUFFER;
+      player.mode = BODYMODE;
+      messages.push(new message('AUX BOOSTERS ACQUIRED. ENERGY CAPACITY INCREASED.'));
+      playSound(sounds.fuelget, 1, player.x.map(0, WIDTH, -1, 1), false);
+    }
 
     break;
 
     case ARM:
-
-    ram[COLLISION + o.x + o.y * WIDTH] == 0;
-    renderTarget = COLLISION;
-    fillCircle(o.x,o.y,3,0);
-    renderTarget = BUFFER;
-    player.mode = ARMMODE;
-    playSound(sounds.fuelget, 1, player.x.map(0, WIDTH, -1, 1), false);
-    messages.push(new message('DISINTIGRATE TOOL ACQUIRED. PRESS X TO USE'));
+    if(player.mode == BODYMODE){
+      ram[COLLISION + o.x + o.y * WIDTH] == 0;
+      renderTarget = COLLISION;
+      fillCircle(o.x,o.y,3,0);
+      renderTarget = BUFFER;
+      player.mode = ARMMODE;
+      playSound(sounds.fuelget, 1, player.x.map(0, WIDTH, -1, 1), false);
+      messages.push(new message('DISINTIGRATE TOOL ACQUIRED. PRESS X TO USE'))
+    }
 
     break;
 
     case THRUSTER:
+    if(player.mode == ARMMODE){
+      ram[COLLISION + o.x + o.y * WIDTH] == 0;
+      renderTarget = COLLISION;
+      fillCircle(o.x,o.y,3,0);
+      renderTarget = BUFFER;
+      player.mode = THRUSTERMODE;
+      playSound(sounds.fuelget, 1, player.x.map(0, WIDTH, -1, 1), false);
+      messages.push(new message('WHERE WE ARE GOING, WE DONT NEED WHEELS'));
+    }
 
-    ram[COLLISION + o.x + o.y * WIDTH] == 0;
-    renderTarget = COLLISION;
-    fillCircle(o.x,o.y,3,0);
-    renderTarget = BUFFER;
-    player.mode = THRUSTERMODE;
-    playSound(sounds.fuelget, 1, player.x.map(0, WIDTH, -1, 1), false);
-    messages.push(new message('E-M CONVERTER ACQUIRED. PRESS C TO USE'));
 
 
     break;
@@ -4852,11 +4875,21 @@ states.game = {
     ],
     [
       'THRUSTERS ONLINE. FUSION REACTOR ONLINE.'
+    ],
+    [
+      'OOH YOU FOUND A SECRET',
+      '...',
+      'THANKS FOR PLAYING GREEBLE',
+      'A JS13K 2017 ENTRY BY RYAN MALM',
+      'SHOUT OUT TO A FEW CODERS...',
+      'TRASEVOL DOG -YOU ARE AN INSPIRATION',
+      'XEM, CANTELOPE, P01, XEN\nJS GOLFERS EXTROARDINAIRE'
     ]
 
   ],
 
   step(dt) {
+    if(credits)helpSection = 4;
     if(!s_gameSong){
       s_gameSong = true;
       gamesong = playSound(sounds.gameMusic, 1, 0, true);
@@ -4887,7 +4920,7 @@ states.game = {
         this.messageIndex = 0;
       }
     }
-
+    if(credits)helpSection = 4;
   },
 
   render(dt) {
@@ -4928,9 +4961,15 @@ states.game = {
     }
 
     renderTarget = SCREEN;
-
+    if(player.mode == THRUSTERMODE){
+      fueltext = 'INFINITE';
+      fuelcolor = 19;
+    } else{
+      fueltext = fuelTimer.toFixed(2).toString();
+      fuelcolor = fuelTimer < 150 ? 27 : 10;
+    }
     text([
-      fuelTimer.toFixed(2).toString(),
+      fueltext,
       WIDTH/2,
       10,
       2,
@@ -4938,7 +4977,7 @@ states.game = {
       'center',
       'top',
       1,
-      fuelTimer < 150 ? 27 : 10,
+      fuelcolor
     ]);
 
     splodes.forEach(function(splode, index, arr){splode.draw(index)});

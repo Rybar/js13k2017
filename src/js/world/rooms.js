@@ -41,7 +41,6 @@ rooms = [
 
       pset(25+Math.random()*325, HEIGHT-36, FUELCELL);
       pset(25+Math.random()*325, HEIGHT-36, FUELCELL);
-      pset(25+Math.random()*325, HEIGHT-36, FUELCELL);
     },
 
     specials: function(dt){
@@ -311,7 +310,7 @@ rooms = [
         1,0,0,0,0,0,1,0,0,0,0,1,
         1,0,0,0,0,0,0,2,0,0,0,1,
         1,0,0,0,0,2,0,0,1,0,0,1,
-        1,0,0,1,0,1,0,0,0,0,0,1,
+        1,0,0,0,1,1,0,0,0,0,0,1,
         1,0,0,0,0,0,0,0,1,1,1,1,
         1,1,0,0,0,0,0,0,0,0,0,1,
 
@@ -395,6 +394,25 @@ rooms = [
     specials: function(dt){
       drawUnderground();
     }
+  },
+
+    //19
+    {
+      draw: function(dt){
+        let x = roomNG.nextIntRange(100,300);
+        let y = roomNG.nextIntRange(50,200);
+        let rad = roomNG.nextIntRange(30,50);
+        fillCircle(x, y, rad, WALLS);
+        fillCircle(x, y, rad-5, 0);
+        fillRect(0,200,WIDTH,20,WALLS);
+        fillRect(170,200,100,20,0);
+        fillRect(0,0,WIDTH,20,WALLS);
+      },
+      specials: function(dt){
+        drawUnderground();
+        credits = true;
+        helpSection = 4;
+      }
   },
 
 

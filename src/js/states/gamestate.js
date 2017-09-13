@@ -23,11 +23,21 @@ states.game = {
     ],
     [
       'THRUSTERS ONLINE. FUSION REACTOR ONLINE.'
+    ],
+    [
+      'OOH YOU FOUND A SECRET',
+      '...',
+      'THANKS FOR PLAYING GREEBLE',
+      'A JS13K 2017 ENTRY BY RYAN MALM',
+      'SHOUT OUT TO A FEW CODERS...',
+      'TRASEVOL DOG -YOU ARE AN INSPIRATION',
+      'XEM, CANTELOPE, P01, XEN\nJS GOLFERS EXTROARDINAIRE'
     ]
 
   ],
 
   step(dt) {
+    if(credits)helpSection = 4;
     if(!s_gameSong){
       s_gameSong = true;
       gamesong = playSound(sounds.gameMusic, 1, 0, true);
@@ -58,7 +68,7 @@ states.game = {
         this.messageIndex = 0;
       }
     }
-
+    if(credits)helpSection = 4;
   },
 
   render(dt) {
@@ -99,9 +109,15 @@ states.game = {
     }
 
     renderTarget = SCREEN;
-
+    if(player.mode == THRUSTERMODE){
+      fueltext = 'INFINITE';
+      fuelcolor = 19;
+    } else{
+      fueltext = fuelTimer.toFixed(2).toString();
+      fuelcolor = fuelTimer < 150 ? 27 : 10;
+    }
     text([
-      fuelTimer.toFixed(2).toString(),
+      fueltext,
       WIDTH/2,
       10,
       2,
@@ -109,7 +125,7 @@ states.game = {
       'center',
       'top',
       1,
-      fuelTimer < 150 ? 27 : 10,
+      fuelcolor
     ]);
 
     splodes.forEach(function(splode, index, arr){splode.draw(index)});
