@@ -2940,7 +2940,7 @@ init = () => {
 
   sounds = {};
   soundsLoaded = 0;
-  totalSounds = 8;
+  totalSounds = 7;
   score = 0;
   fuelTimer = 0;
   parts = 0;
@@ -4280,7 +4280,7 @@ player = {
         //player.jumping = true;
         player.yvel += -player.yspeed * dt * 5;
         //s_jump = true;
-        playSound(sounds.jet, 2.5, player.x.map(0, WIDTH, -1, 1), false);
+        //playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
       }
 
     }

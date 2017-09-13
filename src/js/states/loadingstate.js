@@ -40,6 +40,12 @@ states.loading = {
         sounds.step = buffer;
         soundsLoaded++;
       });
+      var soundGen = new sonantx.SoundGenerator(a_jet);
+      soundGen.createAudioBuffer(130, function(buffer) {
+        var source = audioCtx.createBufferSource();
+        sounds.jet = buffer;
+        soundsLoaded++;
+      });
   },
 
     step: function(dt) {

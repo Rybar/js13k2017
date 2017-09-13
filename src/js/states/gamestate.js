@@ -13,8 +13,9 @@ states.game = {
     ],
 
     [
-      'MAX ENERGY CAPACITY REACHED.',
-      'FIND MISSING COMPONENTS TO INCREASE CAPACITY',
+      'DISINTEGRATOR ONLINE. PRESS X TO USE',
+      'FIND MISSING COMPONENTS TO INCREASE MOBILITY',
+      'PRESS DOWN WHILE USING TO DIG DOWNWARD'
     ],
 
     [
@@ -22,7 +23,7 @@ states.game = {
       'SEEK OUT REMAINING BODY COMPONENTS'
     ],
     [
-      ''
+      'THRUSTERS ONLINE. FUSION REACTOR ONLINE.'
     ]
 
   ],

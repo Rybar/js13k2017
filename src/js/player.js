@@ -274,6 +274,8 @@ player = {
     player.minYvel = -290;
     player.xspeed = 200;
     player.yspeed = 290;
+    fuelTimer = 1200000000;
+    helpSection = 3;
     if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
       player.facingLeft = false;
       player.xvel =  player.xspeed;
@@ -285,9 +287,9 @@ player = {
     if(Key.isDown(Key.w) || Key.isDown(Key.UP) || Key.isDown(Key.Z) || Key.isDown(Key.SPACE)){
       if(!player.jumping){
         //player.jumping = true;
-        player.yvel += -player.yspeed * dt;
-        s_jump = true;
-        playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
+        player.yvel += -player.yspeed * dt * 5;
+        //s_jump = true;
+        playSound(sounds.jet, 2.5, player.x.map(0, WIDTH, -1, 1), false);
       }
 
     }
