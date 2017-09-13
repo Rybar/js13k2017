@@ -4,10 +4,10 @@ states.menu = {//
 
   step: function(dt) {
 
-      // if(!s_titleSong){
-      //   titleSong = playSound(sounds.titleMusic, 1, 0, true);
-      //   s_titleSong = true;
-      // }
+      if(!s_titleSong){
+        titleSong = playSound(sounds.titleMusic, 1, 0, true);
+        s_titleSong = true;
+      }
 
       //game update
       if(Key.justReleased(Key.p)){
@@ -37,7 +37,7 @@ states.menu = {//
         playSound(sounds.boom, 1, player.x.map(0, WIDTH, -1, 1), false);
         roomSwitch();
         state = 'game';
-        //titleSong.sound.stop();
+        titleSong.sound.stop();
       }
 
 

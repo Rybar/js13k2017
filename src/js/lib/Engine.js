@@ -1,20 +1,20 @@
 //--------------Engine.js-------------------
 
-const WIDTH =     383;
-const HEIGHT =    255;
-const PAGES =     11;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
+const WIDTH =     384;
+const HEIGHT =    256;
+const PAGES =     22;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
 const PAGESIZE = WIDTH*HEIGHT;
 
 const SCREEN = 0;
-const BUFFER = PAGESIZE;
-const DEBUG = PAGESIZE*2;
-const SCRATCH = PAGESIZE*3;
-const SCRATCH2 = PAGESIZE*4;
+const BUFFER = PAGESIZE*2;
+const DEBUG = PAGESIZE*4;
+const SCRATCH = PAGESIZE*6;
+const SCRATCH2 = PAGESIZE*8;
 const SPRITES = PAGESIZE*10;
-const COLLISION = PAGESIZE*6;
-const MIDGROUND = PAGESIZE*7;
-const FOREGROUND = PAGESIZE*8;
-const BACKGROUND = PAGESIZE*9;
+const COLLISION = PAGESIZE*12;
+const MIDGROUND = PAGESIZE*14;
+const FOREGROUND = PAGESIZE*16;
+const BACKGROUND = PAGESIZE*18;
 
 //default palette index
 const palDefault = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
@@ -56,8 +56,8 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
   }
 
   function pset(x, y, color) { //an index from colors[], 0-31
-    x = (x|0).clamp(0,WIDTH-1);
-    y = (y|0).clamp(0,HEIGHT-1);
+    x = (x|0).clamp(0,WIDTH);
+    y = (y|0).clamp(0,HEIGHT);
     color = color|0;
 
     ram[renderTarget + y * WIDTH + x] = color;
@@ -69,10 +69,10 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
 
   function line(x1, y1, x2, y2, color) {
 
-    // x1 = x1|0;
-    // x2 = x2|0;
-    // y1 = y1|0;
-    // y2 = y2|0;
+    x1 = x1|0;
+    x2 = x2|0;
+    y1 = y1|0;
+    y2 = y2|0;
 
     var dy = (y2 - y1);
     var dx = (x2 - x1);
@@ -212,8 +212,8 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
 
   function outline(renderSource, renderTarget, color, color2=color, color3=color, color4=color){
 
-    for(let i = 0; i < WIDTH; i++ ){
-      for(let j = 0; j < HEIGHT; j++){
+    for(let i = 0; i <= WIDTH; i++ ){
+      for(let j = 0; j <= HEIGHT; j++){
         let left = i-1 + j * WIDTH;
         let right = i+1 + j * WIDTH;
         let bottom = i + (j+1) * WIDTH;
@@ -488,7 +488,7 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
     source.playbackRate.value = playbackRate;
     source.loop = loop;
     gainNode.gain.value = vol;
-    panNode.pan.value = pan.clamp(-1,1);
+    panNode.pan.value = pan;
     source.start();
     return {volume: gainNode, sound: source};
 }

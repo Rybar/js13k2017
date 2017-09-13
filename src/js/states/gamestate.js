@@ -28,10 +28,10 @@ states.game = {
   ],
 
   step(dt) {
-    // if(!s_gameSong){
-    //   s_gameSong = true;
-    //   gamesong = playSound(sounds.gameMusic, 1, 0, true);
-    // }
+    if(!s_gameSong){
+      s_gameSong = true;
+      gamesong = playSound(sounds.gameMusic, 1, 0, true);
+    }
 
     if(Key.isDown(Key.r)){
       player.init();
@@ -93,7 +93,7 @@ states.game = {
       }
 
     } else{
-      //gamesong.sound.stop();
+      gamesong.sound.stop();
       state = 'gameover';
 
     }

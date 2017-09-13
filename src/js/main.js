@@ -13,7 +13,7 @@ init = () => {
 
   sounds = {};
   soundsLoaded = 0;
-  totalSounds = 5;
+  totalSounds = 7;
   score = 0;
   fuelTimer = 0;
   parts = 0;

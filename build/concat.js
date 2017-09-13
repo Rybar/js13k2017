@@ -2,21 +2,21 @@
 
 //--------------Engine.js-------------------
 
-const WIDTH =     383;
-const HEIGHT =    255;
-const PAGES =     11;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
+const WIDTH =     384;
+const HEIGHT =    256;
+const PAGES =     22;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
 const PAGESIZE = WIDTH*HEIGHT;
 
 const SCREEN = 0;
-const BUFFER = PAGESIZE;
-const DEBUG = PAGESIZE*2;
-const SCRATCH = PAGESIZE*3;
-const SCRATCH2 = PAGESIZE*4;
+const BUFFER = PAGESIZE*2;
+const DEBUG = PAGESIZE*4;
+const SCRATCH = PAGESIZE*6;
+const SCRATCH2 = PAGESIZE*8;
 const SPRITES = PAGESIZE*10;
-const COLLISION = PAGESIZE*6;
-const MIDGROUND = PAGESIZE*7;
-const FOREGROUND = PAGESIZE*8;
-const BACKGROUND = PAGESIZE*9;
+const COLLISION = PAGESIZE*12;
+const MIDGROUND = PAGESIZE*14;
+const FOREGROUND = PAGESIZE*16;
+const BACKGROUND = PAGESIZE*18;
 
 //default palette index
 const palDefault = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
@@ -58,8 +58,8 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
   }
 
   function pset(x, y, color) { //an index from colors[], 0-31
-    x = (x|0).clamp(0,WIDTH-1);
-    y = (y|0).clamp(0,HEIGHT-1);
+    x = (x|0).clamp(0,WIDTH);
+    y = (y|0).clamp(0,HEIGHT);
     color = color|0;
 
     ram[renderTarget + y * WIDTH + x] = color;
@@ -71,10 +71,10 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
 
   function line(x1, y1, x2, y2, color) {
 
-    // x1 = x1|0;
-    // x2 = x2|0;
-    // y1 = y1|0;
-    // y2 = y2|0;
+    x1 = x1|0;
+    x2 = x2|0;
+    y1 = y1|0;
+    y2 = y2|0;
 
     var dy = (y2 - y1);
     var dx = (x2 - x1);
@@ -214,8 +214,8 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
 
   function outline(renderSource, renderTarget, color, color2=color, color3=color, color4=color){
 
-    for(let i = 0; i < WIDTH; i++ ){
-      for(let j = 0; j < HEIGHT; j++){
+    for(let i = 0; i <= WIDTH; i++ ){
+      for(let j = 0; j <= HEIGHT; j++){
         let left = i-1 + j * WIDTH;
         let right = i+1 + j * WIDTH;
         let bottom = i + (j+1) * WIDTH;
@@ -490,7 +490,7 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
     source.playbackRate.value = playbackRate;
     source.loop = loop;
     gainNode.gain.value = vol;
-    panNode.pan.value = pan.clamp(-1,1);
+    panNode.pan.value = pan;
     source.start();
     return {volume: gainNode, sound: source};
 }
@@ -528,45 +528,21 @@ Number.prototype.map = function(old_bottom, old_top, new_bottom, new_top) {
 
 world = [ //                                                  ||---start
 // 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39
-  03,01,01,01,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//0
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//0
   00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//1
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//2
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//3
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//4
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,04,02,02,02,04,02,02,04,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//5 --fall start
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,07,07,07,07,07,07,05,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//6
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,00,00,00,00,05,00,07,08,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//7
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,00,00,00,00,05,02,02,02,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//8
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,06,00,00,00,00,07,07,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//9
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//10
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//11
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,01,02,02,02,04,00,00,00,00,00,00,00,00,00,00,00,00,00,//12
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,00,00,00,00,00,00,00,00,00,00,00,00,00,//13
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,06,00,00,00,00,00,00,00,00,00,00,00,00,00,//14
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//15
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//16
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//17
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//18
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//19
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//20
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//21
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//22
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//23
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//24
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//25
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//26
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//27
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//28
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//29
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//30
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//31
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//32
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//33
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//34
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//36
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//37
-  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//38
-  00,01,02,03,04,05,06,07,08,09,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//39
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,04,02,02,02,01,02,04,02,04,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//2
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,00,00,00,00,00,07,04,04,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//3
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,04,07,11,02,04,00,04,02,05,12,00,00,17,00,00,00,00,00,00,00,00,00,00,00,00,//4
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,05,05,00,00,00,00,02,16,02,18,00,00,00,00,00,00,00,00,00,00,//5
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,02,06,02,10,11,04,00,15,05,00,00,00,00,00,00,00,00,00,00,00,//6
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,02,04,00,00,17,05,00,14,00,00,00,00,00,00,00,00,00,00,00,00,//7
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,02,12,04,04,05,02,16,02,02,13,02,00,00,00,00,00,00,00,00,00,00,00,//8
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,05,00,00,00,15,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//9
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,07,08,04,00,14,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//10
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,02,06,02,13,02,02,18,02,04,00,00,00,00,00,00,00,00,00,00,//36
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,02,02,02,00,00,00,00,02,07,08,00,00,00,00,00,00,00,00,00,//37
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,06,10,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,//38
+  09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,09,//39
 
 
 ];
@@ -2418,6 +2394,8 @@ function drawSpriteSheet(){
   clear(0);
   renderTarget = SPRITES;
   renderSource = SPRITES;
+
+  //fillRect(10,0,WIDTH-10,40, 21);
   //head
   fillRect(3+5,7+3,17,9,8);  //0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
   fillRect(2+5,8+3,19,7,8);
@@ -2459,6 +2437,8 @@ function drawSpriteSheet(){
   spr(64,0,32,32, 192-32+5, 4); //wheel arm
   spr(64+32,0,32,32, 192-32+5, 3); //arm
   spr(0,0,32,32, 192-32, 0); //head
+
+  spr(64,0,32,32, 118,0, 4); //wheel arm
 
   //spr(128,0,32,40, 192-32+5, 4+40); //wheel
   spr(32,0,32,32, 192-32+2, 5+40); //body
@@ -2928,7 +2908,7 @@ init = () => {
 
   sounds = {};
   soundsLoaded = 0;
-  totalSounds = 5;
+  totalSounds = 7;
   score = 0;
   fuelTimer = 0;
   parts = 0;
@@ -3037,7 +3017,7 @@ const BODYMODE = 2;
 const ARMMODE = 3;
 const THRUSTERMODE = 4;
 
-const WALLS = 21;
+const WALLS = 1;
 const FUELCELL = 8;
 const FUELCRYSTAL = 9;
 const TERRA = 4;
@@ -3118,6 +3098,9 @@ function redraw(){
   renderTarget = MIDGROUND; clear(0);
   renderTarget = FOREGROUND; clear(0);
   //
+  renderSource = COLLISION;
+  renderTarget = MIDGROUND; spr();
+
   bgstars();
   drawTerra();
   drawFuelCrystals();
@@ -3393,7 +3376,7 @@ function drawClouds(){
 
 }
 
-function drawHorizon(){
+function drawHorizon(color1 = 1, color2 = 14){
 
   let i = 150;
   while(i--){
@@ -3402,7 +3385,7 @@ function drawHorizon(){
     let y = roomNG.nextIntRange(60,HEIGHT)
     let width = roomNG.nextIntRange(3,15)
     let x = roomNG.nextIntRange(0,WIDTH);
-    fillCircle(x,y,width,1);
+    fillCircle(x,y,width,color1);
 
   }
   i = 150;
@@ -3412,7 +3395,7 @@ function drawHorizon(){
     let y = roomNG.nextIntRange(100,HEIGHT)
     let width = roomNG.nextIntRange(3,15);
     let x = roomNG.nextIntRange(0,WIDTH);
-    fillCircle(x,y,width,14);
+    fillCircle(x,y,width,color2);
 
   }
 
@@ -3423,7 +3406,7 @@ function drawHorizon(){
     let y = roomNG.nextIntRange(150,HEIGHT)
     let width = roomNG.nextIntRange(15,20);
     let x = roomNG.nextIntRange(0,WIDTH);
-    fillCircle(x,y,width,14);
+    fillCircle(x,y,width,color1);
   }
 }
 
@@ -3443,7 +3426,7 @@ function drawUnderground(){
 
 }
 
-function drawBlocks(arr){
+function drawBlocks(arr, flipped=false){
   arr.forEach(function(block, i, arr){
     if(block == 1){
       fillRect((i%12)*32, ((i/12)|0)*32, 32, 32, WALLS);
@@ -3451,7 +3434,20 @@ function drawBlocks(arr){
     if(block == 2){
       pset((i%12)*32+16, ((i/12)|0)*32+16, FUELCELL);
     }
+    if(block == 7){
+      pset((i%12)*32+16, ((i/12)|0)*32+16, ARM);
+    }
+    if(block == 8){
+      pset((i%12)*32+16, ((i/12)|0)*32+16, THRUSTER);
+    }
   });
+  if(flipped){
+    renderSource = COLLISION;
+    renderTarget = SCRATCH; spr(0,0,WIDTH,HEIGHT,0,0,true);
+    renderTarget = COLLISION; clear();
+    renderSource = SCRATCH; spr();
+
+  }
 }
 
 rooms = [
@@ -3510,9 +3506,16 @@ rooms = [
   //3
   {
     draw: function(dt){
-      fillRect(0,170,384,200,WALLS);
-      fillRect(0,140,100,100, WALLS);
-      pset(192, 160, BODY);
+      drawBlocks([
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,2,0,
+        1,1,1,1,1,1,1,1,1,0,0,0
+      ])
     },
 
     specials: function(dt){
@@ -3530,7 +3533,7 @@ rooms = [
         0,0,0,0,0,0,0,0,0,0,0,0,
         0,0,0,0,0,0,0,0,0,0,0,0,
         0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,2,0,0,0,0,0,1,1,1,
+        0,0,0,2,0,0,0,2,0,0,0,0,
         1,1,1,1,0,0,0,0,1,1,1,1
       ])
     },
@@ -3544,12 +3547,12 @@ rooms = [
     draw: function(dt){
       drawBlocks([
         1,1,1,1,0,0,0,0,1,1,1,1,
-        1,1,1,1,0,0,0,0,1,1,1,1,
-        1,1,1,1,0,0,0,0,1,1,1,1,
-        1,1,1,1,0,0,0,0,1,1,1,1,
-        1,1,1,1,0,0,0,0,1,1,1,1,
-        1,1,1,1,0,0,0,0,1,1,1,1,
-        1,1,1,1,0,0,0,0,1,1,1,1,
+        0,1,1,1,0,0,0,0,1,1,1,0,
+        0,0,1,1,0,0,0,0,1,1,0,0,
+        0,0,0,1,0,0,0,0,1,0,0,0,
+        0,0,0,2,0,0,0,0,2,0,0,0,
+        0,0,0,1,0,0,0,0,1,0,0,0,
+        0,1,1,1,0,0,0,0,1,1,0,0,
         1,1,1,1,0,0,0,0,1,1,1,1,
       ])
     },
@@ -3612,8 +3615,8 @@ rooms = [
         0,0,0,0,0,0,0,0,0,0,0,0,
         1,1,1,1,0,0,0,0,0,0,0,0,
         1,1,0,1,1,1,1,1,0,0,0,0,
-        1,1,1,1,1,1,1,1,1,1,1,1,
-        1,1,1,1,1,0,1,1,1,0,0,1,
+        1,1,1,1,1,1,1,1,1,1,0,0,
+        1,1,1,1,1,0,1,1,1,0,0,0,
         1,1,1,1,1,1,1,1,1,1,1,1
       ])
     },
@@ -3638,9 +3641,214 @@ rooms = [
     },
 
     specials: function(dt){
-
+      drawHorizon(0,27);
     }
   },
+
+  //10
+  {
+    draw: function(dt){
+      drawBlocks([
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,1,1,
+        0,0,0,0,0,0,0,1,1,0,1,0,
+        0,0,0,0,1,2,0,0,0,0,1,0,
+        0,0,0,0,0,0,0,0,0,0,1,0,
+        1,1,1,1,1,1,1,1,1,1,1,1
+      ])
+    },
+
+    specials: function(dt){
+      drawUnderground();
+    }
+  },
+
+  //11 --is 10 flipped
+  {
+    draw: function(dt){
+      drawBlocks([
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,1,1,
+        0,0,0,0,0,0,0,1,1,0,1,0,
+        0,0,0,0,1,2,0,0,0,0,1,0,
+        0,0,0,0,0,0,0,0,0,0,1,0,
+        1,1,1,1,1,1,1,1,1,1,1,1
+      ], true)
+    },
+
+    specials: function(dt){
+      drawUnderground();
+    }
+  },
+
+  //12 --is 7 flipped
+  {
+    draw: function(dt){
+
+      drawBlocks([
+        0,1,1,1,0,0,0,0,1,1,1,1,
+        0,1,1,1,0,0,0,0,1,1,1,1,
+        0,1,1,1,2,0,0,0,0,0,2,0,
+        0,1,1,1,1,1,1,1,1,1,1,1,
+        0,1,1,1,1,1,1,1,1,1,1,1,
+        0,0,0,2,0,0,0,0,1,1,1,1,
+        1,1,1,1,0,0,0,0,1,1,1,1,
+        1,1,1,1,0,0,0,0,1,1,1,1,
+      ], true)
+
+
+
+    },
+    specials: function(dt){
+      drawUnderground();
+    }
+  },
+  //13
+  {
+    draw: function(dt){
+
+      drawBlocks([
+        1,0,0,0,0,0,0,0,0,2,1,1,
+        1,0,0,0,0,0,0,0,0,1,1,1,
+        1,0,0,0,0,0,0,0,1,1,1,1,
+        1,0,0,0,0,0,0,2,0,0,0,1,
+        1,0,0,0,0,0,1,1,1,0,0,1,
+        0,0,0,0,0,0,0,0,0,0,0,1,
+        0,0,0,0,0,0,0,0,1,1,1,0,
+        1,1,1,1,1,1,1,1,1,1,1,1,
+
+      ],)
+
+
+
+    },
+    specials: function(dt){
+      drawUnderground();
+    }
+  },
+  //14
+  {
+    draw: function(dt){
+
+      drawBlocks([
+        1,1,2,0,0,0,0,0,0,0,0,1,
+        1,1,1,0,0,0,0,0,0,0,0,1,
+        1,0,0,0,0,0,0,0,0,0,0,1,
+        1,0,0,0,0,1,1,1,0,0,0,1,
+        1,0,0,0,0,0,0,2,0,0,0,1,
+        1,0,0,0,0,0,0,1,1,0,0,1,
+        1,0,0,0,0,0,0,0,0,0,0,1,
+        1,0,0,0,0,0,0,0,0,0,1,1,
+
+      ],)
+
+
+
+    },
+    specials: function(dt){
+      drawUnderground();
+    }
+  },
+  //15
+  {
+    draw: function(dt){
+
+      drawBlocks([
+        1,1,1,1,0,0,0,0,0,0,0,1,
+        1,1,1.1,1,1,0,0,0,0,0,1,
+        1,0,0,0,0,0,1,0,0,0,0,1,
+        1,0,0,0,0,0,0,2,0,0,0,1,
+        1,0,0,0,0,2,0,0,1,0,0,1,
+        1,0,0,1,0,1,0,0,0,0,0,1,
+        1,0,0,0,0,0,0,0,1,1,1,1,
+        1,1,0,0,0,0,0,0,0,0,0,1,
+
+      ],)
+
+
+
+    },
+    specials: function(dt){
+      drawUnderground();
+    }
+  },
+
+  //16
+  {
+    draw: function(dt){
+
+      drawBlocks([
+        1,1,1,1,0,0,0,0,0,0,0,1,
+        1,0,1,1,0,0,0,0,0,0,0,1,
+        1,2,1,1,1,1,0,0,0,0,0,1,
+        1,2,1,0,0,0,0,0,1,0,0,1,
+        1,2,1,0,0,0,0,0,7,0,0,1,
+        1,2,1,0,0,0,1,1,1,1,1,0,
+        1,2,1,0,0,0,0,0,0,1,1,0,
+        1,1,1,1,0,0,0,0,0,0,0,1,
+
+      ],)
+
+
+
+    },
+    specials: function(dt){
+      drawUnderground();
+    }
+  },
+
+  //17
+  {
+    draw: function(dt){
+
+      drawBlocks([
+        1,1,1,1,0,0,0,0,0,0,0,1,
+        0,0,0,0,0,0,0,0,0,0,0,1,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,2,0,0,
+        1,1,1,1,1,1,1,1,1,1,1,1,
+        1,1,1,1,1,1,1,1,1,1,1,1,
+        1,1,1,1,0,0,0,0,0,0,0,1,
+
+      ],)
+
+
+
+    },
+    specials: function(dt){
+      drawUnderground();
+    }
+  },
+
+  //18
+  {
+    draw: function(dt){
+
+      drawBlocks([
+        1,1,1,1,0,0,0,0,0,0,0,1,
+        0,0,0,0,0,0,0,0,0,0,0,1,
+        0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,1,1,1,0,0,0,0,
+        0,0,0,0,0,1,8,1,0,0,0,0,
+        0,0,0,1,1,1,1,1,1,0,0,0,
+        0,0,1,1,1,1,1,1,1,1,0,0,
+        1,1,1,1,1,1,1,1,1,1,1,1,
+
+      ],)
+
+
+
+    },
+    specials: function(dt){
+      drawUnderground();
+    }
+  },
+
 
 
 ] // end rooms;
@@ -3776,7 +3984,7 @@ player = {
     this.gunCooldown = 0;
     this.minedFuel = false;
     fuelTimer = 40;
-    currentRoom = [20,4]; //
+    currentRoom = [20,0]; //
 
   },
 
@@ -3924,9 +4132,9 @@ player = {
       case ARMMODE: //----------------------------------------------------------
 
       player.maxXvel = 150;
-      player.minYvel = -150;
+      player.minYvel = -300;
       player.xspeed = 150;
-      player.yspeed = 220;
+      player.yspeed = 270;
 
       if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
         player.facingLeft = false;
@@ -4022,9 +4230,9 @@ player = {
 
     case THRUSTERMODE://--------------------------------------------------------
     player.maxXvel = 250;
-    player.minYvel = -250;
+    player.minYvel = -290;
     player.xspeed = 200;
-    player.yspeed = 200;
+    player.yspeed = 290;
     if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
       player.facingLeft = false;
       player.xvel =  player.xspeed;
@@ -4035,8 +4243,8 @@ player = {
     }
     if(Key.isDown(Key.w) || Key.isDown(Key.UP) || Key.isDown(Key.Z) || Key.isDown(Key.SPACE)){
       if(!player.jumping){
-        player.jumping = true;
-        player.yvel = -player.yspeed;
+        //player.jumping = true;
+        player.yvel += -player.yspeed * dt;
         s_jump = true;
         playSound(sounds.jump, 2.5, player.x.map(0, WIDTH, -1, 1), false);
       }
@@ -4107,91 +4315,7 @@ player = {
       redraw(); //update room drawing every 4 frames
     }
   }
-  if(Key.isDown(Key.c)){
-    if(Key.isDown(Key.DOWN) || Key.isDown(Key.s)){
 
-      splodes.push( new splode(
-        player.x + (Math.random()*15-8)|0,
-        player.y + 16 + (Math.random()*2-1)|0,
-        6,5
-        )
-      )
-      renderTarget = COLLISION;
-      if(pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) == FUELCRYSTAL){
-        player.minedFuel = true;
-      }
-      fillCircle(player.x + (Math.random()*20-15)|0,
-      player.y + 20, 10, WALLS);
-
-      let i = 5;
-      while(--i){
-        splodes.push( new splode(
-          player.x + Math.random() * 10, //x
-          player.y + 30 + Math.random()*20-10, //y
-          10 + Math.random()*10-5, //size
-          Math.random()*3, //speed
-          9 + (Math.random()*2)|0, //color
-          false,
-          true )
-        );
-      }
-
-    }
-    else {
-    fuelTimer-=0.2;
-    splodes.push( new splode(
-      player.x + (player.facingLeft ? -16 : 16) + (Math.random()*2-1)|0,
-      player.y + (Math.random()*15-8)|0,
-      6,5
-    )
-  )
-  renderTarget = COLLISION;
-  fillCircle(player.x + (player.facingLeft ? -10 + -player.radius : 10 + player.radius),
-  player.y + (Math.random()*20-15)|0, 10, WALLS);
-
-  let i = 5;
-  while(--i){
-    splodes.push( new splode(
-      player.x + (player.facingLeft ? -30 + Math.random() * 10 : 30 + Math.random() * 10 ), //x
-      player.y + Math.random()*20-10, //y
-      10 + Math.random()*10-5, //size
-      Math.random()*3, //speed
-      9 + (Math.random()*3)|0, //color
-      false,
-      true )
-      );
-  }
-}
-
-
-  if(player.gunCooldown < 0){
-    player.gunCooldown = 4;
-    playSound(sounds.zapgun, 2.5, player.x.map(0, WIDTH, -1, 1), false);
-
-    redraw(); //update room drawing every 4 frames
-  }
-
-}
-if(player.minedFuel){
-  pset(player.x + (player.facingLeft ? -10 : 10), player.y - 5, FUELCELL);
-  fuelTimer += 25;
-  player.minedFuel=false;
-
-  let i = 10;
-  while(--i){
-    splodes.push( new splode(
-      192 + Math.random()*50-25, //x
-      14 + Math.random()*4-2, //y
-      10 + Math.random()*4-2, //size
-      10 + Math.random()*4-2, //speed
-      9 + (Math.random()*2-1)|0, //color
-      false,
-      true )
-    );
-
-  }
-
-}
 player.gunCooldown--;
 break;
 
@@ -4220,7 +4344,7 @@ if(player.y < 0){
 
 draw (dt){
 
-rect(player.b.x - this.radius, player.b.y - this.radius, this.radius * 2, this.radius * 2, 27);
+//rect(player.b.x - this.radius, player.b.y - this.radius, this.radius * 2, this.radius * 2, 27);
 
   switch(player.mode){
     case HEADMODE:
@@ -4499,10 +4623,10 @@ states.menu = {//
 
   step: function(dt) {
 
-      // if(!s_titleSong){
-      //   titleSong = playSound(sounds.titleMusic, 1, 0, true);
-      //   s_titleSong = true;
-      // }
+      if(!s_titleSong){
+        titleSong = playSound(sounds.titleMusic, 1, 0, true);
+        s_titleSong = true;
+      }
 
       //game update
       if(Key.justReleased(Key.p)){
@@ -4532,7 +4656,7 @@ states.menu = {//
         playSound(sounds.boom, 1, player.x.map(0, WIDTH, -1, 1), false);
         roomSwitch();
         state = 'game';
-        //titleSong.sound.stop();
+        titleSong.sound.stop();
       }
 
 
@@ -4697,10 +4821,10 @@ states.game = {
   ],
 
   step(dt) {
-    // if(!s_gameSong){
-    //   s_gameSong = true;
-    //   gamesong = playSound(sounds.gameMusic, 1, 0, true);
-    // }
+    if(!s_gameSong){
+      s_gameSong = true;
+      gamesong = playSound(sounds.gameMusic, 1, 0, true);
+    }
 
     if(Key.isDown(Key.r)){
       player.init();
@@ -4762,7 +4886,7 @@ states.game = {
       }
 
     } else{
-      //gamesong.sound.stop();
+      gamesong.sound.stop();
       state = 'gameover';
 
     }
@@ -4800,16 +4924,16 @@ states.game = {
 states.loading = {
 
     init: function(dt){
-      // var songGen = new sonantx.MusicGenerator(a_title);
-      // songGen.createAudioBuffer(function(buffer) {
-      //     sounds.titleMusic = buffer;
-      //     soundsLoaded++;
-      // });
-      // var songGen = new sonantx.MusicGenerator(a_gamesong);
-      // songGen.createAudioBuffer(function(buffer) {
-      //     sounds.gameMusic = buffer;
-      //     soundsLoaded++;
-      // });
+      var songGen = new sonantx.MusicGenerator(a_title);
+      songGen.createAudioBuffer(function(buffer) {
+          sounds.titleMusic = buffer;
+          soundsLoaded++;
+      });
+      var songGen = new sonantx.MusicGenerator(a_gamesong);
+      songGen.createAudioBuffer(function(buffer) {
+          sounds.gameMusic = buffer;
+          soundsLoaded++;
+      });
       var songGen = new sonantx.MusicGenerator(a_zapgun);
       songGen.createAudioBuffer(function(buffer) {
           sounds.zapgun = buffer;

@@ -10,7 +10,7 @@ const BODYMODE = 2;
 const ARMMODE = 3;
 const THRUSTERMODE = 4;
 
-const WALLS = 21;
+const WALLS = 1;
 const FUELCELL = 8;
 const FUELCRYSTAL = 9;
 const TERRA = 4;
@@ -91,6 +91,9 @@ function redraw(){
   renderTarget = MIDGROUND; clear(0);
   renderTarget = FOREGROUND; clear(0);
   //
+  renderSource = COLLISION;
+  renderTarget = MIDGROUND; spr();
+
   bgstars();
   drawTerra();
   drawFuelCrystals();
@@ -366,7 +369,7 @@ function drawClouds(){
 
 }
 
-function drawHorizon(){
+function drawHorizon(color1 = 1, color2 = 14){
 
   let i = 150;
   while(i--){
@@ -375,7 +378,7 @@ function drawHorizon(){
     let y = roomNG.nextIntRange(60,HEIGHT)
     let width = roomNG.nextIntRange(3,15)
     let x = roomNG.nextIntRange(0,WIDTH);
-    fillCircle(x,y,width,1);
+    fillCircle(x,y,width,color1);
 
   }
   i = 150;
@@ -385,7 +388,7 @@ function drawHorizon(){
     let y = roomNG.nextIntRange(100,HEIGHT)
     let width = roomNG.nextIntRange(3,15);
     let x = roomNG.nextIntRange(0,WIDTH);
-    fillCircle(x,y,width,14);
+    fillCircle(x,y,width,color2);
 
   }
 
@@ -396,7 +399,7 @@ function drawHorizon(){
     let y = roomNG.nextIntRange(150,HEIGHT)
     let width = roomNG.nextIntRange(15,20);
     let x = roomNG.nextIntRange(0,WIDTH);
-    fillCircle(x,y,width,14);
+    fillCircle(x,y,width,color1);
   }
 }
 
@@ -416,7 +419,7 @@ function drawUnderground(){
 
 }
 
-function drawBlocks(arr){
+function drawBlocks(arr, flipped=false){
   arr.forEach(function(block, i, arr){
     if(block == 1){
       fillRect((i%12)*32, ((i/12)|0)*32, 32, 32, WALLS);
@@ -424,5 +427,18 @@ function drawBlocks(arr){
     if(block == 2){
       pset((i%12)*32+16, ((i/12)|0)*32+16, FUELCELL);
     }
+    if(block == 7){
+      pset((i%12)*32+16, ((i/12)|0)*32+16, ARM);
+    }
+    if(block == 8){
+      pset((i%12)*32+16, ((i/12)|0)*32+16, THRUSTER);
+    }
   });
+  if(flipped){
+    renderSource = COLLISION;
+    renderTarget = SCRATCH; spr(0,0,WIDTH,HEIGHT,0,0,true);
+    renderTarget = COLLISION; clear();
+    renderSource = SCRATCH; spr();
+
+  }
 }
