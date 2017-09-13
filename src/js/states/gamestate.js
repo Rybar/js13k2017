@@ -30,7 +30,7 @@ states.game = {
       'THANKS FOR PLAYING GREEBLE',
       'A JS13K 2017 ENTRY BY RYAN MALM',
       'SHOUT OUT TO A FEW CODERS...',
-      'TRASEVOL DOG -YOU ARE AN INSPIRATION',
+      'TRASEVOL DOG \nYOU ARE AN INSPIRATION',
       'XEM, CANTELOPE, P01, XEN\nJS GOLFERS EXTROARDINAIRE'
     ]
 
@@ -55,6 +55,7 @@ states.game = {
       helpSection = 1;
     }
 
+    if(credits)helpSection = 4;
     this.messageDelay--;
     if(this.messageDelay < 0){
       messages.push(new message(
@@ -68,7 +69,6 @@ states.game = {
         this.messageIndex = 0;
       }
     }
-    if(credits)helpSection = 4;
   },
 
   render(dt) {

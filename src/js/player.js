@@ -30,11 +30,6 @@ player = {
   },
 
   update (dt) {
-    if(Key.isDown(Key.ONE))player.mode = HEADMODE;
-    if(Key.isDown(Key.TWO))player.mode = BODYMODE;
-    if(Key.isDown(Key.THREE))player.mode = ARMMODE;
-    if(Key.isDown(Key.FOUR))player.mode = THRUSTERMODE;
-
 
     this.updateB();
     this.oldX = this.x;
@@ -205,9 +200,9 @@ player = {
           )
         )
       renderTarget = COLLISION;
-      if(pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) == FUELCRYSTAL){
-        player.minedFuel = true;
-      }
+      // if(pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) == FUELCRYSTAL){
+      //   player.minedFuel = true;
+      // }
       fillCircle(player.x + (player.facingLeft ? -10 : 10),
       player.y + (Math.random()*20-15)|0, 10, 0);
 
@@ -233,9 +228,9 @@ player = {
           )
         )
         renderTarget = COLLISION;
-        if(pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) == FUELCRYSTAL){
-          player.minedFuel = true;
-        }
+        // if(pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) == FUELCRYSTAL){
+        //   player.minedFuel = true;
+        // }
         fillCircle(player.x + (Math.random()*20-15)|0,
         player.y + 10, 10, 0);
 

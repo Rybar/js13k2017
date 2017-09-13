@@ -404,6 +404,7 @@ rooms = [
         let rad = roomNG.nextIntRange(30,50);
         fillCircle(x, y, rad, WALLS);
         fillCircle(x, y, rad-5, 0);
+        //archi(x,y-20,20);
         fillRect(0,200,WIDTH,20,WALLS);
         fillRect(170,200,100,20,0);
         fillRect(0,0,WIDTH,20,WALLS);

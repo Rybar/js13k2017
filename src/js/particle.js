@@ -55,6 +55,32 @@ message.prototype.draw = function(index){
   if(this.time < 0)return messages.splice(index, 1);
   else{
     this.string = this.text.substring(0,this.counter);
+    if(credits){
+      text([
+      this.string,
+      WIDTH/2,
+      40 + 22*index,
+      2,
+      2,
+      'center',
+      'top',
+      2,
+      8,
+      ]);
+
+    }else{
+      text([
+        this.string,
+        WIDTH/2,
+        20 + 12*index,
+        2,
+        2,
+        'center',
+        'top',
+        1,
+        this.color,
+      ]);
+    }
     text([
       this.string,
       WIDTH/2,

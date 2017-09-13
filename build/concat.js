@@ -3150,7 +3150,7 @@ function redraw(){
 
 function archi(x,y,color){
   renderTarget = FOREGROUND;
-  cRect(x-4,y-4,40,100,23);
+  cRect(x-4,y-4,40,100,4,25);
 
   for(n=p=i=0;p<2e3;i%2||pset(x+p%23,y+p/23|0,color),p++){
     p^n||(n=p+([...'F0AL1314B2C2B16001177AeBSB1SB1R11AREàBDCCB5CAM6A51CBCB513333ZAQAÜAQFMEWB5DCCBC4IA515CC613333ZAFBIAKBO3BJFEBFEJBMAHAH3AFBGAGB5FAJBCA5O6BMBCA5IB5F4FAH3AGBH2HBH2IAG34G4LBIBHBIACC17K4N3ELAD1C1B1B7F7CB7GACDCEBACI13CA6AF13FBAF13BF3B7cCEANC11C0117CI0AP1ANEPILCGCIBKBGB1I1BE6BG6BDAC1312D2B2B2HAC12LADADALAIAN71AK5E1BD'].map(v=>['AAAAAA','AA','ACA','AE','AGA','DB','BB','AB'][v]||v).join('').charCodeAt(i++)&63))
@@ -3891,6 +3891,7 @@ rooms = [
         let rad = roomNG.nextIntRange(30,50);
         fillCircle(x, y, rad, WALLS);
         fillCircle(x, y, rad-5, 0);
+        //archi(x,y-20,20);
         fillRect(0,200,WIDTH,20,WALLS);
         fillRect(170,200,100,20,0);
         fillRect(0,0,WIDTH,20,WALLS);
@@ -4042,11 +4043,6 @@ player = {
   },
 
   update (dt) {
-    if(Key.isDown(Key.ONE))player.mode = HEADMODE;
-    if(Key.isDown(Key.TWO))player.mode = BODYMODE;
-    if(Key.isDown(Key.THREE))player.mode = ARMMODE;
-    if(Key.isDown(Key.FOUR))player.mode = THRUSTERMODE;
-
 
     this.updateB();
     this.oldX = this.x;
@@ -4217,9 +4213,9 @@ player = {
           )
         )
       renderTarget = COLLISION;
-      if(pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) == FUELCRYSTAL){
-        player.minedFuel = true;
-      }
+      // if(pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) == FUELCRYSTAL){
+      //   player.minedFuel = true;
+      // }
       fillCircle(player.x + (player.facingLeft ? -10 : 10),
       player.y + (Math.random()*20-15)|0, 10, 0);
 
@@ -4245,9 +4241,9 @@ player = {
           )
         )
         renderTarget = COLLISION;
-        if(pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) == FUELCRYSTAL){
-          player.minedFuel = true;
-        }
+        // if(pget(player.b.x + (player.facingLeft ? -10 : 10), player.b.y) == FUELCRYSTAL){
+        //   player.minedFuel = true;
+        // }
         fillCircle(player.x + (Math.random()*20-15)|0,
         player.y + 10, 10, 0);
 
@@ -4626,6 +4622,32 @@ message.prototype.draw = function(index){
   if(this.time < 0)return messages.splice(index, 1);
   else{
     this.string = this.text.substring(0,this.counter);
+    if(credits){
+      text([
+      this.string,
+      WIDTH/2,
+      40 + 22*index,
+      2,
+      2,
+      'center',
+      'top',
+      2,
+      8,
+      ]);
+
+    }else{
+      text([
+        this.string,
+        WIDTH/2,
+        20 + 12*index,
+        2,
+        2,
+        'center',
+        'top',
+        1,
+        this.color,
+      ]);
+    }
     text([
       this.string,
       WIDTH/2,
@@ -4882,7 +4904,7 @@ states.game = {
       'THANKS FOR PLAYING GREEBLE',
       'A JS13K 2017 ENTRY BY RYAN MALM',
       'SHOUT OUT TO A FEW CODERS...',
-      'TRASEVOL DOG -YOU ARE AN INSPIRATION',
+      'TRASEVOL DOG \nYOU ARE AN INSPIRATION',
       'XEM, CANTELOPE, P01, XEN\nJS GOLFERS EXTROARDINAIRE'
     ]
 
@@ -4907,6 +4929,7 @@ states.game = {
       helpSection = 1;
     }
 
+    if(credits)helpSection = 4;
     this.messageDelay--;
     if(this.messageDelay < 0){
       messages.push(new message(
@@ -4920,7 +4943,6 @@ states.game = {
         this.messageIndex = 0;
       }
     }
-    if(credits)helpSection = 4;
   },
 
   render(dt) {
@@ -5099,57 +5121,6 @@ states.loading = {
     } //end render;
 
 }; //end loading state
-
-states.spritesheet = {
-
-    step: function(dt) {
-
-        if(Key.isDown(Key.x)){
-          roomSwitch();
-          state = 'menu';
-        }
-
-        if(Key.isDown(Key.p))state = 'game';
-
-    },
-
-    render: function(dt) {
-
-        renderTarget = SCREEN;
-        clear(0);
-        //checker(0,0,384,256,256/32|0,384/32|0,1);
-        renderSource = SPRITES; spr();
-        spr(0,0,22,34, 300,100);
-
-        rspr(0,0,32,32, 16,128-16, 1, 15+t*90); //head. works.
-
-        rspr(32,0,32,32, 48,128-16, 1, 15+t*90);  //body. bugged
-
-        rspr(64,0,32,32, 48+32,128-16, 1, 15+t*90); //wheel hub. bugged.
-
-        // for(n=p=i=0;p<2e3;i%2||pset(p%23,p/23|0,21),p++){
-        //   p^n||(n=p+([...'F0AL1314B2C2B16001177AeBSB1SB1R11AREàBDCCB5CAM6A51CBCB513333ZAQAÜAQFMEWB5DCCBC4IA515CC613333ZAFBIAKBO3BJFEBFEJBMAHAH3AFBGAGB5FAJBCA5O6BMBCA5IB5F4FAH3AGBH2HBH2IAG34G4LBIBHBIACC17K4N3ELAD1C1B1B7F7CB7GACDCEBACI13CA6AF13FBAF13BF3B7cCEANC11C0117CI0AP1ANEPILCGCIBKBGB1I1BE6BG6BDAC1312D2B2B2HAC12LADADALAIAN71AK5E1BD'].map(v=>['AAAAAA','AA','ACA','AE','AGA','DB','BB','AB'][v]||v).join('').charCodeAt(i++)&63))
-        // }
-
-        for(var i = 0; i < 32; i++){
-          text([
-            i.toString(),
-            i < 16 ? ( 3+16*i ) : ( 3 + 16* (i-16) ),
-            i < 16 ? 200 : 200 + 16,
-            1,
-            1,
-            1,
-            'left',
-            1,
-            i,
-            0
-          ])
-          }
-
-
-
-        } //end render
-}//end state
 
     Key = {
 
