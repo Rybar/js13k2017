@@ -20,7 +20,7 @@ const ARM = 28;
 const THRUSTER = 29;
 
 const WORLDWIDTH = 39;
-const WORLDHEIGHT = 39; // 0 index.
+const WORLDHEIGHT = 13; // 0 index.
 
 const H12 = WIDTH/12;
 const V8 = HEIGHT/8;
@@ -434,6 +434,7 @@ function drawBlocks(arr, flipped=false){
       pset((i%12)*32+16, ((i/12)|0)*32+16, THRUSTER);
     }
   });
+
   if(flipped){
     renderSource = COLLISION;
     renderTarget = SCRATCH; spr(0,0,WIDTH,HEIGHT,0,0,true);

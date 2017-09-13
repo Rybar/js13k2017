@@ -141,7 +141,7 @@ player = {
       break;
 
       case BODYMODE:
-      helpSection = 2;
+      helpSection = 1;
 
       player.maxXvel = 150;
       player.minYvel = -300;
@@ -176,6 +176,7 @@ player = {
       player.minYvel = -300;
       player.xspeed = 150;
       player.yspeed = 270;
+      helpSection = 2;
 
       if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
         player.facingLeft = false;
@@ -367,19 +368,19 @@ break;
 
 //world wrap for player
 if(player.x > WIDTH){
-  player.x = 0;
+  player.x = 16;
   roomSwitch(RIGHT);
 }
 if(player.x < 0){
-  player.x = WIDTH;
+  player.x = WIDTH-16;
   roomSwitch(LEFT);
 }
 if(player.y > HEIGHT){
-  player.y = 0;
+  player.y = 16;
   roomSwitch(DOWN);
 }
 if(player.y < 0){
-  player.y = HEIGHT;
+  player.y = HEIGHT-16;
   roomSwitch(UP);
 }
 
