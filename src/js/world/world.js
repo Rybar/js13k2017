@@ -165,7 +165,7 @@ function drawThings() {
       break;
 
       case THRUSTER:
-      rspr(192-64-32,0,32,32,x-2,y-5,1, t*90);
+      rspr(128,0,32,40,x-2,y-5,1, t*90);
       break;
 
       }
